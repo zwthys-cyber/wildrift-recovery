@@ -50,6 +50,56 @@ class OriginalEngineGetters(unittest.TestCase):
         cls.data=ENGINE.read_bytes()
         if hashlib.sha256(cls.data).hexdigest()!=ENGINE_SHA: raise ValueError('Wrong native engine profile')
 
+    def test_original_logic_battle_root(self):
+        # FEDesk.dataroot +10, then its live logical Battle +18.
+        # Deliberately different from FEDesk.frameroot +38 (sync view).
+        for delta in (0,0x100,0x800):
+            u=machine(self.data,((0xd03ddc,0xd03e60),))
+            q(u,0x523cf28,HEAP);q(u,HEAP+0x10,HEAP+0x1000)
+            q(u,HEAP+0x1018,HEAP+0x2000+delta);q(u,HEAP+0x38,HEAP+0x3000)
+            u.emu_start(0xd03ddc,HALT,count=100)
+            self.assertEqual(u.reg_read(UC_ARM64_REG_X0),HEAP+0x2000+delta)
+
+    def test_original_battle_actor_manager_dispatch(self):
+        # Stop at the virtual call. No game virtual function is executed.
+        for offset in (0,0x1000):
+            u=machine(self.data,((0x279f30,0x279fcc),));u.mem_map(0x6caa000,4096)
+            battle=HEAP+offset;q(u,battle+0xd10,HEAP+0x4000);q(u,HEAP+0x4078,0x32f2318)
+            u.reg_write(UC_ARM64_REG_X0,battle);u.reg_write(UC_ARM64_REG_X1,5)
+            u.emu_start(0x279f30,0x279fcc,count=100)
+            self.assertEqual(u.reg_read(UC_ARM64_REG_X0),battle+0xd10)
+            self.assertEqual(u.reg_read(UC_ARM64_REG_X8),0x32f2318)
+
+    def test_original_logic_object_tree_lookup(self):
+        # Original signed/object layout is checked against an independently
+        # built unsigned-key tree: left/right boundaries, absent keys and
+        # keys above INT32_MAX. Unknown logging/error calls remain rejected.
+        for sought,expected in ((1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(0,0),(7,0),
+                                (0xffffffff,0),(0x80000000,0),(0xffffffff,6),(0x80000000,6)):
+            u=machine(self.data,((0x32f2318,0x32f232c),(0x1011910,0x1011a18)))
+            header=HEAP+0x1000;q(u,HEAP+0x20,header);q(u,header,HEAP+0x2400)
+            for node_id,left,right in ((4,2,5),(2,1,3),(5,0,6),(1,0,0),(3,0,0),(6,0,0)):
+                a=HEAP+0x2000+node_id*0x100
+                q(u,a+8,HEAP+0x2000+left*0x100 if left else 0)
+                q(u,a+0x10,HEAP+0x2000+right*0x100 if right else 0)
+                node_key=sought if expected==6 and sought>=0x80000000 and node_id==6 else node_id
+                u.mem_write(a+0x20,struct.pack('<I',node_key));q(u,a+0x28,HEAP+0x5000+node_id*0x100)
+                u.mem_write(HEAP+0x5014+node_id*0x100,struct.pack('<I',node_key))
+            u.reg_write(UC_ARM64_REG_X0,HEAP);u.reg_write(UC_ARM64_REG_X1,sought)
+            u.emu_start(0x32f2318,HALT,count=300)
+            self.assertEqual(u.reg_read(UC_ARM64_REG_X0),HEAP+0x5000+expected*0x100 if expected else 0)
+
+    def test_named_original_logic_actor_identity(self):
+        # Lua registrations name FixGameObject.objId/transform and
+        # BattleActor.ResID/camp. These are not sync actor field offsets.
+        for start,member,size in ((0x3326590,0x14,4),(0x33269c8,0x20,8),
+                                  (0x3959e5c,0xc4,4),(0x395c260,0x198,4)):
+            for v in (0,16384,0xffffffff if size==4 else HEAP+0x1234):
+                u=machine(self.data,((start,start+8),))
+                u.mem_write(HEAP+member,struct.pack('<I' if size==4 else '<Q',v))
+                u.reg_write(UC_ARM64_REG_X0,HEAP);u.emu_start(start,HALT,count=30)
+                self.assertEqual(u.reg_read(UC_ARM64_REG_X0),v)
+
     def health(self,mode,logic,sync,node=True,count=3,config=True):
         u=machine(self.data,((0xcb3c,0xcbf8),(0xd03e60,0xd03e84),
             (0xfe29ec,0xfe2a4c),(0x1024524,0x102453c)))

@@ -1,0 +1,11 @@
+Original FEProj range 0xd03de8..0xd03df8; no device calls executed.
+00d03de8: adrp x8, #0x523c000
+00d03dec: add x8, x8, #0xf28
+00d03df0: ldr x19, [x8]
+00d03df4: ldr x8, [x19, #0x10]
+Original FEProj range 0xd03e18..0xd03e2c; no device calls executed.
+00d03e18: ldr x0, [x8, #0x18]
+00d03e1c: cbz x0, #0xd03e2c
+00d03e20: ldp x29, x30, [sp, #0x10]
+00d03e24: ldp x20, x19, [sp], #0x20
+00d03e28: ret 

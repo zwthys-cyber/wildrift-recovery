@@ -19,6 +19,10 @@ typedef enum {
     LV_HEALTH_UNAVAILABLE, LV_HEALTH_READY, LV_HEALTH_UNREADABLE,
     LV_HEALTH_INVALID, LV_HEALTH_CHANGED, LV_HEALTH_INELIGIBLE
 } LVNativeHealthStatus;
+typedef enum {
+    LV_LOGIC_UNAVAILABLE, LV_LOGIC_READY, LV_LOGIC_NOT_FOUND,
+    LV_LOGIC_UNREADABLE, LV_LOGIC_INVALID, LV_LOGIC_CHANGED, LV_LOGIC_INELIGIBLE
+} LVLogicPositionStatus;
 typedef struct {
     uint64_t visual, managed, native, attribute, transform;
     uint32_t object_id;
@@ -43,6 +47,11 @@ typedef struct {
     unsigned attribute_last_position_ok, host_position_ok, sync_logic_position_ok, visual_state_ok, should_be_visible;
     int64_t fow_force_position[3];
     unsigned fow_force_position_ok, fog_cut_state_ok, fog_cut_disappear;
+    /* Independent native logic object; never a reinterpretation of native. */
+    uint64_t logic_native, logic_transform;
+    int64_t logic_position_fixed[3];
+    unsigned logic_position_ok;
+    LVLogicPositionStatus logic_position_status;
 } LVTargetActor;
 typedef struct {
     uint64_t native, cd_node;
@@ -85,6 +94,19 @@ typedef struct {
     unsigned fog_config_ok, use_logic_network, logic_thread_enabled, fog_cut_enabled;
     size_t eligible, valid, unreadable, invalid, changed;
 } LVNativeHealthReport;
+typedef struct {
+    const char *reason;
+    unsigned profile_matches;
+    uint64_t desk, data_root, battle, manager, tree;
+    size_t eligible, valid, not_found, unreadable, invalid, changed;
+} LVLogicPositionReport;
+
+/* Caller has verified the Unity UUID. FEProj UUID is independently checked.
+   Reads current logic transforms only; no calls, writes or historical cache. */
+void lv_target_logic_position_read(LVTargetRead read, void *context, uint64_t engine_base,
+                                  const char *engine_uuid, LVTargetSnapshot *snapshot,
+                                  LVLogicPositionReport *report);
+const char *lv_logic_position_status_name(LVLogicPositionStatus status);
 
 /* Unity profile must already match. The FEProj UUID is checked here as well. */
 void lv_target_native_health_read(LVTargetRead read, void *context, uint64_t engine_base,

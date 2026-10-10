@@ -42,6 +42,7 @@ typedef struct {
     double health_fraction;
     unsigned health_fraction_ok, edge_clamped;
     unsigned health_source; /* 0 unknown, 1 native current/max, 2 minimap UI */
+    unsigned position_source; /* 1 sync transform, 2 independent logic transform */
 } LVMinimapMarker;
 typedef struct {
     unsigned ready, manual_projection;

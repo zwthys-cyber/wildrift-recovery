@@ -103,7 +103,7 @@ static NSDictionary *positionCandidates(const LVTargetActor *a) {
 }
 static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTargetSnapshot *snapshot,
                                       const LVMinimapSettings *settings, const LVMinimapHealthReport *health,
-                                      const LVNativeHealthReport *nativeHealth) {
+                                      const LVNativeHealthReport *nativeHealth, const LVLogicPositionReport *logic) {
     LVMinimapGeometry geometry; lv_minimap_read(readTarget, (__bridge void *)reader, base, &geometry);
     if (!geometry.ready && [@(geometry.reason) isEqual:@"geometry_changed"])
         lv_minimap_read(readTarget, (__bridge void *)reader, base, &geometry);
@@ -120,6 +120,7 @@ static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTarg
             @"health_fraction_read_ok": @(m->health_fraction_ok != 0), @"health_fraction": @(m->health_fraction),
             @"health_source": m->health_source==1 ? @"native_attributes" :
                 (m->health_source==2 ? @"game_minimap_cached_percent" : @"unavailable"),
+            @"position_source": m->position_source==2 ? @"native_logic_transform" : @"sync_transform",
             @"edge_clamped": @(m->edge_clamped != 0) }];
     }
     return @{ @"projection_ready": @(frame.ready != 0), @"reason": @(frame.reason),
@@ -142,12 +143,17 @@ static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTarg
             @"eligible_hero_count": @(nativeHealth->eligible), @"valid_fraction_count": @(nativeHealth->valid),
             @"unreadable_count": @(nativeHealth->unreadable), @"invalid_count": @(nativeHealth->invalid),
             @"changed_count": @(nativeHealth->changed), @"source": @"native_attributes", @"max_health_inferred": @NO },
+        @"logic_positions": @{ @"reason": @(logic->reason), @"profile_matches": @(logic->profile_matches!=0),
+            @"eligible_hero_count": @(logic->eligible), @"valid_position_count": @(logic->valid),
+            @"not_found_count": @(logic->not_found), @"unreadable_count": @(logic->unreadable),
+            @"invalid_count": @(logic->invalid), @"changed_count": @(logic->changed),
+            @"source": @"native_logic_transform" },
         @"markers": markers, @"alignment_device_verified": @NO,
         @"geometry": @{ @"ready": @(geometry.ready != 0), @"reason": @(geometry.reason),
             @"viewport_mode": @(geometry.viewport_mode != 0), @"full_map_showing": @(geometry.full_map_showing != 0),
             @"zoom_state": @(geometry.zoom_state), @"scale_x": @(geometry.scale_x), @"scale_z": @(geometry.scale_z),
             @"half_width": @(geometry.half_width), @"half_height": @(geometry.half_height) },
-        @"scope": @"Current client-memory coordinates only; no historical positions or extrapolation. HP fraction prefers identity-checked native current/max attributes; visible/enabled minimap UI cache is a fallback. Maximum HP is not inferred; unavailable data uses a neutral ring. Extra coordinate sources are diagnostic candidates, not established real-time positions. Ordinary map only." };
+        @"scope": @"Current client-memory coordinates only; no historical positions or extrapolation. Identity-matched independent logic transforms are preferred to the sync view. HP fraction prefers native current/max attributes. Remaining coordinate candidates are diagnostic only. Ordinary map only; native logic positions require device verification." };
 }
 NSDictionary *LVReadTargetSnapshot(LVMachReader *reader, NSDictionary *metadata, const LVConfig *config,
                                   const LVMinimapSettings *mapSettings) {
@@ -191,6 +197,9 @@ NSDictionary *LVReadTargetSnapshot(LVMachReader *reader, NSDictionary *metadata,
     LVNativeHealthReport nativeHealth;
     lv_target_native_health_read(readTarget,(__bridge void *)reader,engineBase,
         [engineUUID isKindOfClass:NSString.class] ? engineUUID.UTF8String : NULL,&snapshot,&nativeHealth);
+    LVLogicPositionReport logic;
+    lv_target_logic_position_read(readTarget,(__bridge void *)reader,engineBase,
+        [engineUUID isKindOfClass:NSString.class] ? engineUUID.UTF8String : NULL,&snapshot,&logic);
     NSMutableArray *actors = [NSMutableArray new];
     for (size_t i = 0; i < snapshot.count; ++i) {
         LVTargetActor *a = &snapshot.actors[i];
@@ -202,6 +211,15 @@ NSDictionary *LVReadTargetSnapshot(LVMachReader *reader, NSDictionary *metadata,
             @"transform_address": hexAddress(a->transform) } mutableCopy];
         record[@"classification_read_ok"] = @(a->classification_ok != 0);
         if(a->classification_ok && a->is_hero) record[@"coordinate_candidates"]=positionCandidates(a);
+        if(a->classification_ok && a->is_hero) {
+            record[@"logic_position_read_ok"]=@(a->logic_position_ok!=0);
+            record[@"logic_position_status"]=@(lv_logic_position_status_name(a->logic_position_status));
+            if(a->logic_position_ok) {
+                record[@"logic_position"]=fixedPosition(a->logic_position_fixed);
+                record[@"logic_native_address"]=hexAddress(a->logic_native);
+                record[@"logic_transform_address"]=hexAddress(a->logic_transform);
+            }
+        }
         record[@"minimap_health_fraction_read_ok"] = @(a->minimap_health_fraction_ok != 0);
         if(a->minimap_health_fraction_ok) record[@"minimap_health_fraction"] = @((double)a->minimap_health_fraction_fixed/16384.0);
         record[@"native_health_fraction_read_ok"]=@(a->native_health_fraction_ok!=0);
@@ -234,7 +252,9 @@ NSDictionary *LVReadTargetSnapshot(LVMachReader *reader, NSDictionary *metadata,
         @"local_native_address": hexAddress(snapshot.local_native), @"actors": actors,
         @"smite_preview": smitePreview(&snapshot, config),
         @"snapshot_read_attempts": @(attempts),
-        @"minimap": minimapSnapshot(reader, base, &snapshot, mapSettings, &health, &nativeHealth),
+        @"minimap": minimapSnapshot(reader, base, &snapshot, mapSettings, &health, &nativeHealth, &logic),
+        @"logic_trace": @{ @"desk":hexAddress(logic.desk), @"data_root":hexAddress(logic.data_root),
+            @"battle":hexAddress(logic.battle), @"actor_manager":hexAddress(logic.manager), @"tree":hexAddress(logic.tree) },
         @"trace": @{ @"class_cache": hexAddress(snapshot.class_cache), @"drive_class": hexAddress(snapshot.drive_class),
           @"drive_statics": hexAddress(snapshot.drive_statics), @"drive_instance": hexAddress(snapshot.drive),
           @"actor_manager": hexAddress(snapshot.manager), @"actor_list": hexAddress(snapshot.list),

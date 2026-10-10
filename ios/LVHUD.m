@@ -58,7 +58,8 @@ static void recordCoordinateTrace(NSDictionary *snapshot) {
     NSMutableArray *heroes=[NSMutableArray new]; BOOL truncated=NO;
     NSArray *keys=@[@"object_id",@"resource_id",@"camp",@"is_local",@"position_read_ok",@"position",
         @"health_read_ok",@"health",@"minimap_health_fraction_read_ok",@"minimap_health_fraction",@"coordinate_candidates",
-        @"native_health_fraction_read_ok",@"native_health_status",@"native_current_health",@"native_max_health",@"native_health_fraction"];
+        @"native_health_fraction_read_ok",@"native_health_status",@"native_current_health",@"native_max_health",@"native_health_fraction",
+        @"logic_position_read_ok",@"logic_position_status",@"logic_position"];
     for(NSDictionary *actor in snapshot[@"actors"]) {
         if(![actor[@"classification_read_ok"] boolValue] || ![actor[@"is_hero"] boolValue]) continue;
         if(heroes.count==16) { truncated=YES; break; }
@@ -74,12 +75,17 @@ static void recordCoordinateTrace(NSDictionary *snapshot) {
         @"current_enemy_markers":map[@"current_enemy_marker_count"] ?: @0,
         @"outside_map_enemies":map[@"outside_map_enemy_count"] ?: @0,
         @"health_cache":map[@"health_cache"] ?: @{}, @"native_health":map[@"native_health"] ?: @{},
+        @"logic_positions":map[@"logic_positions"] ?: @{},
         @"hero_list_truncated":@(truncated), @"heroes":heroes }];
     if(coordinateSamples.count>32) [coordinateSamples removeObjectAtIndex:0];
-    NSDictionary *trace=@{ @"format_version":@1, @"session":hudSession.lowercaseString,
+    NSMutableDictionary *trace=[@{ @"format_version":@1, @"session":hudSession.lowercaseString,
         @"producer_pid":@(getpid()), @"profile_uuid":@LV_TARGET_UUID, @"sample_interval_seconds":@1,
         @"sample_limit":@32, @"hero_limit":@16, @"samples":coordinateSamples,
-        @"scope":@"Bounded local numeric observations for comparing coordinate sources through vision changes. Candidate and last-position fields are not used for drawing. No full-memory dump, historical marker or predicted coordinate." };
+        @"scope":@"Bounded numeric observations through vision changes. Identity-matched native logic coordinates may be used for drawing; candidate and last-position fields are diagnostic only. No full-memory dump, history marker or predicted coordinate." } mutableCopy];
+    while(coordinateSamples.count>1 &&
+        [NSJSONSerialization dataWithJSONObject:trace options:0 error:NULL].length>512*1024) {
+        [coordinateSamples removeObjectAtIndex:0]; trace[@"byte_budget_trimmed"]=@YES;
+    }
     LVHUDWriteTrace(hudSession,trace);
 }
 static BOOL handshakeClosed = NO;

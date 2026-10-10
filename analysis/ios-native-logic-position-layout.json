@@ -1,0 +1,140 @@
+{
+  "engine_uuid": "D5B32037-47A3-3EFF-B0E5-04B071EFBEE3",
+  "engine_sha256": "69ed33e4b969139bda80946404528584a879f63ae4032c65fcb7412c3db4431e",
+  "unity_uuid": "085E1DDF-4A8D-34E2-9D73-A0A28BCC0B83",
+  "native_engine_collection_version": "0.7.5",
+  "scope": "Recovered independent native logic path. Offsets come from original getter instructions and named Lua registrations. Original getters executed only in bounded synthetic RAM. New device mapping and live fog coordinates remain unverified.",
+  "root": {
+    "desk_global": "0x523cf28",
+    "desk_data_root": "0x10",
+    "data_root_battle": "0x18",
+    "sync_frame_comparison": "FEDesk.frameroot +0x38 leads to the sync view; managed __Instance +0x10/+0x18 are pointer aliases, not separate logic objects"
+  },
+  "actor_lookup": {
+    "battle_embedded_manager": "0xd10",
+    "vtable_method": "0x78",
+    "accepted_original_methods": [
+      "0x32f2318",
+      "0x1011910"
+    ],
+    "manager_tree_pointer": "0x20",
+    "tree_root": "0x0",
+    "node_left": "0x8",
+    "node_right": "0x10",
+    "node_unsigned_key": "0x20",
+    "node_value": "0x28",
+    "limit": 64,
+    "sync_tree_pointer_comparison": "0x28"
+  },
+  "actor_identity": {
+    "object_id": "0x14",
+    "resource_id": "0xc4",
+    "camp": "0x198",
+    "transform_pointer": "0x20",
+    "lua_binding_evidence": {
+      "FixGameObject.objId": "0x35f6344 -> 0x3326590",
+      "FixGameObject.transform": "0x35f62c0 registration -> 0x33269c8",
+      "BattleActor.ResID": "0x35f4690 -> 0x3959e5c",
+      "BattleActor.camp": "0x35f49b0 -> 0x395c260"
+    },
+    "sync_comparison": {
+      "object_id": "0x18",
+      "resource_id": "0x2c",
+      "camp": "0x80"
+    }
+  },
+  "position": {
+    "encrypted_q14_vector": "transform +0x28, +0x30, +0x38",
+    "xor_key_global": "0x523cf38",
+    "decryption": "Each 64-bit component XOR current key then interpreted as signed Q14. No additive guess or temporal prediction.",
+    "accepted_components_world_units": [
+      -200,
+      200
+    ],
+    "invalid_sentinels_rejected": [
+      "(500,0,500)",
+      "(-10000,0,0)"
+    ]
+  },
+  "consistency": "Check sync and logic object ID/resource/camp, resolve logic object twice, recheck transform pointer, global desk/data/battle/tree/XOR key and lookup method. A failing hero does not discard unrelated valid actors. No last-position cache.",
+  "integration": "The minimap prefers validated native logic position and retains the existing current sync fallback; other preview behavior is unchanged. Primary sync and logic coordinates are exported separately.",
+  "original_instruction_checks": {
+    "tests": 9,
+    "cases": 101,
+    "calls_and_syscalls_rejected": true,
+    "actor_manager_dispatch_stop": "before virtual call",
+    "private_binary_bundled_or_uploaded": false
+  },
+  "device_verified": false,
+  "evidence_files": {
+    "analysis/ios-native-logic/logic-battle-root.asm.txt": {
+      "sha256": "3397059d13377a40b9021f6acdda1fdd7cc572a79d186a996106c45593799f13",
+      "ranges": [
+        [
+          "0xd03de8",
+          "0xd03df8"
+        ],
+        [
+          "0xd03e18",
+          "0xd03e2c"
+        ]
+      ]
+    },
+    "analysis/ios-native-logic/battle-actor-manager.asm.txt": {
+      "sha256": "56a81fb43423e2f5f2be88ffe874ba0de9c3a622b2ede00b29c75086721af340",
+      "ranges": [
+        [
+          "0x279fbc",
+          "0x279fd0"
+        ],
+        [
+          "0x32f2318",
+          "0x32f232c"
+        ]
+      ]
+    },
+    "analysis/ios-native-logic/logic-object-tree.asm.txt": {
+      "sha256": "e4c194d95b64cd1056b3965fde0df3560768f5b898ffa767e7376310c7125bcf",
+      "ranges": [
+        [
+          "0x1011924",
+          "0x1011994"
+        ]
+      ]
+    },
+    "analysis/ios-native-logic/logic-actor-identity.asm.txt": {
+      "sha256": "c3cf906cabed70f8eafefc0a567a563925543e7e4493f8ac20e073c635ef2bd9",
+      "ranges": [
+        [
+          "0x3326590",
+          "0x3326598"
+        ],
+        [
+          "0x33269c8",
+          "0x33269d0"
+        ],
+        [
+          "0x3959e5c",
+          "0x3959e64"
+        ],
+        [
+          "0x395c260",
+          "0x395c268"
+        ]
+      ]
+    },
+    "analysis/ios-native-logic/logic-transform-decode.asm.txt": {
+      "sha256": "8e5d24890332b3a93da93c2ecc3bf1d34fe7a8e34e64fa14237bd2f43135186a",
+      "ranges": [
+        [
+          "0x1030dac",
+          "0x1030dc0"
+        ],
+        [
+          "0x1030de8",
+          "0x1030e1c"
+        ]
+      ]
+    }
+  }
+}

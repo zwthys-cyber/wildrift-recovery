@@ -1,0 +1,156 @@
+#include "LVTarget.h"
+#include <string.h>
+
+typedef struct { LVTargetRead read; void *context; } Reader;
+static int address_valid(uint64_t a, size_t n) {
+    return a >= 0x10000 && a < (UINT64_C(1)<<48) && n && n <= 4096 &&
+           n <= (UINT64_C(1)<<48)-a;
+}
+static int load(Reader *r,uint64_t a,void *p,size_t n) {
+    memset(p,0,n);
+    if(!address_valid(a,n) || !r->read(r->context,a,p,n)) { memset(p,0,n); return 0; }
+    return 1;
+}
+static int pointer(Reader *r,uint64_t a,uint64_t *p) {
+    return load(r,a,p,8) && (!*p || (address_valid(*p,8) && !(*p&7)));
+}
+static void clear(LVTargetActor *a,LVLogicPositionStatus s) {
+    a->logic_position_ok=0; a->logic_native=a->logic_transform=0;
+    memset(a->logic_position_fixed,0,sizeof(a->logic_position_fixed));
+    a->logic_position_status=s;
+}
+static int duplicate(const LVTargetSnapshot *s,size_t index) {
+    for(size_t i=0;i<s->count;++i) if(i!=index && s->actors[i].object_id_ok &&
+        s->actors[i].object_id==s->actors[index].object_id) return 1;
+    return 0;
+}
+static int sync_identity(Reader *r,const LVTargetActor *a) {
+    uint64_t managed,native; uint32_t id; int32_t res,camp;
+    return pointer(r,a->visual+0xa0,&managed) && managed==a->managed &&
+        pointer(r,managed+0x18,&native) && native==a->native &&
+        load(r,native+0x18,&id,4) && id==a->object_id &&
+        load(r,native+0x2c,&res,4) && res==a->resource_id &&
+        load(r,native+0x80,&camp,4) && camp==a->camp;
+}
+static int logic_identity(Reader *r,uint64_t native,const LVTargetActor *a,uint64_t *transform) {
+    /* Lua FixGameObject.objId 0x3326590; BattleActor.ResID/camp
+       0x3959e5c/0x395c260; FixGameObject.transform and original Fow
+       position getter 0x1030dac use the independent actor's +20. */
+    uint32_t id; int32_t res,camp;
+    return load(r,native+0x14,&id,4) && id==a->object_id &&
+        load(r,native+0xc4,&res,4) && res==a->resource_id &&
+        load(r,native+0x198,&camp,4) && camp==a->camp &&
+        pointer(r,native+0x20,transform) && *transform;
+}
+static LVLogicPositionStatus find(Reader *r,uint64_t tree,uint32_t id,uint64_t *object) {
+    /* Original logic FixObjectMgr.FindObject 0x1011924..0x1011990:
+       manager +20 -> tree header; header +0 -> root; node +8/+10
+       children, +20 unsigned key, +28 object. Sync uses manager +28
+       and object +18 instead, so it cannot be substituted here. */
+    uint64_t node,candidate=0,visited[64]; uint32_t candidate_key=0;
+    size_t depth=0;
+    if(!pointer(r,tree,&node)) return LV_LOGIC_UNREADABLE;
+    while(node) {
+        if(depth==64) return LV_LOGIC_INVALID;
+        for(size_t i=0;i<depth;++i) if(visited[i]==node) return LV_LOGIC_INVALID;
+        visited[depth++]=node;
+        unsigned char bytes[48];
+        if(!load(r,node,bytes,sizeof(bytes))) return LV_LOGIC_UNREADABLE;
+        uint32_t key; uint64_t child,value;
+        memcpy(&key,bytes+0x20,4); memcpy(&value,bytes+0x28,8);
+        if(key>=id) { candidate=value; candidate_key=key; }
+        memcpy(&child,bytes+(key<id ? 0x10 : 8),8);
+        if(child && (!address_valid(child,48) || (child&7))) return LV_LOGIC_INVALID;
+        node=child;
+    }
+    if(candidate_key!=id || !candidate) return LV_LOGIC_NOT_FOUND;
+    if(!address_valid(candidate,0x1a0) || (candidate&7)) return LV_LOGIC_INVALID;
+    *object=candidate; return LV_LOGIC_READY;
+}
+static int roots(Reader *r,uint64_t base,const LVLogicPositionReport *v,uint64_t key) {
+    uint64_t desk,data,battle,tree,same_key;
+    return pointer(r,base+0x523cf28,&desk) && desk==v->desk &&
+        pointer(r,desk+0x10,&data) && data==v->data_root &&
+        pointer(r,data+0x18,&battle) && battle==v->battle &&
+        pointer(r,v->manager+0x20,&tree) && tree==v->tree &&
+        load(r,base+0x523cf38,&same_key,8) && same_key==key;
+}
+void lv_target_logic_position_read(LVTargetRead read,void *context,uint64_t base,
+                                  const char *uuid,LVTargetSnapshot *s,LVLogicPositionReport *report) {
+    LVLogicPositionReport v={.reason="logic_unavailable"};
+    if(!s || s->count>LV_TARGET_MAX_ACTORS) { if(report) *report=v; return; }
+    for(size_t i=0;i<s->count;++i) clear(&s->actors[i],LV_LOGIC_UNAVAILABLE);
+    if(!read || !uuid || strcmp(uuid,LV_NATIVE_ENGINE_UUID) || !address_valid(base,8) ||
+        base> (UINT64_C(1)<<48)-0x523cf40) { v.reason="logic_profile_mismatch"; goto done; }
+    v.profile_matches=1;
+    if(s->result!=LV_TARGET_READY && s->result!=LV_TARGET_PARTIAL) goto done;
+    Reader r={read,context}; uint64_t key,vtable,lookup;
+    /* GetBattleFromDataRoot 0xd03ddc: global FEDesk -> dataroot +10
+       -> battle +18. FEDesk.frameroot +38 is the separate sync view. */
+    if(!pointer(&r,base+0x523cf28,&v.desk) || !v.desk ||
+        !pointer(&r,v.desk+0x10,&v.data_root) || !v.data_root ||
+        !pointer(&r,v.data_root+0x18,&v.battle) || !v.battle ||
+        !load(&r,base+0x523cf38,&key,8)) { v.reason="logic_root_unreadable"; goto done; }
+    if(!address_valid(v.battle+0xd10,0x30)) { v.reason="logic_manager_invalid"; goto done; }
+    /* Battle actor lookup 0x279fbc dispatches the embedded manager +d10
+       through vtable +78. Accept only the recovered original tree lookup. */
+    v.manager=v.battle+0xd10;
+    if(!pointer(&r,v.manager,&vtable) || !vtable || !load(&r,vtable+0x78,&lookup,8)) {
+        v.reason="logic_manager_unreadable"; goto done;
+    }
+    if(lookup!=base+0x32f2318 && lookup!=base+0x1011910) { v.reason="logic_lookup_layout_mismatch"; goto done; }
+    if(!pointer(&r,v.manager+0x20,&v.tree) || !v.tree) { v.reason="logic_tree_unreadable"; goto done; }
+    for(size_t i=0;i<s->count;++i) {
+        LVTargetActor *a=&s->actors[i];
+        if(!a->values_ok || !a->classification_ok || !a->is_hero || !a->object_id_ok ||
+            !a->object_id || duplicate(s,i)) { clear(a,LV_LOGIC_INELIGIBLE); continue; }
+        ++v.eligible;
+        uint64_t native=0,transform=0,after_transform=0,same=0,encrypted[3];
+        LVLogicPositionStatus status=find(&r,v.tree,a->object_id,&native);
+        if(status==LV_LOGIC_READY && (!sync_identity(&r,a) ||
+            !logic_identity(&r,native,a,&transform))) status=LV_LOGIC_CHANGED;
+        if(status==LV_LOGIC_READY && !load(&r,transform+0x28,encrypted,sizeof(encrypted))) status=LV_LOGIC_UNREADABLE;
+        int64_t position[3]={0};
+        if(status==LV_LOGIC_READY) {
+            /* Original logical transform 0x1030de8..0x1030e0c. Copy
+               decoded bit patterns to signed Q14 without signed overflow. */
+            for(size_t j=0;j<3;++j) { uint64_t decoded=encrypted[j]^key; memcpy(&position[j],&decoded,8); }
+            for(size_t j=0;j<3;++j) if(position[j]<-200*INT64_C(16384) || position[j]>200*INT64_C(16384))
+                status=LV_LOGIC_INVALID;
+        }
+        if(status==LV_LOGIC_READY && (find(&r,v.tree,a->object_id,&same)!=LV_LOGIC_READY || same!=native ||
+            !logic_identity(&r,native,a,&after_transform) || after_transform!=transform || !sync_identity(&r,a)))
+            status=LV_LOGIC_CHANGED;
+        clear(a,status);
+        switch(status) {
+            case LV_LOGIC_READY:
+                a->logic_native=native; a->logic_transform=transform; a->logic_position_ok=1;
+                memcpy(a->logic_position_fixed,position,sizeof(position)); ++v.valid; break;
+            case LV_LOGIC_NOT_FOUND: ++v.not_found; break;
+            case LV_LOGIC_UNREADABLE: ++v.unreadable; break;
+            case LV_LOGIC_INVALID: ++v.invalid; break;
+            default: ++v.changed; break;
+        }
+    }
+    uint64_t after_vtable=0,after_lookup=0;
+    if(!roots(&r,base,&v,key) || !pointer(&r,v.manager,&after_vtable) || after_vtable!=vtable ||
+        !load(&r,vtable+0x78,&after_lookup,8) || after_lookup!=lookup) {
+        for(size_t i=0;i<s->count;++i) if(s->actors[i].logic_position_ok) {
+            clear(&s->actors[i],LV_LOGIC_CHANGED); ++v.changed;
+        }
+        v.valid=0; v.reason="logic_root_changed";
+    } else v.reason=v.valid ? "ready" : "no_valid_logic_position";
+done:
+    if(report) *report=v;
+}
+const char *lv_logic_position_status_name(LVLogicPositionStatus s) {
+    switch(s) {
+        case LV_LOGIC_READY:return "ready";
+        case LV_LOGIC_NOT_FOUND:return "not_found";
+        case LV_LOGIC_UNREADABLE:return "unreadable";
+        case LV_LOGIC_INVALID:return "invalid";
+        case LV_LOGIC_CHANGED:return "changed";
+        case LV_LOGIC_INELIGIBLE:return "ineligible";
+        default:return "unavailable";
+    }
+}

@@ -35,6 +35,7 @@ record = {
     'target_reader_scenarios': checks('target-reader-checks.txt'),
     'minimap_health_checks': checks('minimap-health-checks.txt'),
     'native_health_checks': checks('native-health-checks.txt'),
+    'logic_position_checks': checks('logic-position-checks.txt'),
     'hud_telemetry_checks': checks('hud-telemetry-checks.txt'),
     'ipa_signature_tests': 5,
     'ipa_total_tests': 8,
@@ -42,9 +43,12 @@ record = {
     'collection_inspector_tests': 6,
     'native_engine_collection_device_verified': metadata['native_engine_collection_device_verified'],
     'native_health_device_verified': False,
+    'logic_position_device_verified': False,
+    'prior_native_health_device_evidence_version': '0.7.6',
+    'prior_native_health_ring_user_confirmed': True,
     'bundled_hero_portraits': metadata['minimap_hero_portrait_count'],
     'desktop_icon_payload_verified': True,
-    'scope': 'GitHub CI checks and build provenance. Local original FEProj getter emulation is separately recorded and private engine bytes are absent from CI. Native-engine collection was verified from the 0.7.5 device export. New native health reading/rendering remains device-unverified. Real-time fog coordinates remain unresolved.'
+    'scope': 'GitHub CI checks and build provenance. Local original FEProj getter emulation is separately recorded; private engine bytes are absent from CI. The 0.7.6 native HP ring was confirmed by the user. The new independent logic position reader is implemented and locally checked but requires device validation through fog changes.'
 }
 text = json.dumps(record, ensure_ascii=False, indent=2) + '\n'
 (ROOT / 'analysis/ci-validation.json').write_text(text)

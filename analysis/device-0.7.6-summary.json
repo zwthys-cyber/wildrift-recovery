@@ -1,0 +1,43 @@
+{
+  "recovery_app_version": "0.7.6",
+  "report_sha256": "c2ab0a858654155a5261b3969e2cf031f16687c16e612d69bb2514adb46fb629",
+  "report_bytes": 694821,
+  "probe_sampled_at": "2026-10-10T21:50:59Z",
+  "probe": {
+    "hero_count": 10,
+    "enemy_count": 5,
+    "live_enemy_hidden_sync_sentinel_count": 4,
+    "enemy_markers": 1,
+    "native_health": {
+      "max_health_inferred": false,
+      "fog_cut_enabled": 0,
+      "profile_matches": 1,
+      "unreadable_count": 0,
+      "logic_thread_enabled": 1,
+      "invalid_count": 0,
+      "changed_count": 0,
+      "source": "native_attributes",
+      "use_logic_network": 0,
+      "sync_values": 1,
+      "fog_config_read_ok": 1,
+      "valid_fraction_count": 10,
+      "reason": "ready",
+      "eligible_hero_count": 10
+    }
+  },
+  "later_trace": {
+    "sample_count": 32,
+    "first_sample_at": "2026-10-10T22:09:33Z",
+    "last_sample_at": "2026-10-10T22:10:05Z",
+    "hero_count_per_sample": [
+      10
+    ],
+    "valid_native_hp_pair_count": 320,
+    "fog_hidden_hero_observations": 0
+  },
+  "user_confirmation": {
+    "native_health_ring_good": true,
+    "enemy_portraits_still_disappear_without_vision": true
+  },
+  "scope": "Whitelisted numeric summary only; addresses, PIDs, paths and player identifiers omitted. Probe and later HUD trace are different times; the later 32 samples do not capture hidden heroes. No independent logic objects were sampled by 0.7.6."
+}

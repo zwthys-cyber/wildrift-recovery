@@ -1,0 +1,12 @@
+Original FEProj range 0x3326590..0x3326598; no device calls executed.
+03326590: ldr w0, [x0, #0x14]
+03326594: ret 
+Original FEProj range 0x33269c8..0x33269d0; no device calls executed.
+033269c8: ldr x0, [x0, #0x20]
+033269cc: ret 
+Original FEProj range 0x3959e5c..0x3959e64; no device calls executed.
+03959e5c: ldr w0, [x0, #0xc4]
+03959e60: ret 
+Original FEProj range 0x395c260..0x395c268; no device calls executed.
+0395c260: ldr w0, [x0, #0x198]
+0395c264: ret 

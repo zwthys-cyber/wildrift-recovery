@@ -243,8 +243,9 @@ static int duplicate_id(const LVTargetSnapshot *s, size_t index) {
 }
 static int add_marker(LVMinimapFrame *out, const LVTargetActor *a, unsigned ordinal,
                        const LVMinimapGeometry *g, const LVMinimapSettings *settings) {
-    if (!a->position_ok || (a->health_ok && a->health_fixed <= 0)) return 0;
-    double x = (double)a->position_fixed[0] / 16384, z = (double)a->position_fixed[2] / 16384;
+    if ((!a->logic_position_ok && !a->position_ok) || (a->health_ok && a->health_fixed <= 0)) return 0;
+    const int64_t *p=a->logic_position_ok ? a->logic_position_fixed : a->position_fixed;
+    double x = (double)p[0] / 16384, z = (double)p[2] / 16384;
     /* Red-side 180-degree camera orientation is a default, with a user
        override for camera/layout settings. Native rotation APIs are not called. */
     switch (out->rotation_degrees) {
@@ -266,6 +267,7 @@ static int add_marker(LVMinimapFrame *out, const LVTargetActor *a, unsigned ordi
     if (out->count >= LV_TARGET_MAX_ACTORS) return 0;
     out->markers[out->count++] = (LVMinimapMarker){ .object_id = a->object_id, .resource_id = a->resource_id,
         .ordinal = ordinal, .is_local = a->is_local, .u = u, .v = v, .edge_clamped = clamped,
+        .position_source = a->logic_position_ok ? 2 : 1,
         .health_fraction_ok = a->native_health_fraction_ok || a->minimap_health_fraction_ok,
         .health_source = a->native_health_fraction_ok ? 1 : (a->minimap_health_fraction_ok ? 2 : 0),
         .health_fraction = (double)(a->native_health_fraction_ok ? a->native_health_fraction_fixed :

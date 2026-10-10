@@ -32,7 +32,7 @@ def build(sdk, clang, linker, ldid):
               '-O2', '-Wall', '-Werror', '-Wno-deprecated-declarations',
               '-fvisibility=hidden', '-I', ROOT / 'core', '-I', ROOT / 'ios']
     files = ['ios/main.m', 'ios/LVMachReader.m', 'ios/LVHelper.m', 'ios/LVProbe.m', 'ios/LVCollect.m', 'ios/LVHUDTrace.m',
-             'ios/LVSnapshot.m', 'ios/LVSnapshotController.m', 'ios/LVHUD.m', 'ios/LVHeroPortraits.m', 'ios/LVHUDControl.m', 'ios/LVMinimapSettings.m', 'core/LVMinimap.c', 'core/LVMinimapMotion.c', 'core/LVHUDTelemetry.c', 'core/LVConfig.c', 'core/LVActions.c', 'core/LVZip.c', 'core/LVTarget.c', 'core/LVSmitePreview.c']
+             'ios/LVSnapshot.m', 'ios/LVSnapshotController.m', 'ios/LVHUD.m', 'ios/LVHeroPortraits.m', 'ios/LVHUDControl.m', 'ios/LVMinimapSettings.m', 'core/LVMinimap.c', 'core/LVMinimapMotion.c', 'core/LVHUDTelemetry.c', 'core/LVConfig.c', 'core/LVActions.c', 'core/LVZip.c', 'core/LVTarget.c', 'core/LVLogicPosition.c', 'core/LVSmitePreview.c']
     objects = {}
     for filename in files:
         src = ROOT / filename
@@ -46,9 +46,9 @@ def build(sdk, clang, linker, ldid):
     run(*links, '-framework', 'UIKit', '-framework', 'CoreGraphics', objects['main'], objects['LVConfig'], objects['LVActions'],
         objects['LVMachReader'], objects['LVHelper'], objects['LVSnapshotController'], objects['LVHUDControl'], objects['LVHUDTrace'], objects['LVHUDTelemetry'], objects['LVMinimapSettings'], objects['LVMinimap'], '-o', app / 'LVRecovery')
     run(*links, '-lz', objects['LVProbe'], objects['LVMachReader'], objects['LVCollect'], objects['LVZip'],
-        objects['LVSnapshot'], objects['LVTarget'], objects['LVSmitePreview'], objects['LVActions'], objects['LVConfig'], objects['LVHUDControl'], objects['LVHUDTrace'], objects['LVHUDTelemetry'], objects['LVMinimap'], '-o', app / 'LVProbe')
+        objects['LVSnapshot'], objects['LVTarget'], objects['LVLogicPosition'], objects['LVSmitePreview'], objects['LVActions'], objects['LVConfig'], objects['LVHUDControl'], objects['LVHUDTrace'], objects['LVHUDTelemetry'], objects['LVMinimap'], '-o', app / 'LVProbe')
     run(*links, '-framework', 'UIKit', '-framework', 'QuartzCore', '-framework', 'CoreGraphics',
-        objects['LVHUD'], objects['LVHUDControl'], objects['LVHUDTrace'], objects['LVMachReader'], objects['LVSnapshot'], objects['LVTarget'],
+        objects['LVHUD'], objects['LVHUDControl'], objects['LVHUDTrace'], objects['LVMachReader'], objects['LVSnapshot'], objects['LVTarget'], objects['LVLogicPosition'],
         objects['LVSmitePreview'], objects['LVActions'], objects['LVConfig'], objects['LVHUDTelemetry'], objects['LVMinimap'], objects['LVMinimapMotion'], objects['LVHeroPortraits'], '-o', app / 'LVHUD')
     info = plistlib.loads((ROOT / 'ios/Info.plist').read_bytes())
     (app / 'Info.plist').write_bytes(plistlib.dumps(info, fmt=plistlib.FMT_BINARY))
@@ -119,13 +119,20 @@ def build(sdk, clang, linker, ldid):
                 'minimap_native_health_layout_evidence': 'analysis/ios-native-health-layout.json',
                 'minimap_native_health_device_verified': False,
                 'minimap_health_ring_device_verified': False,
+                'prior_minimap_native_health_device_evidence_version': '0.7.6',
+                'prior_minimap_native_health_reads_succeeded': True,
+                'prior_minimap_health_ring_user_confirmed': True,
                 'minimap_unknown_health_ring': 'gray',
                 'minimap_max_health_inferred': False,
                 'minimap_history_position_fallback': False,
                 'minimap_coordinate_candidates_used_for_overlay': False,
                 'minimap_fog_disappearance_resolved': False,
-                'minimap_latest_device_evidence': 'analysis/device-0.7.4-summary.json',
-                'minimap_latest_device_issue': '0.7.4 trace confirms native and sync positions both become (500,0,500) for live heroes. Last HUD has five enemies, three markers: one dead and one invalid position. HP cache validity is intermittent.',
+                'minimap_logic_position_reader_implemented': True,
+                'minimap_logic_position_device_verified': False,
+                'minimap_logic_position_layout_evidence': 'analysis/ios-native-logic-position-layout.json',
+                'minimap_logic_position_source': 'Current independent native logic actor matched to sync hero by object ID, resource ID and camp; Q14 transform decoded with the current engine XOR key',
+                'minimap_latest_device_evidence': 'analysis/device-0.7.6-summary.json',
+                'minimap_latest_device_issue': '0.7.6 probe has four live hidden enemies with sync position (500,0,500); its later 32-sample trace has visible actors and validates all 320 native HP pairs. Logic thread is enabled. New independent logic reader needs a device report.',
                 'minimap_coordinate_trace_implemented': True,
                 'minimap_coordinate_trace_device_verified': False,
                 'prior_minimap_coordinate_trace_device_evidence_version': '0.7.4',
