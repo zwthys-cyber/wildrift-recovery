@@ -1,0 +1,301 @@
+{
+  "framework_sha256": "effa95dbbc2bf16f9474c7c99700b80b3e0b7c793537e2da7089bd01b6a5e394",
+  "framework_uuid": "085E1DDF-4A8D-34E2-9D73-A0A28BCC0B83",
+  "missing_native_framework": "FEProj.framework/FEProj",
+  "expected_native_framework_uuid": "D5B32037-47A3-3EFF-B0E5-04B071EFBEE3",
+  "native_framework_loaded_cryptid": 0,
+  "native_framework_present_in_original_inputs": false,
+  "max_hp_call_chain": [
+    "ActorComponentAttribute.get_maxHP / get_maxHPVisi",
+    "AttrDB.getValue (attribute tag 2)",
+    "0x5203520",
+    "0x7c13358",
+    "0xe950aac",
+    "_FE_TN212 in FEProj"
+  ],
+  "import_slot": "0x100251a0",
+  "indirect_symbol_index": 3875,
+  "symbol_index": 24180,
+  "symbol": "_FE_TN212",
+  "dylib_ordinal": 38,
+  "dependency": "@rpath/FEProj.framework/FEProj",
+  "instruction_blocks": {
+    "0x7c13358": [
+      {
+        "address": "0x7c13358",
+        "instruction": "b #0xe950aac"
+      }
+    ],
+    "0xe950aac": [
+      {
+        "address": "0xe950aac",
+        "instruction": "adrp x16, #0x10025000"
+      },
+      {
+        "address": "0xe950ab0",
+        "instruction": "ldr x16, [x16, #0x1a0]"
+      },
+      {
+        "address": "0xe950ab4",
+        "instruction": "br x16"
+      }
+    ],
+    "0x5203520": [
+      {
+        "address": "0x5203520",
+        "instruction": "stp x22, x21, [sp, #-0x30]!"
+      },
+      {
+        "address": "0x5203524",
+        "instruction": "stp x20, x19, [sp, #0x10]"
+      },
+      {
+        "address": "0x5203528",
+        "instruction": "stp x29, x30, [sp, #0x20]"
+      },
+      {
+        "address": "0x520352c",
+        "instruction": "add x29, sp, #0x20"
+      },
+      {
+        "address": "0x5203530",
+        "instruction": "mov x19, x1"
+      },
+      {
+        "address": "0x5203534",
+        "instruction": "mov x20, x0"
+      },
+      {
+        "address": "0x5203538",
+        "instruction": "adrp x21, #0x10b37000"
+      },
+      {
+        "address": "0x520353c",
+        "instruction": "ldrb w8, [x21, #0xd8f]"
+      },
+      {
+        "address": "0x5203540",
+        "instruction": "tbz w8, #0, #0x5203564"
+      },
+      {
+        "address": "0x5203544",
+        "instruction": "adrp x22, #0x1060e000"
+      },
+      {
+        "address": "0x5203548",
+        "instruction": "ldr x0, [x22, #0x9c0]"
+      },
+      {
+        "address": "0x520354c",
+        "instruction": "ldr w8, [x0, #0xe0]"
+      },
+      {
+        "address": "0x5203550",
+        "instruction": "cbz w8, #0x5203588"
+      },
+      {
+        "address": "0x5203554",
+        "instruction": "ldr x8, [x0, #0xb8]"
+      },
+      {
+        "address": "0x5203558",
+        "instruction": "ldr x0, [x8]"
+      },
+      {
+        "address": "0x520355c",
+        "instruction": "cbnz x0, #0x520359c"
+      },
+      {
+        "address": "0x5203560",
+        "instruction": "b #0x52035f0"
+      },
+      {
+        "address": "0x5203564",
+        "instruction": "adrp x0, #0x1060e000"
+      },
+      {
+        "address": "0x5203568",
+        "instruction": "add x0, x0, #0x9c0"
+      },
+      {
+        "address": "0x520356c",
+        "instruction": "bl #0x2c6b024"
+      },
+      {
+        "address": "0x5203570",
+        "instruction": "mov w8, #1"
+      },
+      {
+        "address": "0x5203574",
+        "instruction": "strb w8, [x21, #0xd8f]"
+      },
+      {
+        "address": "0x5203578",
+        "instruction": "adrp x22, #0x1060e000"
+      },
+      {
+        "address": "0x520357c",
+        "instruction": "ldr x0, [x22, #0x9c0]"
+      },
+      {
+        "address": "0x5203580",
+        "instruction": "ldr w8, [x0, #0xe0]"
+      },
+      {
+        "address": "0x5203584",
+        "instruction": "cbnz w8, #0x5203554"
+      },
+      {
+        "address": "0x5203588",
+        "instruction": "bl #0x2c6b180"
+      },
+      {
+        "address": "0x520358c",
+        "instruction": "ldr x0, [x22, #0x9c0]"
+      },
+      {
+        "address": "0x5203590",
+        "instruction": "ldr x8, [x0, #0xb8]"
+      },
+      {
+        "address": "0x5203594",
+        "instruction": "ldr x0, [x8]"
+      },
+      {
+        "address": "0x5203598",
+        "instruction": "cbz x0, #0x52035f0"
+      },
+      {
+        "address": "0x520359c",
+        "instruction": "mov w1, #8"
+      },
+      {
+        "address": "0x52035a0",
+        "instruction": "mov x2, #0"
+      },
+      {
+        "address": "0x52035a4",
+        "instruction": "bl #0x52bdb48"
+      },
+      {
+        "address": "0x52035a8",
+        "instruction": "mov x21, x0"
+      },
+      {
+        "address": "0x52035ac",
+        "instruction": "mov x0, x20"
+      },
+      {
+        "address": "0x52035b0",
+        "instruction": "mov x1, x19"
+      },
+      {
+        "address": "0x52035b4",
+        "instruction": "mov x2, x21"
+      },
+      {
+        "address": "0x52035b8",
+        "instruction": "bl #0x7c13358"
+      },
+      {
+        "address": "0x52035bc",
+        "instruction": "ldr x8, [x22, #0x9c0]"
+      },
+      {
+        "address": "0x52035c0",
+        "instruction": "ldr x8, [x8, #0xb8]"
+      },
+      {
+        "address": "0x52035c4",
+        "instruction": "ldr x8, [x8]"
+      },
+      {
+        "address": "0x52035c8",
+        "instruction": "cbz x8, #0x52035f0"
+      },
+      {
+        "address": "0x52035cc",
+        "instruction": "ldr x0, [x21]"
+      },
+      {
+        "address": "0x52035d0",
+        "instruction": "ldr w9, [x8, #0x10]"
+      },
+      {
+        "address": "0x52035d4",
+        "instruction": "subs w9, w9, #8"
+      },
+      {
+        "address": "0x52035d8",
+        "instruction": "b.mi #0x52035e0"
+      },
+      {
+        "address": "0x52035dc",
+        "instruction": "str w9, [x8, #0x10]"
+      },
+      {
+        "address": "0x52035e0",
+        "instruction": "ldp x29, x30, [sp, #0x20]"
+      },
+      {
+        "address": "0x52035e4",
+        "instruction": "ldp x20, x19, [sp, #0x10]"
+      },
+      {
+        "address": "0x52035e8",
+        "instruction": "ldp x22, x21, [sp], #0x30"
+      },
+      {
+        "address": "0x52035ec",
+        "instruction": "ret "
+      },
+      {
+        "address": "0x52035f0",
+        "instruction": "bl #0x2c6b2d0"
+      },
+      {
+        "address": "0x52035f4",
+        "instruction": "b #0x7c1335c"
+      }
+    ],
+    "0x4ea1f84": [
+      {
+        "address": "0x4ea1f84",
+        "instruction": "ldr x8, [x19, #0x18]"
+      },
+      {
+        "address": "0x4ea1f88",
+        "instruction": "adds x0, x8, #0x1d0"
+      },
+      {
+        "address": "0x4ea1f8c",
+        "instruction": "b.eq #0x4ea2044"
+      }
+    ],
+    "0x4ea2030": [
+      {
+        "address": "0x4ea2030",
+        "instruction": "mov w1, #2"
+      },
+      {
+        "address": "0x4ea2034",
+        "instruction": "mov x2, #0"
+      },
+      {
+        "address": "0x4ea2038",
+        "instruction": "ldp x29, x30, [sp, #0x10]"
+      },
+      {
+        "address": "0x4ea203c",
+        "instruction": "ldp x20, x19, [sp], #0x20"
+      },
+      {
+        "address": "0x4ea2040",
+        "instruction": "b #0x5203520"
+      }
+    ]
+  },
+  "position_observation": "FixTransform.get_position copies the current native Q14 vector; ActorTransformSync stores a converted copy. Latest device log confirms equality even at (500,0,500).",
+  "scope": "Static call/import evidence, not a runtime max-health or fog-position recovery. No caller is invoked. FEProj is needed to inspect the missing native implementation; it is not proof of an alternative real-time fog source.",
+  "device_report_sha256": "fd0ece015f00b2c117194bd1f3ae19d97a1a4f09fa163cae594c365b2ebf1df5"
+}

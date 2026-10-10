@@ -1,0 +1,314 @@
+{
+  "version": "0.7.4",
+  "source_sha256": "fd0ece015f00b2c117194bd1f3ae19d97a1a4f09fa163cae594c365b2ebf1df5",
+  "source_bytes": 510420,
+  "framework_uuid": "085E1DDF-4A8D-34E2-9D73-A0A28BCC0B83",
+  "probe_sampled_at": "2026-10-10T20:38:09Z",
+  "hud_checked_at": "2026-10-10T20:53:14Z",
+  "trace_sample_count": 32,
+  "trace_first_sample_at": "2026-10-10T20:52:41Z",
+  "trace_last_sample_at": "2026-10-10T20:53:13Z",
+  "trace_span_seconds": 32.54800837500079,
+  "trace_transport_device_observed": true,
+  "latest_hud_sampling": {
+    "freshness_limit_seconds": 3,
+    "smite_cooldown_fixed": 0,
+    "minimap_enabled": 1,
+    "smite_stock_maximum": 2,
+    "latest_snapshot_usable": 1,
+    "smite_cooldown_seconds": 0,
+    "fresh": 1,
+    "edge_clamped_enemy_marker_count": 0,
+    "health_ring_enemy_marker_count": 1,
+    "skipped_actor_count": 0,
+    "confirmed_enemy_hero_count": 5,
+    "last_result": "ready",
+    "read_actor_count": 199,
+    "minimap_projection_ready": 1,
+    "heartbeat_age_seconds": 0.082,
+    "protocol_version": 3,
+    "scope": "Last HUD sample assigned to views; separate from target_probe snapshot. Enemy marker count means prepared coordinates, not proof of visibility or alignment. Fresh heartbeat does not prove screen visibility, orientation correctness or touch passthrough.",
+    "frames_completed": 6013,
+    "displayed_enemy_marker_count": 3,
+    "smite_stock_current": 2,
+    "orientation_raw": 1,
+    "manual_minimap_projection": 0,
+    "stock_read_ok": 1,
+    "cooldown_read_ok": 1,
+    "prepared_enemy_marker_count": 3,
+    "unplaced_enemy_count": 1,
+    "available": true
+  },
+  "enemy_hero_summaries": {
+    "6": {
+      "resource_id": 10034,
+      "name": "萨勒芬妮",
+      "samples": 32,
+      "nonzero_health_samples": 32,
+      "zero_health_samples": 0,
+      "invalid_500_position_samples": 0,
+      "sync_disagreement_samples": 0,
+      "valid_health_fraction_samples": 15,
+      "visual_visible_flag_samples": 24,
+      "nonzero_health_and_visual_flag_true_but_fraction_missing_samples": 9
+    },
+    "7": {
+      "resource_id": 10030,
+      "name": "潘森",
+      "samples": 32,
+      "nonzero_health_samples": 0,
+      "zero_health_samples": 32,
+      "invalid_500_position_samples": 0,
+      "sync_disagreement_samples": 0,
+      "valid_health_fraction_samples": 0,
+      "visual_visible_flag_samples": 28,
+      "nonzero_health_and_visual_flag_true_but_fraction_missing_samples": 0
+    },
+    "8": {
+      "resource_id": 10053,
+      "name": "图奇",
+      "samples": 32,
+      "nonzero_health_samples": 6,
+      "zero_health_samples": 26,
+      "invalid_500_position_samples": 0,
+      "sync_disagreement_samples": 0,
+      "valid_health_fraction_samples": 0,
+      "visual_visible_flag_samples": 17,
+      "nonzero_health_and_visual_flag_true_but_fraction_missing_samples": 1
+    },
+    "9": {
+      "resource_id": 10041,
+      "name": "凯尔",
+      "samples": 32,
+      "nonzero_health_samples": 32,
+      "zero_health_samples": 0,
+      "invalid_500_position_samples": 3,
+      "sync_disagreement_samples": 0,
+      "valid_health_fraction_samples": 27,
+      "visual_visible_flag_samples": 25,
+      "nonzero_health_and_visual_flag_true_but_fraction_missing_samples": 2
+    },
+    "10": {
+      "resource_id": 10068,
+      "name": "瑟提",
+      "samples": 32,
+      "nonzero_health_samples": 6,
+      "zero_health_samples": 26,
+      "invalid_500_position_samples": 6,
+      "sync_disagreement_samples": 0,
+      "valid_health_fraction_samples": 0,
+      "visual_visible_flag_samples": 3,
+      "nonzero_health_and_visual_flag_true_but_fraction_missing_samples": 0
+    }
+  },
+  "nonzero_health_invalid_position_samples": [
+    {
+      "sampled_at": "2026-10-10T20:52:50Z",
+      "object_id": 9,
+      "resource_id": 10041,
+      "health": 2121.28759765625,
+      "position": [
+        500,
+        0,
+        500
+      ],
+      "sync_position": [
+        500,
+        0,
+        500
+      ],
+      "sync_time": 893.248046875,
+      "visual_tick": 13136,
+      "should_be_visible": 0
+    },
+    {
+      "sampled_at": "2026-10-10T20:52:51Z",
+      "object_id": 9,
+      "resource_id": 10041,
+      "health": 2123.8937377929688,
+      "position": [
+        500,
+        0,
+        500
+      ],
+      "sync_position": [
+        500,
+        0,
+        500
+      ],
+      "sync_time": 894.3360595703125,
+      "visual_tick": 13152,
+      "should_be_visible": 0
+    },
+    {
+      "sampled_at": "2026-10-10T20:52:52Z",
+      "object_id": 9,
+      "resource_id": 10041,
+      "health": 2126.4998779296875,
+      "position": [
+        500,
+        0,
+        500
+      ],
+      "sync_position": [
+        500,
+        0,
+        500
+      ],
+      "sync_time": 895.3560791015625,
+      "visual_tick": 13167,
+      "should_be_visible": 0
+    },
+    {
+      "sampled_at": "2026-10-10T20:53:08Z",
+      "object_id": 10,
+      "resource_id": 10068,
+      "health": 3641.96484375,
+      "position": [
+        500,
+        0,
+        500
+      ],
+      "sync_position": [
+        500,
+        0,
+        500
+      ],
+      "sync_time": 911.1320190429688,
+      "visual_tick": 13399,
+      "should_be_visible": 0
+    },
+    {
+      "sampled_at": "2026-10-10T20:53:09Z",
+      "object_id": 10,
+      "resource_id": 10068,
+      "health": 3641.96484375,
+      "position": [
+        500,
+        0,
+        500
+      ],
+      "sync_position": [
+        500,
+        0,
+        500
+      ],
+      "sync_time": 912.1520385742188,
+      "visual_tick": 13414,
+      "should_be_visible": 0
+    },
+    {
+      "sampled_at": "2026-10-10T20:53:10Z",
+      "object_id": 10,
+      "resource_id": 10068,
+      "health": 3641.96484375,
+      "position": [
+        500,
+        0,
+        500
+      ],
+      "sync_position": [
+        500,
+        0,
+        500
+      ],
+      "sync_time": 913.2400512695312,
+      "visual_tick": 13430,
+      "should_be_visible": 0
+    },
+    {
+      "sampled_at": "2026-10-10T20:53:11Z",
+      "object_id": 10,
+      "resource_id": 10068,
+      "health": 3641.96484375,
+      "position": [
+        500,
+        0,
+        500
+      ],
+      "sync_position": [
+        500,
+        0,
+        500
+      ],
+      "sync_time": 913.988037109375,
+      "visual_tick": 13441,
+      "should_be_visible": 0
+    },
+    {
+      "sampled_at": "2026-10-10T20:53:12Z",
+      "object_id": 10,
+      "resource_id": 10068,
+      "health": 3641.96484375,
+      "position": [
+        500,
+        0,
+        500
+      ],
+      "sync_position": [
+        500,
+        0,
+        500
+      ],
+      "sync_time": 913.988037109375,
+      "visual_tick": 13441,
+      "should_be_visible": 0
+    },
+    {
+      "sampled_at": "2026-10-10T20:53:13Z",
+      "object_id": 10,
+      "resource_id": 10068,
+      "health": 3641.96484375,
+      "position": [
+        500,
+        0,
+        500
+      ],
+      "sync_position": [
+        500,
+        0,
+        500
+      ],
+      "sync_time": 913.988037109375,
+      "visual_tick": 13441,
+      "should_be_visible": 0
+    }
+  ],
+  "alternative_source_observations": {
+    "enemy_samples": 160,
+    "native_and_sync_positions_equal": 160,
+    "attribute_last_position_all_zero": true,
+    "host_position_valid_samples": 0
+  },
+  "observed_kayle_gap": {
+    "object_id": 9,
+    "resource_id": 10041,
+    "before_at": "2026-10-10T20:52:49Z",
+    "before_position": [
+      15.0399169921875,
+      0,
+      46.70556640625
+    ],
+    "invalid_samples": [
+      9,
+      10,
+      11
+    ],
+    "after_at": "2026-10-10T20:52:53Z",
+    "after_position": [
+      23.60968017578125,
+      0,
+      33.2813720703125
+    ]
+  },
+  "findings": [
+    "Current raw and sync position readings both become (500,0,500) while health remains nonzero and sync time/tick still advance. This proves the available overlay position inputs are unusable at those times, not that another hidden source is unavailable.",
+    "Latest five-enemy count versus three markers agrees with one zero-health actor and one nonzero-health actor at an invalid position.",
+    "HP fractions were successfully read, but Seraphine has missing fractions even with the visual visibility flag true; the report lacks per-icon rejection reasons.",
+    "Last three samples share a game tick/sync time despite later HUD sample timestamps. Cause is not recorded; HUD heartbeat freshness does not imply a fresh game state."
+  ],
+  "fog_realtime_source_verified": false,
+  "fog_issue_resolved": false,
+  "hp_ring_screen_rendering_verified": false,
+  "scope": "Whitelisted numeric evidence from the latest report. Trace covers only the final ~33 seconds, not the full match. The visual visibility flag is not proof of minimap visibility or a server fog decision. No private binaries, runtime pointers, session IDs or full logs are published."
+}

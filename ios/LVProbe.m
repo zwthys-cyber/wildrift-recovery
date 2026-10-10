@@ -81,11 +81,11 @@ int main(int argc, char **argv) {
             NSString *session = [NSString stringWithUTF8String:argv[2]];
             if (!LVHUDSessionValid(session)) return 2;
             report = !strcmp(argv[1], "hud-stop") ? LVHUDStop(session) : LVHUDStatus(session);
-        } else if (argc == 4 && !strcmp(argv[1], "collect")) {
+        } else if (argc == 4 && (!strcmp(argv[1], "collect") || !strcmp(argv[1], "collect-engine"))) {
             pid_t pid = parsePID(argv[2]);
             NSString *directory = [NSString stringWithUTF8String:argv[3]];
             if (!pid || !directory) return 2;
-            report = LVCollectInputs(pid, directory);
+            report = !strcmp(argv[1], "collect-engine") ? LVCollectEngineInputs(pid, directory) : LVCollectInputs(pid, directory);
         } else {
             return 2;
         }

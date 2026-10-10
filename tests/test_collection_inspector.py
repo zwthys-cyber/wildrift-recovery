@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import importlib.util
 import json
+import plistlib
 import struct
 import tempfile
 import unittest
@@ -13,6 +14,7 @@ spec = importlib.util.spec_from_file_location('inspector', ROOT / 'tools/inspect
 inspector = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(inspector)
 UNITY_UUID = '085E1DDF-4A8D-34E2-9D73-A0A28BCC0B83'
+ENGINE_UUID = 'D5B32037-47A3-3EFF-B0E5-04B071EFBEE3'
 
 
 def image(image_uuid, cryptid):
@@ -60,6 +62,52 @@ class CollectionTests(unittest.TestCase):
             path = Path(directory) / 'inputs.zip'
             self.export_fixture(path, unsafe=True)
             with self.assertRaises(ValueError): inspector.inspect_path(path)
+
+    def engine_fixture(self, path, missing_engine=False, wrong_uuid=False, unexpected_file=False):
+        engine = 'Bundle/Frameworks/FEProj.framework/FEProj'
+        info = 'Bundle/Frameworks/FEProj.framework/Info.plist'
+        payloads = {info: plistlib.dumps({'CFBundleExecutable': 'FEProj'})}
+        roles = {info: 'native_engine_info'}
+        if not missing_engine:
+            payloads[engine] = image(ENGINE_UUID, 0)
+            roles[engine] = 'native_engine'
+        if unexpected_file:
+            payloads['Bundle/lolm'] = image(UNITY_UUID, 1)
+            roles['Bundle/lolm'] = 'main_executable'
+        files = [{'archive_path': name, 'size': len(data), 'source_path': '/device/' + name,
+                  'role': roles[name]} for name, data in payloads.items()]
+        manifest = {'format': 'lvlolm-ios-inputs', 'format_version': 1, 'collection_scope': 'native_engine_only',
+            'files': files, 'device_images': [{'path': '/device/' + engine,
+                'uuid': UNITY_UUID if wrong_uuid else ENGINE_UUID}], 'metadata_search_performed': False}
+        with zipfile.ZipFile(path, 'w') as archive:
+            archive.writestr('manifest.json', json.dumps(manifest))
+            for name, data in payloads.items(): archive.writestr(name, data)
+        return engine
+
+    def test_engine_only_without_unity_or_metadata(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'engine.zip'
+            engine = self.engine_fixture(path)
+            report = inspector.inspect_path(path)
+            self.assertEqual(report['collection_scope'], 'native_engine_only')
+            self.assertEqual(report['metadata_files'], [])
+            self.assertEqual(set(report['images']), {engine})
+            self.assertTrue(report['images'][engine][0]['uuid_matches_device'])
+            self.assertFalse(report['images'][engine][0]['encrypted'])
+
+    def test_engine_uuid_mismatch_reported(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'engine.zip'
+            engine = self.engine_fixture(path, wrong_uuid=True)
+            self.assertFalse(inspector.inspect_path(path)['images'][engine][0]['uuid_matches_device'])
+
+    def test_incomplete_or_mixed_engine_archive_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'engine.zip'
+            for options in ({'missing_engine': True}, {'unexpected_file': True}):
+                with self.subTest(options=options):
+                    self.engine_fixture(path, **options)
+                    with self.assertRaises(ValueError): inspector.inspect_path(path)
 
 
 if __name__ == '__main__': unittest.main()

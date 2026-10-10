@@ -118,7 +118,7 @@ static NSInteger LVGroup(const LVField *field) {
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView { return 8; }
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (section == 7) return 1;
-    return section ? self.groups[section].count : 12;
+    return section ? self.groups[section].count : 13;
 }
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     return @[@"恢复与检测", @"绘制配置", @"惩戒配置", @"水银配置", @"小地图配置", @"实体与技能配置", @"视角与颜色配置", @"iOS 小地图对齐"][section];
@@ -145,8 +145,8 @@ static NSInteger LVGroup(const LVField *field) {
         return cell;
     }
     if (!path.section) {
-        cell.textLabel.text = @[@"57 项配置已恢复", @"适配文件版本", @"运行读取自检", @"检测游戏并读取对局", @"导入安卓配置", @"导出配置", @"导出诊断报告", @"导出适配文件", @"查看对局与技能快照", @"启动／更新只读悬浮窗", @"检查悬浮窗状态", @"停止悬浮窗"][path.row];
-        cell.detailTextLabel.text = @[@"默认值与数值范围已从安卓程序提取", @"本次导出：7.3.3 (2818)", @"检查自身内存读取接口", self.probeStatus ?: @"尚未检测", @"选择 dynamic_draw_lolm.ini", @"保存或分享 INI 文件", @"分享检测结果、快照及悬浮窗状态", @"先检测游戏，再收集框架与元数据；文件可能较大", @"显示最近一次采样；重新检测可更新", @"先检测 lolm；原小地图标记平滑移动，每 0.15 秒采样", self.hudStatus ?: @"尚未检查", @"结束本应用启动的只读悬浮窗"][path.row];
+        cell.textLabel.text = @[@"57 项配置已恢复", @"适配文件版本", @"运行读取自检", @"检测游戏并读取对局", @"导入安卓配置", @"导出配置", @"导出诊断报告", @"导出适配文件", @"查看对局与技能快照", @"启动／更新只读悬浮窗", @"检查悬浮窗状态", @"停止悬浮窗", @"补充导出原生引擎"][path.row];
+        cell.detailTextLabel.text = @[@"默认值与数值范围已从安卓程序提取", @"本次导出：7.3.3 (2818)", @"检查自身内存读取接口", self.probeStatus ?: @"尚未检测", @"选择 dynamic_draw_lolm.ini", @"保存或分享 INI 文件", @"分享检测结果、快照及悬浮窗状态", @"先检测游戏，再收集框架、元数据及原生引擎；文件可能较大", @"显示最近一次采样；重新检测可更新", @"先检测 lolm；原小地图标记平滑移动，每 0.15 秒采样", self.hudStatus ?: @"尚未检查", @"结束本应用启动的只读悬浮窗", @"只补充 FEProj 适配文件；游戏停在大厅即可，无需再打一局"][path.row];
         if (path.row < 2) cell.selectionStyle = UITableViewCellSelectionStyleNone;
         else cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         return cell;
@@ -220,7 +220,7 @@ static NSInteger LVGroup(const LVField *field) {
     share.popoverPresentationController.sourceRect = CGRectMake(CGRectGetMidX(self.view.bounds), CGRectGetMidY(self.view.bounds), 1, 1);
     [self presentViewController:share animated:YES completion:nil];
 }
-- (void)collectInputs {
+- (void)collectInputs:(BOOL)engineOnly {
     if (self.probing) return;
     NSDictionary *probe = self.diagnostics[@"target_probe"];
     NSNumber *pid = probe[@"target_pid"];
@@ -235,16 +235,17 @@ static NSInteger LVGroup(const LVField *field) {
         return;
     }
     self.probing = YES;
-    self.probeStatus = @"正在收集游戏框架与元数据，请保持此应用在前台…";
+    self.probeStatus = engineOnly ? @"正在导出原生引擎，请保持此应用在前台…" : @"正在收集游戏框架、元数据及原生引擎，请保持此应用在前台…";
     [self.tableView reloadData];
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-        NSDictionary *result = LVRunProbe(@[@"collect", pid.stringValue, documents.path]);
+        NSDictionary *result = LVRunProbe(@[engineOnly ? @"collect-engine" : @"collect", pid.stringValue, documents.path]);
         dispatch_async(dispatch_get_main_queue(), ^{
             self.probing = NO;
-            self.diagnostics = LVWithEntry(self.diagnostics, @"input_collection", result);
-            NSURL *archive = [documents URLByAppendingPathComponent:@"lvlolm-ios-inputs.zip"];
+            self.diagnostics = LVWithEntry(self.diagnostics, engineOnly ? @"engine_collection" : @"input_collection", result);
+            NSURL *archive = [documents URLByAppendingPathComponent:engineOnly ? @"lvlolm-ios-engine.zip" : @"lvlolm-ios-inputs.zip"];
             if ([result[@"success"] boolValue] && [NSFileManager.defaultManager fileExistsAtPath:archive.path]) {
-                self.probeStatus = [result[@"metadata_found"] boolValue] ? @"适配文件已导出，包含框架与元数据" : @"框架已导出；未找到标准元数据文件";
+                self.probeStatus = engineOnly ? @"原生引擎已导出，请分享 lvlolm-ios-engine.zip" :
+                    ([result[@"metadata_found"] boolValue] ? @"适配文件已导出，包含框架与元数据" : @"框架已导出；未找到标准元数据文件");
                 [self.tableView reloadData];
                 [self shareURL:archive];
             } else {
@@ -399,7 +400,7 @@ static NSInteger LVGroup(const LVField *field) {
     } else if (path.row == 6) {
         [self hudAction:@"export"];
     } else if (path.row == 7) {
-        [self collectInputs];
+        [self collectInputs:NO];
     } else if (path.row == 8) {
         NSDictionary *snapshot = self.diagnostics[@"target_probe"][@"game_snapshot"];
         if (![snapshot isKindOfClass:NSDictionary.class] || ![snapshot[@"actors"] count]) {
@@ -414,6 +415,8 @@ static NSInteger LVGroup(const LVField *field) {
         [self hudAction:@"status"];
     } else if (path.row == 11) {
         [self hudAction:@"stop"];
+    } else if (path.row == 12) {
+        [self collectInputs:YES];
     }
 }
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {

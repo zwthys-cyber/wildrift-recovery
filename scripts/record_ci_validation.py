@@ -37,9 +37,12 @@ record = {
     'hud_telemetry_checks': checks('hud-telemetry-checks.txt'),
     'ipa_signature_tests': 5,
     'ipa_total_tests': 8,
+    'zip_export_tests': 3,
+    'collection_inspector_tests': 6,
+    'native_engine_collection_device_verified': False,
     'bundled_hero_portraits': metadata['minimap_hero_portrait_count'],
     'desktop_icon_payload_verified': True,
-    'scope': 'GitHub CI checks and build provenance. Local validation remains separately recorded. Ring rendering, diagnostic trace transport and real-time fog coordinates require device evidence; CI does not verify them.'
+    'scope': 'GitHub CI checks and build provenance. Local validation remains separately recorded. New native-engine collection, ring rendering and real-time fog coordinates require device evidence; CI does not verify them. Prior trace transport was observed in the 0.7.4 report.'
 }
 text = json.dumps(record, ensure_ascii=False, indent=2) + '\n'
 (ROOT / 'analysis/ci-validation.json').write_text(text)

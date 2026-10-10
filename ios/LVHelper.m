@@ -13,7 +13,8 @@ extern int posix_spawnattr_set_persona_uid_np(const posix_spawnattr_t *, uid_t);
 extern int posix_spawnattr_set_persona_gid_np(const posix_spawnattr_t *, uid_t);
 
 NSDictionary *LVRunProbe(NSArray<NSString *> *arguments) {
-    BOOL collecting = arguments.count == 3 && [arguments[0] isEqualToString:@"collect"];
+    BOOL collecting = arguments.count == 3 &&
+        ([arguments[0] isEqualToString:@"collect"] || [arguments[0] isEqualToString:@"collect-engine"]);
     BOOL hudStart = arguments.count == 4 && [arguments[0] isEqualToString:@"hud-start"];
     BOOL hudControl = arguments.count == 2 &&
         ([arguments[0] isEqualToString:@"hud-status"] || [arguments[0] isEqualToString:@"hud-stop"]);

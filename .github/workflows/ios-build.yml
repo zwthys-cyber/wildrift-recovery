@@ -40,6 +40,8 @@ jobs:
           build/minimap_health_test | tee build/minimap-health-checks.txt
           build/hud_telemetry_test | tee build/hud-telemetry-checks.txt
           python3 tests/test_ipa.py
+          python3 tests/test_zip.py
+          python3 tests/test_collection_inspector.py
       - name: Record CI provenance and package source
         run: |
           python3 scripts/record_ci_validation.py

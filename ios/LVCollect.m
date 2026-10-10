@@ -14,7 +14,7 @@ static NSString *canonical(NSString *path) {
 }
 static NSDictionary *failure(NSString *message) { return @{ @"error": message, @"errno": @(errno) }; }
 
-NSDictionary *LVCollectInputs(pid_t pid, NSString *documents) {
+static NSDictionary *collectInputs(pid_t pid, NSString *documents, BOOL engineOnly) {
     // Restrict output to this app's verified Documents container.
     NSString *output = canonical(documents);
     if (!output || ![output.lastPathComponent isEqualToString:@"Documents"] ||
@@ -47,27 +47,38 @@ NSDictionary *LVCollectInputs(pid_t pid, NSString *documents) {
     NSArray *images = metadata[@"images"];
     NSString *unityPath = nil;
     NSDictionary *unityImage = nil;
+    NSString *enginePath = nil;
+    NSDictionary *engineImage = nil;
     for (NSDictionary *image in images) {
         if ([image[@"path"] hasSuffix:@"/Frameworks/UnityFramework.framework/UnityFramework"]) {
-            unityPath = canonical(image[@"path"]); unityImage = image; break;
+            unityPath = canonical(image[@"path"]); unityImage = image;
+        } else if ([image[@"path"] hasSuffix:@"/Frameworks/FEProj.framework/FEProj"]) {
+            enginePath = canonical(image[@"path"]); engineImage = image;
         }
     }
     NSString *prefix = [bundle stringByAppendingString:@"/"];
-    if (!unityPath || ![unityPath hasPrefix:prefix]) return failure(@"loaded UnityFramework file could not be located within the game bundle");
+    if (!engineOnly && (!unityPath || ![unityPath hasPrefix:prefix]))
+        return failure(@"loaded UnityFramework file could not be located within the game bundle");
+    if (engineOnly && (!enginePath || ![enginePath hasPrefix:prefix]))
+        return failure(@"loaded FEProj file could not be located within the game bundle");
 
     NSMutableArray<NSDictionary *> *files = [NSMutableArray new];
     NSMutableArray<NSString *> *missing = [NSMutableArray new];
-    NSArray *fixed = @[
+    NSMutableArray *candidates = [NSMutableArray new];
+    if (!engineOnly) [candidates addObjectsFromArray:@[
         @{ @"relative": @"Info.plist", @"role": @"bundle_info" },
         @{ @"relative": @"lolm", @"role": @"main_executable" },
         @{ @"relative": [unityPath substringFromIndex:prefix.length], @"role": @"unity_framework" },
         @{ @"relative": @"Frameworks/UnityFramework.framework/Info.plist", @"role": @"framework_info" }
-    ];
-    NSMutableArray *candidates = [fixed mutableCopy];
+    ]];
+    if (enginePath && [enginePath hasPrefix:prefix]) [candidates addObjectsFromArray:@[
+        @{ @"relative": [enginePath substringFromIndex:prefix.length], @"role": @"native_engine" },
+        @{ @"relative": @"Frameworks/FEProj.framework/Info.plist", @"role": @"native_engine_info" }
+    ]];
     // Metadata locations vary. Search only the selected read-only app bundle,
     // with finite traversal and file limits; skip symlinks and unrelated data.
     __block NSUInteger searchErrors = 0;
-    NSDirectoryEnumerator *enumerator = [NSFileManager.defaultManager enumeratorAtURL:[NSURL fileURLWithPath:bundle]
+    NSDirectoryEnumerator *enumerator = engineOnly ? nil : [NSFileManager.defaultManager enumeratorAtURL:[NSURL fileURLWithPath:bundle]
         includingPropertiesForKeys:@[NSURLIsRegularFileKey, NSURLIsSymbolicLinkKey]
         options:NSDirectoryEnumerationSkipsHiddenFiles errorHandler:^BOOL(NSURL *url, NSError *error) { ++searchErrors; return YES; }];
     NSUInteger visited = 0;
@@ -102,15 +113,20 @@ NSDictionary *LVCollectInputs(pid_t pid, NSString *documents) {
         [files addObject:@{ @"source_path": path, @"archive_path": [@"Bundle/" stringByAppendingString:relative],
             @"role": candidate[@"role"], @"size": @((uint64_t)st.st_size) }];
     }
-    if (![seen containsObject:unityPath]) return failure(@"UnityFramework is not a readable regular file");
+    if (!engineOnly && ![seen containsObject:unityPath]) return failure(@"UnityFramework is not a readable regular file");
+    BOOL hasEngine = enginePath && [seen containsObject:enginePath];
+    if (engineOnly && !hasEngine) return failure(@"FEProj is not a readable regular file");
     BOOL hasMetadata = NO;
     for (NSDictionary *file in files) if ([file[@"role"] isEqualToString:@"il2cpp_metadata"]) hasMetadata = YES;
     NSDictionary *manifest = @{ @"format": @"lvlolm-ios-inputs", @"format_version": @1,
-        @"collector_version": @"0.2.0", @"target_pid": @(pid), @"helper_uid": @(getuid()),
+        @"collector_version": @"0.7.5", @"collection_scope": engineOnly ? @"native_engine_only" : @"unity_metadata_and_engine",
+        @"target_pid": @(pid), @"helper_uid": @(getuid()),
         @"user_reported_app_version": @"7.3.0.2813", @"user_reported_resource_version": @"7.3.19.51",
         @"bundle_identifier": info[@"CFBundleIdentifier"] ?: @"", @"app_version": info[@"CFBundleShortVersionString"] ?: @"",
         @"build_version": info[@"CFBundleVersion"] ?: @"", @"device_images": images ?: @[],
         @"files": files, @"missing_files": missing, @"metadata_found": @(hasMetadata),
+        @"native_engine_found": @(hasEngine), @"native_engine_uuid": engineImage[@"uuid"] ?: @"",
+        @"metadata_search_performed": @(!engineOnly),
         @"metadata_search_complete": @(searchComplete), @"metadata_search_errors": @(searchErrors), @"bundle_entries_visited": @(visited),
         @"collection_mode": @"unchanged on-disk files; no decryption or memory dump" };
     NSData *json = [NSJSONSerialization dataWithJSONObject:manifest options:NSJSONWritingPrettyPrinted error:NULL];
@@ -130,11 +146,16 @@ NSDictionary *LVCollectInputs(pid_t pid, NSString *documents) {
     if (!result && (fchown(fd, destination.st_uid, (gid_t)-1) || fchmod(fd, 0600) || fsync(fd))) result = -1;
     int saved = errno;
     if (close(fd) && !result) { result = -1; saved = errno; }
-    NSString *archive = [output stringByAppendingPathComponent:@"lvlolm-ios-inputs.zip"];
+    NSString *archive = [output stringByAppendingPathComponent:engineOnly ? @"lvlolm-ios-engine.zip" : @"lvlolm-ios-inputs.zip"];
     if (!result && rename(temp, archive.fileSystemRepresentation)) { result = -1; saved = errno; }
     if (result) { unlink(temp); errno = saved; return failure(@"game file collection failed"); }
     return @{ @"success": @YES, @"archive_path": archive, @"files_collected": @(files.count),
         @"metadata_found": @(hasMetadata), @"metadata_search_complete": @(searchComplete),
+        @"metadata_search_performed": @(!engineOnly), @"collection_scope": manifest[@"collection_scope"],
+        @"native_engine_found": @(hasEngine), @"native_engine_uuid": engineImage[@"uuid"] ?: @"",
         @"unity_uuid": unityImage[@"uuid"] ?: @"", @"helper_uid": @(getuid()),
         @"collection_mode": manifest[@"collection_mode"] };
 }
+
+NSDictionary *LVCollectInputs(pid_t pid, NSString *documents) { return collectInputs(pid, documents, NO); }
+NSDictionary *LVCollectEngineInputs(pid_t pid, NSString *documents) { return collectInputs(pid, documents, YES); }

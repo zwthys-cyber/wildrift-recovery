@@ -187,6 +187,9 @@ def inspect_path(path):
 
 def inspect_collection(path, archive, manifest):
     if manifest.get('format_version') != 1: raise ValueError('Unsupported collection format')
+    scope = manifest.get('collection_scope', 'unity_metadata')
+    if scope not in ('unity_metadata', 'unity_metadata_and_engine', 'native_engine_only'):
+        raise ValueError('Unsupported collection scope')
     files, device_images = manifest.get('files'), manifest.get('device_images', [])
     if not isinstance(files, list) or not 1 <= len(files) <= 64 or not isinstance(device_images, list):
         raise ValueError('Invalid collection file list')
@@ -205,7 +208,11 @@ def inspect_collection(path, archive, manifest):
         if entry.file_size > 1024 * 1024 * 1024: raise ValueError('Collected file exceeds 1 GiB')
         if item.get('size') != entry.file_size: raise ValueError('Collected size does not match manifest')
         role = item.get('role')
-        if role in ('main_executable', 'unity_framework'):
+        if scope == 'native_engine_only' and role not in ('native_engine', 'native_engine_info'):
+            raise ValueError('Unexpected file in engine-only collection')
+        if role == 'native_engine' and name != 'Bundle/Frameworks/FEProj.framework/FEProj':
+            raise ValueError('Native engine path does not match FEProj')
+        if role in ('main_executable', 'unity_framework', 'native_engine'):
             records = inspect_macho(archive.read(name))
             source = item.get('source_path')
             target_uuid = expected.get(source) if isinstance(source, str) else None
@@ -219,10 +226,13 @@ def inspect_collection(path, archive, manifest):
             magic, version_value = struct.unpack('<II', header) if len(header) == 8 else (None, None)
             metadata.append({'file': name, 'size': entry.file_size,
                              'standard_il2cpp_magic': magic == 0xfab11baf, 'header_version': version_value})
-    if not any(i.get('role') == 'unity_framework' for i in files): raise ValueError('Collection contains no UnityFramework')
+    required = 'native_engine' if scope == 'native_engine_only' else 'unity_framework'
+    if not any(i.get('role') == required for i in files):
+        raise ValueError('Collection contains no ' + ('FEProj' if scope == 'native_engine_only' else 'UnityFramework'))
     return {'file': path.name, 'collection_format': 'lvlolm-ios-inputs',
             'bundle_identifier': manifest.get('bundle_identifier'), 'app_version': manifest.get('app_version'),
             'build_version': manifest.get('build_version'), 'collection_mode': manifest.get('collection_mode'),
+            'collection_scope': scope,
             'metadata_files': metadata, 'images': images}
 
 
