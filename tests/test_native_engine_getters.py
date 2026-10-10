@@ -1,0 +1,109 @@
+#!/usr/bin/env python3
+"""Bounded original FEProj getters in synthetic RAM; no game or device calls.
+
+Only explicitly listed instruction ranges are executable. Assert handlers,
+hotfix callbacks, unknown calls and syscalls are rejected. Private bytes stay
+in ignored inputs and are never included in source/release artifacts.
+"""
+import hashlib
+import os
+import struct
+import unittest
+from pathlib import Path
+from unicorn import Uc, UC_ARCH_ARM64, UC_MODE_ARM, UC_HOOK_CODE
+from unicorn.arm64_const import UC_ARM64_REG_X0, UC_ARM64_REG_X1, UC_ARM64_REG_X2, UC_ARM64_REG_X8, UC_ARM64_REG_SP, UC_ARM64_REG_LR
+
+ROOT=Path(__file__).resolve().parents[1]
+ENGINE=Path(os.environ.get('LVLOLM_IOS_ENGINE',str(ROOT/'inputs/ios-engine-0.7.5/Bundle/Frameworks/FEProj.framework/FEProj')))
+ENGINE_SHA='69ed33e4b969139bda80946404528584a879f63ae4032c65fcb7412c3db4431e'
+HEAP,STACK,HALT=0x350000000,0x60000000,0x70000000
+
+def q(u,a,v): u.mem_write(a,struct.pack('<Q',v&((1<<64)-1)))
+
+def machine(data,ranges):
+    u=Uc(UC_ARCH_ARM64,UC_MODE_ARM)
+    pages=set()
+    for a,b in ranges:
+        for p in range(a&~4095,(b+4095)&~4095,4096):
+            if p not in pages: u.mem_map(p,4096); pages.add(p)
+        u.mem_write(a,data[a:b])
+    for a,n in ((HEAP,0x10000),(STACK,0x10000),(HALT,4096),(0x523c000,4096),(0x51ab000,4096)):
+        u.mem_map(a,n)
+    u.reg_write(UC_ARM64_REG_SP,STACK+0x8000); u.reg_write(UC_ARM64_REG_LR,HALT)
+    def guard(uc,pc,size,_):
+        if not any(a<=pc<b for a,b in ranges): raise AssertionError(f'Getter escaped: {pc:#x}')
+        w,=struct.unpack('<I',bytes(uc.mem_read(pc,size)))
+        if w&0xfc000000==0x94000000:
+            imm=w&0x3ffffff
+            if imm&0x2000000: imm-=0x4000000
+            target=pc+imm*4
+            if not any(a<=target<b for a,b in ranges): raise AssertionError(f'Unknown call: {pc:#x} -> {target:#x}')
+        if w&0xfffffc1f==0xd63f0000: raise AssertionError('Indirect call rejected')
+        if w&0xffe0001f==0xd4000001: raise AssertionError('Syscall rejected')
+    u.hook_add(UC_HOOK_CODE,guard)
+    return u
+
+@unittest.skipUnless(ENGINE.exists(),'Private native engine not present')
+class OriginalEngineGetters(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.data=ENGINE.read_bytes()
+        if hashlib.sha256(cls.data).hexdigest()!=ENGINE_SHA: raise ValueError('Wrong native engine profile')
+
+    def health(self,mode,logic,sync,node=True,count=3,config=True):
+        u=machine(self.data,((0xcb3c,0xcbf8),(0xd03e60,0xd03e84),
+            (0xfe29ec,0xfe2a4c),(0x1024524,0x102453c)))
+        q(u,0x523cf28,HEAP+0x1000); q(u,HEAP+0x1018,HEAP+0x2000 if config else 0)
+        u.mem_write(HEAP+0x201e,bytes([mode]))
+        q(u,HEAP+0x28,HEAP+0x3000); q(u,HEAP+0x30,HEAP+0x3000+count*8)
+        q(u,HEAP+0x3010,HEAP+0x4000 if node else 0)
+        q(u,HEAP+0x4060,logic); q(u,HEAP+0x4068,sync)
+        u.reg_write(UC_ARM64_REG_X0,HEAP); u.reg_write(UC_ARM64_REG_X1,2); u.reg_write(UC_ARM64_REG_X2,HEAP+0xf000)
+        return u
+
+    def test_original_max_health_dispatch_and_vector(self):
+        for mode in (0,1,255):
+            for value in (-(1<<63),-16384,0,1,16384,1000*16384,(1<<63)-1):
+                for count in (3,16):
+                    u=self.health(mode,value,value^0x12345,count=count)
+                    u.emu_start(0xcb3c,HALT,count=300)
+                    result,=struct.unpack('<q',bytes(u.mem_read(HEAP+0xf000,8)))
+                    self.assertEqual(result,value^0x12345 if mode else value)
+
+    def test_null_node_original_returns_zero(self):
+        for mode in (0,1,255):
+            u=self.health(mode,1,2,node=False); u.emu_start(0xcb3c,HALT,count=300)
+            self.assertEqual(bytes(u.mem_read(HEAP+0xf000,8)),b'\0'*8)
+
+    def test_invalid_inputs_reject_assert_handlers(self):
+        for mode in (0,1):
+            for count in (0,1,2):
+                u=self.health(mode,1,2,count=count)
+                with self.assertRaisesRegex(AssertionError,'Unknown call'): u.emu_start(0xcb3c,HALT,count=300)
+        u=self.health(1,1,2,config=False)
+        with self.assertRaisesRegex(AssertionError,'Unknown call'): u.emu_start(0xcb3c,HALT,count=300)
+
+    def test_named_native_config_accessors(self):
+        # Lua registration 0x35ae384 names these four original getters.
+        for start,member in ((0x3768c30,0x1c),(0x3768c40,0x1d),(0x3768c50,0x1e),(0x3768cd0,0x26)):
+            for v in (0,1,255):
+                u=machine(self.data,((start,start+8),));u.mem_write(HEAP+member,bytes([v]));u.reg_write(UC_ARM64_REG_X0,HEAP)
+                u.emu_start(start,HALT,count=100);self.assertEqual(u.reg_read(UC_ARM64_REG_X0),v)
+
+    def test_original_fow_positions_are_distinct_layouts(self):
+        # This proves the two getters' layout, not live enemy logical objects.
+        for sync in (False,True):
+            start,end=(0x1030e4c,0x1030f5c) if sync else (0x1030d24,0x1030e4c)
+            for force in ((-163840000,0,0),(16384,0,-32768)):
+                for position in ((12345,0,-65432),(8192000,0,8192000)):
+                    u=machine(self.data,((start,end),));u.reg_write(UC_ARM64_REG_X0,HEAP);u.reg_write(UC_ARM64_REG_X8,HEAP+0xf000)
+                    q(u,HEAP+(0x18 if sync else 0x28),HEAP+0x1000);q(u,HEAP+0x1020,HEAP+0x2000)
+                    u.mem_write(HEAP+(0x28 if sync else 0x88),struct.pack('<3q',*force))
+                    key=0xd501a084d9240301;q(u,0x523cf38,key)
+                    raw=struct.pack('<3q',*position)
+                    encrypted=b''.join(struct.pack('<Q',(p&((1<<64)-1))^key) for p in position)
+                    u.mem_write(HEAP+0x2000+(0x18 if sync else 0x28),raw if sync else encrypted)
+                    u.emu_start(start,HALT,count=200)
+                    self.assertEqual(bytes(u.mem_read(HEAP+0xf000,24)),raw if force[0]==-163840000 else struct.pack('<3q',*force))
+
+if __name__=='__main__': unittest.main(verbosity=2)

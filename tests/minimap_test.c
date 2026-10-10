@@ -178,5 +178,22 @@ int main(void) {
     close_to(frame.markers[0].u,1); check(frame.markers[0].v>0 && frame.markers[0].v<.02);
     lv_minimap_read(reader,NULL,UINT64_MAX,&geometry);check(!geometry.ready && !geometry.scale_x);
     lv_minimap_read(NULL,NULL,0x100000000,&geometry);check(!geometry.ready);
+    /* Native attributes outrank an old visible UI percentage. */
+    roster(); lv_minimap_defaults(&settings);
+    geometry=(LVMinimapGeometry){.ready=1,.reason="ready",.scale_x=2,.scale_z=3,.half_width=100,.half_height=150};
+    snapshot.actors[5].minimap_health_fraction_ok=1;
+    snapshot.actors[5].minimap_health_fraction_fixed=12288;
+    snapshot.actors[5].native_health_fraction_ok=1;
+    snapshot.actors[5].native_health_fraction_fixed=4096;
+    lv_minimap_frame(&snapshot,&geometry,&settings,&frame);
+    check(frame.markers[0].health_fraction_ok && frame.markers[0].health_source==1);
+    close_to(frame.markers[0].health_fraction,.25);
+    snapshot.actors[5].native_health_fraction_ok=0;
+    lv_minimap_frame(&snapshot,&geometry,&settings,&frame);
+    check(frame.markers[0].health_fraction_ok && frame.markers[0].health_source==2);
+    close_to(frame.markers[0].health_fraction,.75);
+    snapshot.actors[5].minimap_health_fraction_ok=0;
+    lv_minimap_frame(&snapshot,&geometry,&settings,&frame);
+    check(!frame.markers[0].health_fraction_ok && !frame.markers[0].health_source);
     printf("Minimap: %u checks passed\n",checks);return 0;
 }

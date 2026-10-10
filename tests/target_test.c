@@ -222,5 +222,17 @@ int main(void) {
     lv_target_snapshot(read_fixture,&f,BASE,&s);assert(!s.actors[0].sync_logic_position_ok);
     f.change_address=HEAP+0x4148;f.replacement=HEAP+0x4400;
     lv_target_snapshot(read_fixture,&f,BASE,&s);assert(!s.actors[0].host_position_ok);
-    free(f.cache); puts("target reader: 46 scenarios passed"); return 0;
+    extended(&f); q(&f,HEAP+0x4120,HEAP+0x26000);q(&f,HEAP+0x26018,HEAP+0x4000);
+    put(&f,HEAP+0x26028,last,24); unsigned char cut=1;put(&f,HEAP+0x20b0,&cut,1);
+    lv_target_snapshot(read_fixture,&f,BASE,&s);
+    assert(s.actors[0].fow_force_position_ok && !memcmp(s.actors[0].fow_force_position,last,24));
+    assert(s.actors[0].fog_cut_state_ok && s.actors[0].fog_cut_disappear && s.actors[0].position_fixed[0]==-9*16384);
+    q(&f,HEAP+0x26018,HEAP+0x4400);lv_target_snapshot(read_fixture,&f,BASE,&s);assert(!s.actors[0].fow_force_position_ok);
+    q(&f,HEAP+0x26018,HEAP+0x4000);f.fail=HEAP+0x26028;
+    lv_target_snapshot(read_fixture,&f,BASE,&s);assert(!s.actors[0].fow_force_position_ok);
+    f.fail=0;cut=2;put(&f,HEAP+0x20b0,&cut,1);
+    lv_target_snapshot(read_fixture,&f,BASE,&s);assert(!s.actors[0].fog_cut_state_ok);
+    f.change_address=HEAP+0x4018;f.replacement=27;f.change_reads=0;
+    lv_target_snapshot(read_fixture,&f,BASE,&s);assert(!s.actors[0].fow_force_position_ok && !s.actors[0].fog_cut_state_ok);
+    free(f.cache); puts("target reader: 51 scenarios passed"); return 0;
 }

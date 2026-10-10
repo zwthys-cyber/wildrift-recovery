@@ -85,6 +85,7 @@ static NSDictionary *positionCandidates(const LVTargetActor *a) {
     NSMutableDictionary *r=[@{ @"attribute_last_position_read_ok": @(a->attribute_last_position_ok!=0),
         @"sync_logic_position_read_ok": @(a->sync_logic_position_ok!=0),
         @"host_position_read_ok": @(a->host_position_ok!=0), @"visual_state_read_ok": @(a->visual_state_ok!=0),
+        @"fow_force_position_read_ok":@(a->fow_force_position_ok!=0), @"fog_cut_state_read_ok":@(a->fog_cut_state_ok!=0),
         @"used_for_overlay": @NO } mutableCopy];
     if(a->attribute_last_position_ok) r[@"attribute_last_position"]=fixedPosition(a->attribute_last_position);
     if(a->sync_logic_position_ok) {
@@ -96,10 +97,13 @@ static NSDictionary *positionCandidates(const LVTargetActor *a) {
         r[@"host_object_id"]=@(a->host_object_id); r[@"host_resource_id"]=@(a->host_resource_id); r[@"host_camp"]=@(a->host_camp);
     }
     if(a->visual_state_ok) { r[@"should_be_visible"]=@(a->should_be_visible!=0); r[@"visual_tick"]=@(a->visual_tick); }
+    if(a->fow_force_position_ok) r[@"fow_force_position"]=fixedPosition(a->fow_force_position);
+    if(a->fog_cut_state_ok) r[@"fog_cut_disappear"]=@(a->fog_cut_disappear!=0);
     return r;
 }
 static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTargetSnapshot *snapshot,
-                                      const LVMinimapSettings *settings, const LVMinimapHealthReport *health) {
+                                      const LVMinimapSettings *settings, const LVMinimapHealthReport *health,
+                                      const LVNativeHealthReport *nativeHealth) {
     LVMinimapGeometry geometry; lv_minimap_read(readTarget, (__bridge void *)reader, base, &geometry);
     if (!geometry.ready && [@(geometry.reason) isEqual:@"geometry_changed"])
         lv_minimap_read(readTarget, (__bridge void *)reader, base, &geometry);
@@ -114,6 +118,8 @@ static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTarg
         [markers addObject:@{ @"object_id": @(m->object_id), @"resource_id": @(m->resource_id),
             @"ordinal": @(m->ordinal), @"is_local": @(m->is_local != 0), @"u": @(m->u), @"v": @(m->v),
             @"health_fraction_read_ok": @(m->health_fraction_ok != 0), @"health_fraction": @(m->health_fraction),
+            @"health_source": m->health_source==1 ? @"native_attributes" :
+                (m->health_source==2 ? @"game_minimap_cached_percent" : @"unavailable"),
             @"edge_clamped": @(m->edge_clamped != 0) }];
     }
     return @{ @"projection_ready": @(frame.ready != 0), @"reason": @(frame.reason),
@@ -127,16 +133,25 @@ static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTarg
         @"health_cache": @{ @"reason": @(health->reason), @"matched_hero_count": @(health->matched),
             @"enabled_hero_count": @(health->enabled), @"valid_fraction_count": @(health->valid),
             @"source": @"game_minimap_cached_percent", @"max_health_inferred": @NO },
+        @"native_health": @{ @"reason": @(nativeHealth->reason),
+            @"profile_matches": @(nativeHealth->profile_matches!=0), @"sync_values": @(nativeHealth->sync_values!=0),
+            @"fog_config_read_ok":@(nativeHealth->fog_config_ok!=0),
+            @"use_logic_network":@(nativeHealth->use_logic_network!=0),
+            @"logic_thread_enabled":@(nativeHealth->logic_thread_enabled!=0),
+            @"fog_cut_enabled":@(nativeHealth->fog_cut_enabled!=0),
+            @"eligible_hero_count": @(nativeHealth->eligible), @"valid_fraction_count": @(nativeHealth->valid),
+            @"unreadable_count": @(nativeHealth->unreadable), @"invalid_count": @(nativeHealth->invalid),
+            @"changed_count": @(nativeHealth->changed), @"source": @"native_attributes", @"max_health_inferred": @NO },
         @"markers": markers, @"alignment_device_verified": @NO,
         @"geometry": @{ @"ready": @(geometry.ready != 0), @"reason": @(geometry.reason),
             @"viewport_mode": @(geometry.viewport_mode != 0), @"full_map_showing": @(geometry.full_map_showing != 0),
             @"zoom_state": @(geometry.zoom_state), @"scale_x": @(geometry.scale_x), @"scale_z": @(geometry.scale_z),
             @"half_width": @(geometry.half_width), @"half_height": @(geometry.half_height) },
-        @"scope": @"Current client-memory coordinates only; no historical positions or extrapolation. HP fraction is the original visible/enabled minimap UI cache, not inferred max HP; unavailable data uses a neutral ring. Extra coordinate sources are diagnostic candidates, not established real-time positions. Ordinary map only." };
+        @"scope": @"Current client-memory coordinates only; no historical positions or extrapolation. HP fraction prefers identity-checked native current/max attributes; visible/enabled minimap UI cache is a fallback. Maximum HP is not inferred; unavailable data uses a neutral ring. Extra coordinate sources are diagnostic candidates, not established real-time positions. Ordinary map only." };
 }
 NSDictionary *LVReadTargetSnapshot(LVMachReader *reader, NSDictionary *metadata, const LVConfig *config,
                                   const LVMinimapSettings *mapSettings) {
-    NSDictionary *image = nil;
+    NSDictionary *image = nil, *engineImage = nil;
     id rawImages = metadata[@"images"];
     if ([rawImages isKindOfClass:NSArray.class]) {
         for (id item in rawImages) {
@@ -144,8 +159,10 @@ NSDictionary *LVReadTargetSnapshot(LVMachReader *reader, NSDictionary *metadata,
             NSString *path = item[@"path"];
             if ([path isKindOfClass:NSString.class] &&
                 [path hasSuffix:@"/Frameworks/UnityFramework.framework/UnityFramework"]) {
-                image = item; break;
+                image = item;
             }
+            if ([path isKindOfClass:NSString.class] && [path hasSuffix:@"/Frameworks/FEProj.framework/FEProj"])
+                engineImage = item;
         }
     }
     NSString *profile = @LV_TARGET_UUID;
@@ -164,6 +181,16 @@ NSDictionary *LVReadTargetSnapshot(LVMachReader *reader, NSDictionary *metadata,
     while(snapshot.result==LV_TARGET_CHANGED && attempts<3);
     LVMinimapHealthReport health;
     lv_minimap_health_read(readTarget,(__bridge void *)reader,base,&snapshot,&health);
+    uint64_t engineBase=0; NSString *engineAddress=engineImage[@"load_address"];
+    if([engineAddress isKindOfClass:NSString.class]) {
+        errno=0; const char *engineText=engineAddress.UTF8String;
+        engineBase=strtoull(engineText,&end,0);
+        if(errno || end==engineText || *end) engineBase=0;
+    }
+    NSString *engineUUID=engineImage[@"uuid"];
+    LVNativeHealthReport nativeHealth;
+    lv_target_native_health_read(readTarget,(__bridge void *)reader,engineBase,
+        [engineUUID isKindOfClass:NSString.class] ? engineUUID.UTF8String : NULL,&snapshot,&nativeHealth);
     NSMutableArray *actors = [NSMutableArray new];
     for (size_t i = 0; i < snapshot.count; ++i) {
         LVTargetActor *a = &snapshot.actors[i];
@@ -177,6 +204,12 @@ NSDictionary *LVReadTargetSnapshot(LVMachReader *reader, NSDictionary *metadata,
         if(a->classification_ok && a->is_hero) record[@"coordinate_candidates"]=positionCandidates(a);
         record[@"minimap_health_fraction_read_ok"] = @(a->minimap_health_fraction_ok != 0);
         if(a->minimap_health_fraction_ok) record[@"minimap_health_fraction"] = @((double)a->minimap_health_fraction_fixed/16384.0);
+        record[@"native_health_fraction_read_ok"]=@(a->native_health_fraction_ok!=0);
+        record[@"native_health_status"]=@(lv_native_health_status_name(a->native_health_status));
+        if(a->native_health_fraction_ok) [record addEntriesFromDictionary:@{
+            @"native_current_health":@((double)a->native_current_health_fixed/16384.0),
+            @"native_max_health":@((double)a->native_max_health_fixed/16384.0),
+            @"native_health_fraction":@((double)a->native_health_fraction_fixed/16384.0) }];
         if (a->classification_ok) [record addEntriesFromDictionary:@{ @"is_hero": @(a->is_hero != 0),
             @"is_monster": @(a->is_monster != 0), @"is_soldier": @(a->is_soldier != 0),
             @"is_building": @(a->is_building != 0), @"is_red_blue_buff": @(a->is_red_blue_buff != 0) }];
@@ -201,7 +234,7 @@ NSDictionary *LVReadTargetSnapshot(LVMachReader *reader, NSDictionary *metadata,
         @"local_native_address": hexAddress(snapshot.local_native), @"actors": actors,
         @"smite_preview": smitePreview(&snapshot, config),
         @"snapshot_read_attempts": @(attempts),
-        @"minimap": minimapSnapshot(reader, base, &snapshot, mapSettings, &health),
+        @"minimap": minimapSnapshot(reader, base, &snapshot, mapSettings, &health, &nativeHealth),
         @"trace": @{ @"class_cache": hexAddress(snapshot.class_cache), @"drive_class": hexAddress(snapshot.drive_class),
           @"drive_statics": hexAddress(snapshot.drive_statics), @"drive_instance": hexAddress(snapshot.drive),
           @"actor_manager": hexAddress(snapshot.manager), @"actor_list": hexAddress(snapshot.list),

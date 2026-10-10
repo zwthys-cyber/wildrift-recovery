@@ -1,0 +1,59 @@
+{
+  "engine_uuid": "D5B32037-47A3-3EFF-B0E5-04B071EFBEE3",
+  "engine_sha256": "69ed33e4b969139bda80946404528584a879f63ae4032c65fcb7412c3db4431e",
+  "unity_uuid": "085E1DDF-4A8D-34E2-9D73-A0A28BCC0B83",
+  "config": {
+    "root_pointer_rva": "0x523cf28",
+    "root_config_pointer_offset": "0x18",
+    "fields": {
+      "useLogicNetwork": "0x1c",
+      "isLogicThreadEnabled": "0x1d",
+      "useDataSyncObject": "0x1e",
+      "enableFogCut": "0x26"
+    },
+    "name_evidence": "Lua registration 0x35ae384, accessors 0x3768c30 / 0x3768c40 / 0x3768c50 / 0x3768cd0"
+  },
+  "maximum_health": {
+    "unity_getter": "0x4ea1dc4",
+    "embedded_attr_db_offset": "0x1d0",
+    "tag": 2,
+    "native_export": "FE_TN212",
+    "native_export_rva": "0xcb3c",
+    "vector_begin_offset_from_attr_db": "0x28",
+    "vector_end_offset_from_attr_db": "0x30",
+    "node_logic_value_offset": "0x60",
+    "node_sync_value_offset": "0x68",
+    "current_health_offset_from_attribute": "0x150",
+    "selector": "useDataSyncObject nonzero selects sync node+68; zero selects logic node+60",
+    "implementation": "Identity checked current/max pair with reread; wide intermediate Q14 ratio, clamped to [0,16384]. Native attributes preferred; validated game UI cache remains fallback. No maximum-health inference."
+  },
+  "fog_position": {
+    "logical_getter_rva": "0x1030d24",
+    "sync_getter_rva": "0x1030e4c",
+    "logic_xor_key_rva": "0x523cf38",
+    "logical_force_position_offset": "0x88",
+    "logical_owner_offset": "0x28",
+    "logical_transform_position_offset": "0x28",
+    "sync_force_position_offset": "0x28",
+    "sync_owner_offset": "0x18",
+    "sync_transform_position_offset": "0x18",
+    "invalid_forced_position_fixed": [
+      -163840000,
+      0,
+      0
+    ],
+    "hotfix_callback_globals": [
+      "0x51ab6b8",
+      "0x51ab6c0"
+    ],
+    "managed_alias_evidence": "FixGameObject.__Instance (+10) and __InstanceLongValue (+18) initialized with the same pointer by BattleActor constructor/GetRefFromPtr; get_logicActor 0x4eea044 is an identity return, not a second logical object.",
+    "scope": "Distinct native layout and logical XOR getter are established statically. No reliable runtime mapping from the sampled sync enemy actors to separate logical actors has been recovered. XORing the sync layout or treating the duplicate managed pointer as a logical actor would produce incorrect coordinates. Forced sight position and fog-cut flags are diagnostic only. No history or prediction is drawn.",
+    "realtime_fog_resolved": false
+  },
+  "validation": {
+    "original_engine_getter_tests": 5,
+    "bounded_synthetic_cases": 72,
+    "calls": "Whitelist of pure getter ranges only; assert handlers, hotfix callbacks, unknown calls and syscalls rejected.",
+    "device_verified": false
+  }
+}

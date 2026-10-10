@@ -266,8 +266,10 @@ static int add_marker(LVMinimapFrame *out, const LVTargetActor *a, unsigned ordi
     if (out->count >= LV_TARGET_MAX_ACTORS) return 0;
     out->markers[out->count++] = (LVMinimapMarker){ .object_id = a->object_id, .resource_id = a->resource_id,
         .ordinal = ordinal, .is_local = a->is_local, .u = u, .v = v, .edge_clamped = clamped,
-        .health_fraction_ok = a->minimap_health_fraction_ok,
-        .health_fraction = (double)a->minimap_health_fraction_fixed / 16384.0 };
+        .health_fraction_ok = a->native_health_fraction_ok || a->minimap_health_fraction_ok,
+        .health_source = a->native_health_fraction_ok ? 1 : (a->minimap_health_fraction_ok ? 2 : 0),
+        .health_fraction = (double)(a->native_health_fraction_ok ? a->native_health_fraction_fixed :
+                                   a->minimap_health_fraction_fixed) / 16384.0 };
     if (clamped && !a->is_local) ++out->edge_clamped_enemies;
     return 1;
 }

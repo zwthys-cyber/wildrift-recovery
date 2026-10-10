@@ -41,6 +41,7 @@ typedef struct {
     double u, v; /* UIKit coordinates in the calibrated rectangle, [0,1]. */
     double health_fraction;
     unsigned health_fraction_ok, edge_clamped;
+    unsigned health_source; /* 0 unknown, 1 native current/max, 2 minimap UI */
 } LVMinimapMarker;
 typedef struct {
     unsigned ready, manual_projection;

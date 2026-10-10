@@ -1,0 +1,144 @@
+{
+  "archive_sha256": "76c505959d300935c055d3212bc73b247dbc72a76e0afc82e2b14b92dc78c96f",
+  "archive_bytes": 89553427,
+  "collector_version": "0.7.5",
+  "collection_scope": "native_engine_only",
+  "framework_uuid": "D5B32037-47A3-3EFF-B0E5-04B071EFBEE3",
+  "framework_sha256": "69ed33e4b969139bda80946404528584a879f63ae4032c65fcb7412c3db4431e",
+  "framework_bytes": 89535488,
+  "encrypted": false,
+  "uuid_matches_device": true,
+  "architecture": "arm64",
+  "function_count": 408576,
+  "sections": [
+    {
+      "name": "__text",
+      "segment": "__TEXT",
+      "address": "0x4000",
+      "size": 72882504,
+      "file_offset": 16384
+    },
+    {
+      "name": "__stubs",
+      "segment": "__TEXT",
+      "address": "0x4585948",
+      "size": 4140,
+      "file_offset": 72898888
+    },
+    {
+      "name": "__stub_helper",
+      "segment": "__TEXT",
+      "address": "0x4586974",
+      "size": 4104,
+      "file_offset": 72903028
+    },
+    {
+      "name": "__cstring",
+      "segment": "__TEXT",
+      "address": "0x458797c",
+      "size": 1217721,
+      "file_offset": 72907132
+    },
+    {
+      "name": "__gcc_except_tab",
+      "segment": "__TEXT",
+      "address": "0x46b0e38",
+      "size": 2400940,
+      "file_offset": 74124856
+    },
+    {
+      "name": "__const",
+      "segment": "__TEXT",
+      "address": "0x48fb0f0",
+      "size": 545918,
+      "file_offset": 76525808
+    },
+    {
+      "name": "__unwind_info",
+      "segment": "__TEXT",
+      "address": "0x4980570",
+      "size": 1177568,
+      "file_offset": 77071728
+    },
+    {
+      "name": "__eh_frame",
+      "segment": "__TEXT",
+      "address": "0x4a9fd50",
+      "size": 83820,
+      "file_offset": 78249296
+    },
+    {
+      "name": "__got",
+      "segment": "__DATA",
+      "address": "0x4ab8000",
+      "size": 1504,
+      "file_offset": 78348288
+    },
+    {
+      "name": "__la_symbol_ptr",
+      "segment": "__DATA",
+      "address": "0x4ab85e0",
+      "size": 2720,
+      "file_offset": 78349792
+    },
+    {
+      "name": "__mod_init_func",
+      "segment": "__DATA",
+      "address": "0x4ab9080",
+      "size": 7984,
+      "file_offset": 78352512
+    },
+    {
+      "name": "__const",
+      "segment": "__DATA",
+      "address": "0x4abafb0",
+      "size": 7156368,
+      "file_offset": 78360496
+    },
+    {
+      "name": "__data",
+      "segment": "__DATA",
+      "address": "0x518e240",
+      "size": 636128,
+      "file_offset": 85516864
+    },
+    {
+      "name": "__thread_vars",
+      "segment": "__DATA",
+      "address": "0x5229720",
+      "size": 13728,
+      "file_offset": 86152992
+    },
+    {
+      "name": "__thread_bss",
+      "segment": "__DATA",
+      "address": "0x522ccc0",
+      "size": 52456,
+      "file_offset": 0
+    },
+    {
+      "name": "__common",
+      "segment": "__DATA",
+      "address": "0x52399b0",
+      "size": 17113424,
+      "file_offset": 0
+    },
+    {
+      "name": "__bss",
+      "segment": "__DATA",
+      "address": "0x628bb00",
+      "size": 10725857,
+      "file_offset": 0
+    }
+  ],
+  "dependencies": [
+    "@rpath/onnxruntime.framework/onnxruntime",
+    "/System/Library/Frameworks/Accelerate.framework/Accelerate",
+    "/System/Library/Frameworks/Network.framework/Network",
+    "/System/Library/Frameworks/Foundation.framework/Foundation",
+    "/usr/lib/libobjc.A.dylib",
+    "/usr/lib/libc++.1.dylib",
+    "/usr/lib/libSystem.B.dylib"
+  ],
+  "scope": "On-disk native engine input. No file executed or decrypted. Device paths and process IDs omitted."
+}

@@ -57,7 +57,8 @@ static void recordCoordinateTrace(NSDictionary *snapshot) {
     if(![coordinateBattle isEqual:battle]) { coordinateBattle=battle; coordinateSamples=[NSMutableArray new]; }
     NSMutableArray *heroes=[NSMutableArray new]; BOOL truncated=NO;
     NSArray *keys=@[@"object_id",@"resource_id",@"camp",@"is_local",@"position_read_ok",@"position",
-        @"health_read_ok",@"health",@"minimap_health_fraction_read_ok",@"minimap_health_fraction",@"coordinate_candidates"];
+        @"health_read_ok",@"health",@"minimap_health_fraction_read_ok",@"minimap_health_fraction",@"coordinate_candidates",
+        @"native_health_fraction_read_ok",@"native_health_status",@"native_current_health",@"native_max_health",@"native_health_fraction"];
     for(NSDictionary *actor in snapshot[@"actors"]) {
         if(![actor[@"classification_read_ok"] boolValue] || ![actor[@"is_hero"] boolValue]) continue;
         if(heroes.count==16) { truncated=YES; break; }
@@ -72,7 +73,8 @@ static void recordCoordinateTrace(NSDictionary *snapshot) {
         @"local_camp":map[@"local_camp"] ?: @0, @"map_reason":map[@"reason"] ?: @"missing",
         @"current_enemy_markers":map[@"current_enemy_marker_count"] ?: @0,
         @"outside_map_enemies":map[@"outside_map_enemy_count"] ?: @0,
-        @"health_cache":map[@"health_cache"] ?: @{}, @"hero_list_truncated":@(truncated), @"heroes":heroes }];
+        @"health_cache":map[@"health_cache"] ?: @{}, @"native_health":map[@"native_health"] ?: @{},
+        @"hero_list_truncated":@(truncated), @"heroes":heroes }];
     if(coordinateSamples.count>32) [coordinateSamples removeObjectAtIndex:0];
     NSDictionary *trace=@{ @"format_version":@1, @"session":hudSession.lowercaseString,
         @"producer_pid":@(getpid()), @"profile_uuid":@LV_TARGET_UUID, @"sample_interval_seconds":@1,

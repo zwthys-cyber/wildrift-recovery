@@ -37,6 +37,15 @@ static void position_candidates(Reader *r,LVTargetActor *a) {
     if(load(r,a->visual+0x120,&visible,1) && visible<=1 && load(r,a->visual+0xb8,&a->visual_tick,8)) {
         a->visual_state_ok=1; a->should_be_visible=visible;
     }
+    uint8_t cut;
+    if(load(r,a->visual+0xb0,&cut,1) && cut<=1) { a->fog_cut_state_ok=1; a->fog_cut_disappear=cut; }
+    /* get_fow 0x4ee62f0; get_forcePosition 0x4eab868. The sync Fow getter
+       0x1030e4c verifies owner +18. A forced position may be stale or invalid;
+       collect it for diagnosis, never substitute it for the live transform. */
+    uint64_t fow,owner,same_fow;
+    if(pointer(r,a->native+0x120,&fow) && fow && pointer(r,fow+0x18,&owner) && owner==a->native &&
+        load(r,fow+0x28,a->fow_force_position,24) && pointer(r,a->native+0x120,&same_fow) && same_fow==fow &&
+        pointer(r,fow+0x18,&owner) && owner==a->native) a->fow_force_position_ok=1;
     uint64_t sync, back_visual, back_actor, same_sync;
     if(pointer(r,a->visual+0xf0,&sync) && sync && pointer(r,sync+0x18,&back_visual) && back_visual==a->visual &&
         pointer(r,sync+0x20,&back_actor) && back_actor==a->managed &&
@@ -262,6 +271,7 @@ LVTargetResult lv_target_snapshot(LVTargetRead read, void *context, uint64_t bas
             (a.object_id_ok && (!load(&r, a.native + 0x18, &id_after, 4) || id_after != a.object_id))) {
             a.values_ok = a.health_ok = a.position_ok = a.object_id_ok = a.classification_ok = 0;
             a.attribute_last_position_ok=a.host_position_ok=a.sync_logic_position_ok=a.visual_state_ok=0;
+            a.fow_force_position_ok=a.fog_cut_state_ok=0;
             a.resource_id = a.tid = a.camp = 0; a.object_id = 0; a.health_fixed = 0;
             memset(a.position_fixed, 0, sizeof(a.position_fixed));
             a.is_hero = a.is_monster = a.is_soldier = a.is_building = a.is_red_blue_buff = 0;
@@ -297,6 +307,115 @@ const char *lv_target_result_name(LVTargetResult r) {
         case LV_TARGET_CHANGED: return "changed_during_read";
         case LV_TARGET_LIMIT: return "actor_limit";
         case LV_TARGET_PARTIAL: return "partial";
+    }
+    return "unknown";
+}
+
+static void clear_native_health(LVTargetActor *a, LVNativeHealthStatus status) {
+    a->native_health_fraction_ok=0;
+    a->native_current_health_fixed=a->native_max_health_fixed=a->native_health_fraction_fixed=0;
+    a->native_health_status=status;
+}
+static int native_health_identity(Reader *r, const LVTargetActor *a) {
+    uint64_t p; uint32_t id; int32_t resource, camp;
+    return pointer(r,a->visual+0xa0,&p) && p==a->managed &&
+        pointer(r,a->managed+0x18,&p) && p==a->native &&
+        pointer(r,a->native+0xc0,&p) && p==a->attribute &&
+        load(r,a->native+0x18,&id,4) && id==a->object_id &&
+        load(r,a->native+0x2c,&resource,4) && resource==a->resource_id &&
+        load(r,a->native+0x80,&camp,4) && camp==a->camp;
+}
+void lv_target_native_health_read(LVTargetRead read, void *context, uint64_t base,
+                                 const char *uuid, LVTargetSnapshot *s, LVNativeHealthReport *report) {
+    LVNativeHealthReport result={.reason="native_health_unavailable"};
+    if(report) *report=result;
+    if(!s || s->count>LV_TARGET_MAX_ACTORS) return;
+    for(size_t i=0;i<s->count;++i) clear_native_health(&s->actors[i],LV_HEALTH_UNAVAILABLE);
+    if(!uuid || strcmp(uuid,LV_NATIVE_ENGINE_UUID)) {
+        result.reason="native_engine_uuid_mismatch"; goto done;
+    }
+    result.profile_matches=1;
+    if(!read || (s->result!=LV_TARGET_READY && s->result!=LV_TARGET_PARTIAL) ||
+        !address_valid(base,8) || base>(UINT64_C(1)<<48)-0x523cf30) goto done;
+    Reader r={read,context}; uint64_t root,config; uint8_t mode;
+    /* FE_TN212 -> GetFEInterfaceConfig -> AttrDB tag 2. Same selector and
+       vector/node layout as the original maxHPVisi getter. No code is invoked. */
+    if(!pointer(&r,base+0x523cf28,&root) || !root ||
+        !pointer(&r,root+0x18,&config) || !config || !load(&r,config+0x1e,&mode,1)) {
+        result.reason="native_config_unreadable"; goto done;
+    }
+    result.sync_values=mode!=0;
+    uint8_t network,thread,fog;
+    if(load(&r,config+0x1c,&network,1) && network<=1 &&
+        load(&r,config+0x1d,&thread,1) && thread<=1 && load(&r,config+0x26,&fog,1) && fog<=1) {
+        result.fog_config_ok=1; result.use_logic_network=network;
+        result.logic_thread_enabled=thread; result.fog_cut_enabled=fog;
+    }
+    for(size_t i=0;i<s->count;++i) {
+        LVTargetActor *a=&s->actors[i];
+        unsigned duplicate=0;
+        for(size_t j=0;j<s->count;++j) if(j!=i && s->actors[j].object_id_ok &&
+            s->actors[j].object_id==a->object_id) duplicate=1;
+        if(!a->values_ok || !a->classification_ok || !a->is_hero || !a->object_id_ok ||
+            !a->object_id || duplicate || !a->attribute || !address_valid(a->attribute,0x208)) {
+            clear_native_health(a,LV_HEALTH_INELIGIBLE); continue;
+        }
+        ++result.eligible;
+        uint64_t begin,end,node; int64_t cur,max;
+        if(!native_health_identity(&r,a)) {
+            a->native_health_status=LV_HEALTH_CHANGED; ++result.changed; continue;
+        }
+        if(!pointer(&r,a->attribute+0x1f8,&begin) || !pointer(&r,a->attribute+0x200,&end)) {
+            a->native_health_status=LV_HEALTH_UNREADABLE; ++result.unreadable; continue;
+        }
+        if(!begin || end<begin || (end-begin)%8 || end-begin<24 || end-begin>4096*8) {
+            a->native_health_status=LV_HEALTH_INVALID; ++result.invalid; continue;
+        }
+        if(!pointer(&r,begin+16,&node) || !node ||
+            !load(&r,a->attribute+0x150,&cur,8) || !load(&r,node+(mode ? 0x68 : 0x60),&max,8)) {
+            a->native_health_status=LV_HEALTH_UNREADABLE; ++result.unreadable; continue;
+        }
+        if(cur<0 || max<=0) { a->native_health_status=LV_HEALTH_INVALID; ++result.invalid; continue; }
+        uint64_t same; int64_t cur_after,max_after;
+        if(!pointer(&r,a->attribute+0x1f8,&same) || same!=begin ||
+            !pointer(&r,a->attribute+0x200,&same) || same!=end ||
+            !pointer(&r,begin+16,&same) || same!=node ||
+            !load(&r,a->attribute+0x150,&cur_after,8) || cur_after!=cur ||
+            !load(&r,node+(mode ? 0x68 : 0x60),&max_after,8) || max_after!=max ||
+            !native_health_identity(&r,a)) {
+            a->native_health_status=LV_HEALTH_CHANGED; ++result.changed; continue;
+        }
+        a->native_current_health_fixed=cur; a->native_max_health_fixed=max;
+        a->native_health_fraction_fixed=cur>=max ? 16384 : (int64_t)(((__int128)cur*16384)/max);
+        a->native_health_fraction_ok=1; a->native_health_status=LV_HEALTH_READY; ++result.valid;
+    }
+    uint64_t same; uint8_t same_mode;
+    if(!pointer(&r,base+0x523cf28,&same) || same!=root ||
+        !pointer(&r,root+0x18,&same) || same!=config ||
+        !load(&r,config+0x1e,&same_mode,1) || same_mode!=mode) {
+        result.reason="native_config_changed"; result.valid=0;
+        result.fog_config_ok=0;
+        for(size_t i=0;i<s->count;++i) if(s->actors[i].native_health_fraction_ok) {
+            clear_native_health(&s->actors[i],LV_HEALTH_CHANGED); ++result.changed;
+        }
+    } else {
+        result.reason=result.valid==result.eligible ? "ready" : "partial";
+        uint8_t n,t,f;
+        if(result.fog_config_ok && (!load(&r,config+0x1c,&n,1) || n!=network ||
+            !load(&r,config+0x1d,&t,1) || t!=thread || !load(&r,config+0x26,&f,1) || f!=fog))
+            result.fog_config_ok=0;
+    }
+done:
+    if(report) *report=result;
+}
+const char *lv_native_health_status_name(LVNativeHealthStatus status) {
+    switch(status) {
+        case LV_HEALTH_READY:return "ready";
+        case LV_HEALTH_UNREADABLE:return "unreadable";
+        case LV_HEALTH_INVALID:return "invalid_values_or_layout";
+        case LV_HEALTH_CHANGED:return "changed_during_read";
+        case LV_HEALTH_INELIGIBLE:return "ineligible_actor";
+        case LV_HEALTH_UNAVAILABLE:return "unavailable";
     }
     return "unknown";
 }

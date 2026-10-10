@@ -34,15 +34,17 @@ record = {
     'minimap_motion_checks': checks('minimap-motion-checks.txt'),
     'target_reader_scenarios': checks('target-reader-checks.txt'),
     'minimap_health_checks': checks('minimap-health-checks.txt'),
+    'native_health_checks': checks('native-health-checks.txt'),
     'hud_telemetry_checks': checks('hud-telemetry-checks.txt'),
     'ipa_signature_tests': 5,
     'ipa_total_tests': 8,
     'zip_export_tests': 3,
     'collection_inspector_tests': 6,
-    'native_engine_collection_device_verified': False,
+    'native_engine_collection_device_verified': metadata['native_engine_collection_device_verified'],
+    'native_health_device_verified': False,
     'bundled_hero_portraits': metadata['minimap_hero_portrait_count'],
     'desktop_icon_payload_verified': True,
-    'scope': 'GitHub CI checks and build provenance. Local validation remains separately recorded. New native-engine collection, ring rendering and real-time fog coordinates require device evidence; CI does not verify them. Prior trace transport was observed in the 0.7.4 report.'
+    'scope': 'GitHub CI checks and build provenance. Local original FEProj getter emulation is separately recorded and private engine bytes are absent from CI. Native-engine collection was verified from the 0.7.5 device export. New native health reading/rendering remains device-unverified. Real-time fog coordinates remain unresolved.'
 }
 text = json.dumps(record, ensure_ascii=False, indent=2) + '\n'
 (ROOT / 'analysis/ci-validation.json').write_text(text)
