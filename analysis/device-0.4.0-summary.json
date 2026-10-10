@@ -1,0 +1,432 @@
+{
+  "source": "Derived summary of the user-pasted 0.4.0 JSON in this conversation; not the original file or an independently acquired capture.",
+  "recovery_app_version": "0.4.0",
+  "snapshot_sampled_at": "2026-10-10T15:16:45Z",
+  "recorded_at": "2026-10-10T15:29:44.761312+00:00",
+  "ios_version": "17.0",
+  "device_user_reported": "iPhone 15 Pro Max",
+  "task_result": 0,
+  "helper_uid": 0,
+  "target_pid": 624,
+  "framework_uuid": "085E1DDF-4A8D-34E2-9D73-A0A28BCC0B83",
+  "framework_load_address": "0x11bb70000",
+  "snapshot_result": "ready",
+  "snapshot_stage": "actor_values",
+  "reported_actor_count": 84,
+  "read_actor_count": 84,
+  "skipped_actor_count": 0,
+  "all_actor_baseline_health_object_id_position_reads_ok": true,
+  "all_tid_zero": true,
+  "unique_object_id_count": 84,
+  "actor_identity_pairs": [
+    {
+      "object_id": 1,
+      "resource_id": 10094
+    },
+    {
+      "object_id": 2,
+      "resource_id": 10063
+    },
+    {
+      "object_id": 3,
+      "resource_id": 201901
+    },
+    {
+      "object_id": 4,
+      "resource_id": 820403
+    },
+    {
+      "object_id": 5,
+      "resource_id": 820407
+    },
+    {
+      "object_id": 6,
+      "resource_id": 820407
+    },
+    {
+      "object_id": 7,
+      "resource_id": 820404
+    },
+    {
+      "object_id": 12,
+      "resource_id": 820101
+    },
+    {
+      "object_id": 13,
+      "resource_id": 820102
+    },
+    {
+      "object_id": 14,
+      "resource_id": 820103
+    },
+    {
+      "object_id": 15,
+      "resource_id": 820104
+    },
+    {
+      "object_id": 16,
+      "resource_id": 820105
+    },
+    {
+      "object_id": 17,
+      "resource_id": 820106
+    },
+    {
+      "object_id": 18,
+      "resource_id": 820107
+    },
+    {
+      "object_id": 19,
+      "resource_id": 820108
+    },
+    {
+      "object_id": 20,
+      "resource_id": 820109
+    },
+    {
+      "object_id": 21,
+      "resource_id": 820001
+    },
+    {
+      "object_id": 22,
+      "resource_id": 820201
+    },
+    {
+      "object_id": 23,
+      "resource_id": 820202
+    },
+    {
+      "object_id": 24,
+      "resource_id": 820203
+    },
+    {
+      "object_id": 25,
+      "resource_id": 820204
+    },
+    {
+      "object_id": 26,
+      "resource_id": 820205
+    },
+    {
+      "object_id": 27,
+      "resource_id": 820206
+    },
+    {
+      "object_id": 28,
+      "resource_id": 820207
+    },
+    {
+      "object_id": 29,
+      "resource_id": 820208
+    },
+    {
+      "object_id": 30,
+      "resource_id": 820209
+    },
+    {
+      "object_id": 31,
+      "resource_id": 820002
+    },
+    {
+      "object_id": 32,
+      "resource_id": 831001
+    },
+    {
+      "object_id": 33,
+      "resource_id": 223611
+    },
+    {
+      "object_id": 34,
+      "resource_id": 831001
+    },
+    {
+      "object_id": 35,
+      "resource_id": 223611
+    },
+    {
+      "object_id": 36,
+      "resource_id": 831001
+    },
+    {
+      "object_id": 37,
+      "resource_id": 223611
+    },
+    {
+      "object_id": 38,
+      "resource_id": 831001
+    },
+    {
+      "object_id": 39,
+      "resource_id": 223611
+    },
+    {
+      "object_id": 40,
+      "resource_id": 831001
+    },
+    {
+      "object_id": 41,
+      "resource_id": 223611
+    },
+    {
+      "object_id": 42,
+      "resource_id": 831001
+    },
+    {
+      "object_id": 43,
+      "resource_id": 223611
+    },
+    {
+      "object_id": 44,
+      "resource_id": 820415
+    },
+    {
+      "object_id": 45,
+      "resource_id": 820409
+    },
+    {
+      "object_id": 46,
+      "resource_id": 820409
+    },
+    {
+      "object_id": 47,
+      "resource_id": 820410
+    },
+    {
+      "object_id": 48,
+      "resource_id": 820410
+    },
+    {
+      "object_id": 49,
+      "resource_id": 820423
+    },
+    {
+      "object_id": 50,
+      "resource_id": 820423
+    },
+    {
+      "object_id": 51,
+      "resource_id": 201901
+    },
+    {
+      "object_id": 52,
+      "resource_id": 201902
+    },
+    {
+      "object_id": 55,
+      "resource_id": 831401
+    },
+    {
+      "object_id": 56,
+      "resource_id": 223612
+    },
+    {
+      "object_id": 57,
+      "resource_id": 831401
+    },
+    {
+      "object_id": 58,
+      "resource_id": 223612
+    },
+    {
+      "object_id": 63,
+      "resource_id": 810202
+    },
+    {
+      "object_id": 65,
+      "resource_id": 831501
+    },
+    {
+      "object_id": 66,
+      "resource_id": 223613
+    },
+    {
+      "object_id": 67,
+      "resource_id": 831501
+    },
+    {
+      "object_id": 68,
+      "resource_id": 223613
+    },
+    {
+      "object_id": 69,
+      "resource_id": 820505
+    },
+    {
+      "object_id": 98,
+      "resource_id": 810201
+    },
+    {
+      "object_id": 99,
+      "resource_id": 831501
+    },
+    {
+      "object_id": 100,
+      "resource_id": 223613
+    },
+    {
+      "object_id": 103,
+      "resource_id": 831501
+    },
+    {
+      "object_id": 104,
+      "resource_id": 223613
+    },
+    {
+      "object_id": 107,
+      "resource_id": 810201
+    },
+    {
+      "object_id": 108,
+      "resource_id": 810101
+    },
+    {
+      "object_id": 111,
+      "resource_id": 810202
+    },
+    {
+      "object_id": 112,
+      "resource_id": 810102
+    },
+    {
+      "object_id": 115,
+      "resource_id": 810202
+    },
+    {
+      "object_id": 117,
+      "resource_id": 810102
+    },
+    {
+      "object_id": 183,
+      "resource_id": 106302
+    },
+    {
+      "object_id": 187,
+      "resource_id": 810101
+    },
+    {
+      "object_id": 188,
+      "resource_id": 810201
+    },
+    {
+      "object_id": 193,
+      "resource_id": 810101
+    },
+    {
+      "object_id": 194,
+      "resource_id": 810201
+    },
+    {
+      "object_id": 197,
+      "resource_id": 201901
+    },
+    {
+      "object_id": 198,
+      "resource_id": 201902
+    },
+    {
+      "object_id": 199,
+      "resource_id": 810105
+    },
+    {
+      "object_id": 201,
+      "resource_id": 810205
+    },
+    {
+      "object_id": 203,
+      "resource_id": 810102
+    },
+    {
+      "object_id": 204,
+      "resource_id": 810202
+    },
+    {
+      "object_id": 209,
+      "resource_id": 223601
+    },
+    {
+      "object_id": 213,
+      "resource_id": 831002
+    },
+    {
+      "object_id": 214,
+      "resource_id": 831002
+    },
+    {
+      "object_id": 215,
+      "resource_id": 831002
+    }
+  ],
+  "original_smite_allowlist_match_count": 0,
+  "selected_actors": [
+    {
+      "object_id": 1,
+      "resource_id": 10094,
+      "camp": 1,
+      "is_local": true,
+      "native_address": "0x15c8ba5c0",
+      "health_fixed": 7973823,
+      "position_fixed": [
+        -194861,
+        0,
+        -273812
+      ],
+      "health": 486.68353271484375,
+      "position": [
+        -11.89337158203125,
+        0.0,
+        -16.712158203125
+      ]
+    },
+    {
+      "object_id": 2,
+      "resource_id": 10063,
+      "camp": 2,
+      "is_local": false,
+      "native_address": "0x15c88aa50",
+      "health_fixed": 9292791,
+      "position_fixed": [
+        -7393,
+        0,
+        -15077
+      ],
+      "health": 567.1869506835938,
+      "position": [
+        -0.45123291015625,
+        0.0,
+        -0.92022705078125
+      ]
+    }
+  ],
+  "local_skills": {
+    "result": "ready",
+    "all_count": 5,
+    "summoner_count": 3,
+    "all_values_and_cooldown_reads_ok": true,
+    "all_levels": 1,
+    "all_cooldown_fixed": 0,
+    "all_cd_locked": false,
+    "all_resource_ids": [
+      10940101,
+      10940201,
+      10940301,
+      10940501,
+      10940701
+    ],
+    "summoner_resource_ids": [
+      10000001,
+      81110101,
+      81090101
+    ],
+    "smite_object_id": 15,
+    "smite_native_address": "0x2cc0b7200",
+    "smite_cd_node_address": "0x2abb398d0"
+  },
+  "game_integration_ready": false,
+  "limits": [
+    "All sampled cooldowns are zero; nonzero cooldown countdown is unverified.",
+    "No screen comparison, monster category flags, inventory, slot or cast state values were supplied.",
+    "No original-allowlist red/blue/dragon target appears in this snapshot.",
+    "Reading success does not verify actual iOS damage, casting range, IsValid/IsSkillable, rendering or touches.",
+    "Addresses and PIDs vary with process lifetime."
+  ]
+}

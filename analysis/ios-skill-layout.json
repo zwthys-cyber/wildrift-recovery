@@ -1,0 +1,3251 @@
+{
+  "framework_uuid": "085E1DDF-4A8D-34E2-9D73-A0A28BCC0B83",
+  "framework_sha256": "effa95dbbc2bf16f9474c7c99700b80b3e0b7c793537e2da7089bd01b6a5e394",
+  "metadata_sha256": "0ea4de1fdba5924e75f09a10911692c833ae996ec3df773aba4d9b32c39f90e3",
+  "selected_types": [
+    {
+      "index": 34993,
+      "name": "FixGameObject",
+      "namespace": "FrameEngine.Logic",
+      "byval_type_index": 40477,
+      "declaring_type_index": -1,
+      "parent_type_index": 52004,
+      "flags": 1048577,
+      "field_start": 308510,
+      "method_start": 292204,
+      "method_count": 14,
+      "field_count": 6,
+      "bitfield": 3072,
+      "token": 33589426,
+      "fields": [
+        {
+          "index": 308510,
+          "name": "TypeID",
+          "type_index": 46144,
+          "token": 67417375,
+          "offset": 0,
+          "static": true,
+          "literal": true,
+          "native_type": {
+            "data": 39296,
+            "attributes": 32854,
+            "kind": 8
+          }
+        },
+        {
+          "index": 308511,
+          "name": "__Instance",
+          "type_index": 46183,
+          "token": 67417376,
+          "offset": 16,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39480,
+            "attributes": 6,
+            "kind": 24
+          }
+        },
+        {
+          "index": 308512,
+          "name": "__InstanceLongValue",
+          "type_index": 46151,
+          "token": 67417377,
+          "offset": 24,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39297,
+            "attributes": 6,
+            "kind": 10
+          }
+        },
+        {
+          "index": 308513,
+          "name": "NativeMap",
+          "type_index": 5588,
+          "token": 67417378,
+          "offset": 0,
+          "static": true,
+          "literal": false,
+          "native_type": {
+            "data": 277510592,
+            "attributes": 19,
+            "kind": 21
+          }
+        },
+        {
+          "index": 308514,
+          "name": "_wrapperPool",
+          "type_index": 15599,
+          "token": 67417379,
+          "offset": 8,
+          "static": true,
+          "literal": false,
+          "native_type": {
+            "data": 277759136,
+            "attributes": 19,
+            "kind": 21
+          }
+        },
+        {
+          "index": 308515,
+          "name": "_transform",
+          "type_index": 40577,
+          "token": 67417380,
+          "offset": 32,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34995,
+            "attributes": 1,
+            "kind": 18
+          }
+        }
+      ],
+      "methods": [
+        {
+          "index": 292216,
+          "name": "get_objId",
+          "return_type_index": 72736,
+          "token": 100955513,
+          "flags": 2534,
+          "parameter_count": 0,
+          "native_address": 83366664,
+          "declaring_module": "Assembly-CSharp.dll"
+        },
+        {
+          "index": 292217,
+          "name": "get_transform",
+          "return_type_index": 40576,
+          "token": 100955514,
+          "flags": 2534,
+          "parameter_count": 0,
+          "native_address": 83366676,
+          "declaring_module": "Assembly-CSharp.dll"
+        }
+      ]
+    },
+    {
+      "index": 34995,
+      "name": "FixTransform",
+      "namespace": "FrameEngine.Logic",
+      "byval_type_index": 40576,
+      "declaring_type_index": -1,
+      "parent_type_index": 40452,
+      "flags": 1048833,
+      "field_start": 308523,
+      "method_start": 292234,
+      "method_count": 9,
+      "field_count": 2,
+      "bitfield": 3072,
+      "token": 33589428,
+      "fields": [
+        {
+          "index": 308523,
+          "name": "TypeID",
+          "type_index": 46144,
+          "token": 67417388,
+          "offset": 0,
+          "static": true,
+          "literal": true,
+          "native_type": {
+            "data": 39296,
+            "attributes": 32854,
+            "kind": 8
+          }
+        },
+        {
+          "index": 308524,
+          "name": "_wrapperPool",
+          "type_index": 15599,
+          "token": 67417389,
+          "offset": 0,
+          "static": true,
+          "literal": false,
+          "native_type": {
+            "data": 277759136,
+            "attributes": 19,
+            "kind": 21
+          }
+        }
+      ],
+      "methods": [
+        {
+          "index": 292238,
+          "name": "get_position",
+          "return_type_index": 40591,
+          "token": 100955535,
+          "flags": 2182,
+          "parameter_count": 0,
+          "native_address": 83371344,
+          "declaring_module": "Assembly-CSharp.dll"
+        }
+      ]
+    },
+    {
+      "index": 34683,
+      "name": "BattleActor",
+      "namespace": "FrameEngine.Logic",
+      "byval_type_index": 26096,
+      "declaring_type_index": -1,
+      "parent_type_index": 40477,
+      "flags": 1048577,
+      "field_start": 306968,
+      "method_start": 289734,
+      "method_count": 368,
+      "field_count": 109,
+      "bitfield": 3072,
+      "token": 33589116,
+      "fields": [
+        {
+          "index": 306968,
+          "name": "TypeID",
+          "type_index": 46144,
+          "token": 67415833,
+          "offset": 0,
+          "static": true,
+          "literal": true,
+          "native_type": {
+            "data": 39296,
+            "attributes": 32854,
+            "kind": 8
+          }
+        },
+        {
+          "index": 306969,
+          "name": "_wrapperPool",
+          "type_index": 15599,
+          "token": 67415834,
+          "offset": 0,
+          "static": true,
+          "literal": false,
+          "native_type": {
+            "data": 277759136,
+            "attributes": 19,
+            "kind": 21
+          }
+        },
+        {
+          "index": 306970,
+          "name": "_fightStateMgr",
+          "type_index": 23745,
+          "token": 67415835,
+          "offset": 40,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34589,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306971,
+          "name": "_varMgr",
+          "type_index": 23971,
+          "token": 67415836,
+          "offset": 48,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34663,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306972,
+          "name": "_renderer",
+          "type_index": 23874,
+          "token": 67415837,
+          "offset": 56,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34639,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306973,
+          "name": "_collisionBoxMgr",
+          "type_index": 23711,
+          "token": 67415838,
+          "offset": 64,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34573,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306974,
+          "name": "_hatred",
+          "type_index": 23758,
+          "token": 67415839,
+          "offset": 72,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34597,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306975,
+          "name": "_hurtDelay",
+          "type_index": 23765,
+          "token": 67415840,
+          "offset": 80,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34600,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306976,
+          "name": "_traitComp",
+          "type_index": 23816,
+          "token": 67415841,
+          "offset": 88,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34628,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306977,
+          "name": "_rideComp",
+          "type_index": 23799,
+          "token": 67415842,
+          "offset": 96,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34620,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306978,
+          "name": "_attackStateMgr",
+          "type_index": 23719,
+          "token": 67415843,
+          "offset": 104,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34576,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306979,
+          "name": "_movement",
+          "type_index": 23783,
+          "token": 67415844,
+          "offset": 112,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34609,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306980,
+          "name": "_team",
+          "type_index": 26897,
+          "token": 67415845,
+          "offset": 120,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34738,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306981,
+          "name": "_player",
+          "type_index": 26644,
+          "token": 67415846,
+          "offset": 128,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34716,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306982,
+          "name": "_anchor",
+          "type_index": 50942,
+          "token": 67415847,
+          "offset": 136,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 35710,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306983,
+          "name": "_attribute",
+          "type_index": 23723,
+          "token": 67415848,
+          "offset": 144,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34579,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306984,
+          "name": "_fsm",
+          "type_index": 23743,
+          "token": 67415849,
+          "offset": 152,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34593,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306985,
+          "name": "_skillMgr",
+          "type_index": 23805,
+          "token": 67415850,
+          "offset": 160,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34623,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306986,
+          "name": "_skillMirror",
+          "type_index": 23807,
+          "token": 67415851,
+          "offset": 168,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34624,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306987,
+          "name": "_buffMgr",
+          "type_index": 23734,
+          "token": 67415852,
+          "offset": 176,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34585,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306988,
+          "name": "_flowMgr",
+          "type_index": 23747,
+          "token": 67415853,
+          "offset": 184,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34590,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306989,
+          "name": "_behavior",
+          "type_index": 23730,
+          "token": 67415854,
+          "offset": 192,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34583,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306990,
+          "name": "_summonMgr",
+          "type_index": 23814,
+          "token": 67415855,
+          "offset": 200,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34627,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306991,
+          "name": "_lifeComponent",
+          "type_index": 23769,
+          "token": 67415856,
+          "offset": 208,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34602,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306992,
+          "name": "_visibleMgr",
+          "type_index": 23827,
+          "token": 67415857,
+          "offset": 216,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34633,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306993,
+          "name": "_growth",
+          "type_index": 23755,
+          "token": 67415858,
+          "offset": 224,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34595,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306994,
+          "name": "_auxComponent",
+          "type_index": 23727,
+          "token": 67415859,
+          "offset": 232,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34581,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306995,
+          "name": "_fow",
+          "type_index": 23750,
+          "token": 67415860,
+          "offset": 240,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34592,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306996,
+          "name": "_markHeroComponent",
+          "type_index": 23774,
+          "token": 67415861,
+          "offset": 248,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34605,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306997,
+          "name": "_skillHurtStrengthen",
+          "type_index": 23803,
+          "token": 67415862,
+          "offset": 256,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34622,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306998,
+          "name": "_miniMapState",
+          "type_index": 23777,
+          "token": 67415863,
+          "offset": 264,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34607,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306999,
+          "name": "_wayPointsMgr",
+          "type_index": 23994,
+          "token": 67415864,
+          "offset": 272,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34664,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 307000,
+          "name": "_host",
+          "type_index": 26097,
+          "token": 67415865,
+          "offset": 280,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34683,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 307001,
+          "name": "_lastKiller",
+          "type_index": 26097,
+          "token": 67415866,
+          "offset": 288,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34683,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 307002,
+          "name": "_subBattle",
+          "type_index": 62824,
+          "token": 67415867,
+          "offset": 296,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36234,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 307003,
+          "name": "_realmComponent",
+          "type_index": 23792,
+          "token": 67415868,
+          "offset": 304,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34617,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 307004,
+          "name": "isBuilding",
+          "type_index": 27332,
+          "token": 67415869,
+          "offset": 312,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307005,
+          "name": "isHomeBase",
+          "type_index": 27332,
+          "token": 67415870,
+          "offset": 313,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307006,
+          "name": "isSpring",
+          "type_index": 27332,
+          "token": 67415871,
+          "offset": 314,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307007,
+          "name": "isTower",
+          "type_index": 27332,
+          "token": 67415872,
+          "offset": 315,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307008,
+          "name": "isTurret",
+          "type_index": 27332,
+          "token": 67415873,
+          "offset": 316,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307009,
+          "name": "isBarracks",
+          "type_index": 27332,
+          "token": 67415874,
+          "offset": 317,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307010,
+          "name": "isInhibitor",
+          "type_index": 27332,
+          "token": 67415875,
+          "offset": 318,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307011,
+          "name": "isHero",
+          "type_index": 27332,
+          "token": 67415876,
+          "offset": 319,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307012,
+          "name": "isTeleportable",
+          "type_index": 27332,
+          "token": 67415877,
+          "offset": 320,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307013,
+          "name": "isSoldier",
+          "type_index": 27332,
+          "token": 67415878,
+          "offset": 321,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307014,
+          "name": "isSmallDragon",
+          "type_index": 27332,
+          "token": 67415879,
+          "offset": 322,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307015,
+          "name": "isMonster",
+          "type_index": 27332,
+          "token": 67415880,
+          "offset": 323,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307016,
+          "name": "isBigDragon",
+          "type_index": 27332,
+          "token": 67415881,
+          "offset": 324,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307017,
+          "name": "isHexBaron",
+          "type_index": 27332,
+          "token": 67415882,
+          "offset": 325,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307018,
+          "name": "isRiftScuttler",
+          "type_index": 27332,
+          "token": 67415883,
+          "offset": 326,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307019,
+          "name": "isRiftHerald",
+          "type_index": 27332,
+          "token": 67415884,
+          "offset": 327,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307020,
+          "name": "isSummonRiftHerald",
+          "type_index": 27332,
+          "token": 67415885,
+          "offset": 328,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307021,
+          "name": "isSummonAnnieBear",
+          "type_index": 27332,
+          "token": 67415886,
+          "offset": 329,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307022,
+          "name": "isLargeMonster",
+          "type_index": 27332,
+          "token": 67415887,
+          "offset": 330,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307023,
+          "name": "isMonsterNormal",
+          "type_index": 27332,
+          "token": 67415888,
+          "offset": 331,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307024,
+          "name": "isMonsterEpic",
+          "type_index": 27332,
+          "token": 67415889,
+          "offset": 332,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307025,
+          "name": "isScuttlerZone",
+          "type_index": 27332,
+          "token": 67415890,
+          "offset": 333,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307026,
+          "name": "isCampVisionMonster",
+          "type_index": 27332,
+          "token": 67415891,
+          "offset": 334,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307027,
+          "name": "isSummoned",
+          "type_index": 27332,
+          "token": 67415892,
+          "offset": 335,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307028,
+          "name": "isSummonedNum",
+          "type_index": 27332,
+          "token": 67415893,
+          "offset": 336,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307029,
+          "name": "isSummonedClone",
+          "type_index": 27332,
+          "token": 67415894,
+          "offset": 337,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307030,
+          "name": "isNeutralEye",
+          "type_index": 27332,
+          "token": 67415895,
+          "offset": 338,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307031,
+          "name": "isSummonedPsychic",
+          "type_index": 27332,
+          "token": 67415896,
+          "offset": 339,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307032,
+          "name": "isSummonedBattle",
+          "type_index": 27332,
+          "token": 67415897,
+          "offset": 340,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307033,
+          "name": "isSummonedOther",
+          "type_index": 27332,
+          "token": 67415898,
+          "offset": 341,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307034,
+          "name": "isBlock",
+          "type_index": 27332,
+          "token": 67415899,
+          "offset": 342,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307035,
+          "name": "isSmallMonster",
+          "type_index": 27332,
+          "token": 67415900,
+          "offset": 343,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307036,
+          "name": "isSummonedWards",
+          "type_index": 27332,
+          "token": 67415901,
+          "offset": 344,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307037,
+          "name": "isMelee",
+          "type_index": 27332,
+          "token": 67415902,
+          "offset": 345,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307038,
+          "name": "isHoneyTree",
+          "type_index": 27332,
+          "token": 67415903,
+          "offset": 346,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307039,
+          "name": "isRedBlueBuff",
+          "type_index": 27332,
+          "token": 67415904,
+          "offset": 347,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307040,
+          "name": "isBlastCone",
+          "type_index": 27332,
+          "token": 67415905,
+          "offset": 348,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307041,
+          "name": "isCryerBloom",
+          "type_index": 27332,
+          "token": 67415906,
+          "offset": 349,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307042,
+          "name": "isIceFruit",
+          "type_index": 27332,
+          "token": 67415907,
+          "offset": 350,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307043,
+          "name": "isPet",
+          "type_index": 27332,
+          "token": 67415908,
+          "offset": 351,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307044,
+          "name": "isTowerFire",
+          "type_index": 27332,
+          "token": 67415909,
+          "offset": 352,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307045,
+          "name": "isHexGate",
+          "type_index": 27332,
+          "token": 67415910,
+          "offset": 353,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307046,
+          "name": "isHexToolBox",
+          "type_index": 27332,
+          "token": 67415911,
+          "offset": 354,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307047,
+          "name": "isHexCannon",
+          "type_index": 27332,
+          "token": 67415912,
+          "offset": 355,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307048,
+          "name": "isSummonHexCannon",
+          "type_index": 27332,
+          "token": 67415913,
+          "offset": 356,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307049,
+          "name": "isHexRex",
+          "type_index": 27332,
+          "token": 67415914,
+          "offset": 357,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307050,
+          "name": "isHexPoro",
+          "type_index": 27332,
+          "token": 67415915,
+          "offset": 358,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307051,
+          "name": "isRexMecha",
+          "type_index": 27332,
+          "token": 67415916,
+          "offset": 359,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307052,
+          "name": "isSuperSoilder",
+          "type_index": 27332,
+          "token": 67415917,
+          "offset": 360,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307053,
+          "name": "isGunnerSoilder",
+          "type_index": 27332,
+          "token": 67415918,
+          "offset": 361,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307054,
+          "name": "isBarracksSummon",
+          "type_index": 27332,
+          "token": 67415919,
+          "offset": 362,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307055,
+          "name": "isQuickCrystal",
+          "type_index": 27332,
+          "token": 67415920,
+          "offset": 363,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307056,
+          "name": "isQuickWall",
+          "type_index": 27332,
+          "token": 67415921,
+          "offset": 364,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307057,
+          "name": "cacheObjId",
+          "type_index": 72737,
+          "token": 67415922,
+          "offset": 368,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39372,
+            "attributes": 1,
+            "kind": 9
+          }
+        },
+        {
+          "index": 307058,
+          "name": "isYordleHerald",
+          "type_index": 27332,
+          "token": 67415923,
+          "offset": 372,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307059,
+          "name": "isSummonYordleHerald",
+          "type_index": 27332,
+          "token": 67415924,
+          "offset": 373,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307060,
+          "name": "isTransportGate",
+          "type_index": 27332,
+          "token": 67415925,
+          "offset": 374,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307061,
+          "name": "isYordleGate",
+          "type_index": 27332,
+          "token": 67415926,
+          "offset": 375,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307062,
+          "name": "isYordlePig",
+          "type_index": 27332,
+          "token": 67415927,
+          "offset": 376,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307063,
+          "name": "isSummonYordlePig",
+          "type_index": 27332,
+          "token": 67415928,
+          "offset": 377,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307064,
+          "name": "isGem",
+          "type_index": 27332,
+          "token": 67415929,
+          "offset": 378,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307065,
+          "name": "isSeniorGem",
+          "type_index": 27332,
+          "token": 67415930,
+          "offset": 379,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307066,
+          "name": "isLowSeniorGem",
+          "type_index": 27332,
+          "token": 67415931,
+          "offset": 380,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307067,
+          "name": "isSeniorGemGenerator",
+          "type_index": 27332,
+          "token": 67415932,
+          "offset": 381,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307068,
+          "name": "isChaosZoneSprite",
+          "type_index": 27332,
+          "token": 67415933,
+          "offset": 382,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307069,
+          "name": "isChaosZoneChestBox",
+          "type_index": 27332,
+          "token": 67415934,
+          "offset": 383,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307070,
+          "name": "isChaosMarshLord",
+          "type_index": 27332,
+          "token": 67415935,
+          "offset": 384,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307071,
+          "name": "isSummonIoniaHerald",
+          "type_index": 27332,
+          "token": 67415936,
+          "offset": 385,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307072,
+          "name": "isWall",
+          "type_index": 27332,
+          "token": 67415937,
+          "offset": 386,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307073,
+          "name": "isAllRealmVisible",
+          "type_index": 27332,
+          "token": 67415938,
+          "offset": 387,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307074,
+          "name": "isChaosZoneFrog",
+          "type_index": 27332,
+          "token": 67415939,
+          "offset": 388,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 307075,
+          "name": "__DC",
+          "type_index": 26116,
+          "token": 67415940,
+          "offset": 392,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36717,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 307076,
+          "name": "_actorVisi",
+          "type_index": 26108,
+          "token": 67415941,
+          "offset": 400,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 37453,
+            "attributes": 1,
+            "kind": 18
+          }
+        }
+      ],
+      "methods": [
+        {
+          "index": 289760,
+          "name": "get_skillMgr",
+          "return_type_index": 23804,
+          "token": 100953057,
+          "flags": 2182,
+          "parameter_count": 0,
+          "native_address": 82730296,
+          "declaring_module": "Assembly-CSharp.dll"
+        }
+      ]
+    },
+    {
+      "index": 34623,
+      "name": "ActorComponentSkillMgr",
+      "namespace": "FrameEngine.Logic",
+      "byval_type_index": 23804,
+      "declaring_type_index": -1,
+      "parent_type_index": 23712,
+      "flags": 1048833,
+      "field_start": 306607,
+      "method_start": 288889,
+      "method_count": 81,
+      "field_count": 33,
+      "bitfield": 3072,
+      "token": 33589056,
+      "fields": [
+        {
+          "index": 306607,
+          "name": "TypeID",
+          "type_index": 46144,
+          "token": 67415472,
+          "offset": 0,
+          "static": true,
+          "literal": true,
+          "native_type": {
+            "data": 39296,
+            "attributes": 32854,
+            "kind": 8
+          }
+        },
+        {
+          "index": 306608,
+          "name": "_wrapperPool",
+          "type_index": 15599,
+          "token": 67415473,
+          "offset": 0,
+          "static": true,
+          "literal": false,
+          "native_type": {
+            "data": 277759136,
+            "attributes": 19,
+            "kind": 21
+          }
+        },
+        {
+          "index": 306609,
+          "name": "_skillLvDic",
+          "type_index": 32692,
+          "token": 67415474,
+          "offset": 40,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34357,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306610,
+          "name": "_slotList",
+          "type_index": 4393,
+          "token": 67415475,
+          "offset": 48,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 277480288,
+            "attributes": 1,
+            "kind": 21
+          }
+        },
+        {
+          "index": 306611,
+          "name": "_slots",
+          "type_index": 4393,
+          "token": 67415476,
+          "offset": 56,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 277480288,
+            "attributes": 1,
+            "kind": 21
+          }
+        },
+        {
+          "index": 306612,
+          "name": "_runeSkilMgr",
+          "type_index": 58889,
+          "token": 67415477,
+          "offset": 64,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36119,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306613,
+          "name": "_gemSkillMgr",
+          "type_index": 42646,
+          "token": 67415478,
+          "offset": 72,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 35112,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306614,
+          "name": "_currentActiveList",
+          "type_index": 4267,
+          "token": 67415479,
+          "offset": 80,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 277478272,
+            "attributes": 1,
+            "kind": 21
+          }
+        },
+        {
+          "index": 306615,
+          "name": "_runningSkillList",
+          "type_index": 4265,
+          "token": 67415480,
+          "offset": 88,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 277478240,
+            "attributes": 1,
+            "kind": 21
+          }
+        },
+        {
+          "index": 306616,
+          "name": "_summonerSkillMgr",
+          "type_index": 62865,
+          "token": 67415481,
+          "offset": 96,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36238,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306617,
+          "name": "_levelSkillMgr",
+          "type_index": 47460,
+          "token": 67415482,
+          "offset": 104,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 35171,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306618,
+          "name": "_spellBookSkillMgr",
+          "type_index": 62100,
+          "token": 67415483,
+          "offset": 112,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36230,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306619,
+          "name": "_dynamicSkillMgr",
+          "type_index": 33857,
+          "token": 67415484,
+          "offset": 120,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34840,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306620,
+          "name": "_pickupSkillMgr",
+          "type_index": 53659,
+          "token": 67415485,
+          "offset": 128,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36089,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306621,
+          "name": "_wardSkill",
+          "type_index": 23922,
+          "token": 67415486,
+          "offset": 136,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34648,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306622,
+          "name": "_wardSkill2",
+          "type_index": 23922,
+          "token": 67415487,
+          "offset": 144,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34648,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306623,
+          "name": "_skillEvolveMgr",
+          "type_index": 61082,
+          "token": 67415488,
+          "offset": 152,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36153,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306624,
+          "name": "_replaceSkills",
+          "type_index": 4265,
+          "token": 67415489,
+          "offset": 160,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 277478240,
+            "attributes": 1,
+            "kind": 21
+          }
+        },
+        {
+          "index": 306625,
+          "name": "_bornSkill",
+          "type_index": 23922,
+          "token": 67415490,
+          "offset": 168,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34648,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306626,
+          "name": "_deadSkill",
+          "type_index": 23922,
+          "token": 67415491,
+          "offset": 176,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34648,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306627,
+          "name": "_talentSkill",
+          "type_index": 23922,
+          "token": 67415492,
+          "offset": 184,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34648,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306628,
+          "name": "_talentSkillSlot",
+          "type_index": 63507,
+          "token": 67415493,
+          "offset": 192,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36245,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306629,
+          "name": "_attackSkill",
+          "type_index": 23922,
+          "token": 67415494,
+          "offset": 200,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34648,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306630,
+          "name": "_randomGainMgr",
+          "type_index": 44222,
+          "token": 67415495,
+          "offset": 208,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 35149,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306631,
+          "name": "_freeSkillMgr",
+          "type_index": 41735,
+          "token": 67415496,
+          "offset": 216,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 35099,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306632,
+          "name": "_virtualSkillMgr",
+          "type_index": 73985,
+          "token": 67415497,
+          "offset": 224,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36275,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306633,
+          "name": "_spellBookRandomSkillMgr",
+          "type_index": 62098,
+          "token": 67415498,
+          "offset": 232,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36229,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306634,
+          "name": "_talentMgr",
+          "type_index": 44363,
+          "token": 67415499,
+          "offset": 240,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 35152,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306635,
+          "name": "_skills",
+          "type_index": 4265,
+          "token": 67415500,
+          "offset": 248,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 277478240,
+            "attributes": 1,
+            "kind": 21
+          }
+        },
+        {
+          "index": 306636,
+          "name": "_proxySkills",
+          "type_index": 4265,
+          "token": 67415501,
+          "offset": 256,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 277478240,
+            "attributes": 1,
+            "kind": 21
+          }
+        },
+        {
+          "index": 306637,
+          "name": "_originSkills",
+          "type_index": 4265,
+          "token": 67415502,
+          "offset": 264,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 277478240,
+            "attributes": 1,
+            "kind": 21
+          }
+        },
+        {
+          "index": 306638,
+          "name": "_changeSkinSkill",
+          "type_index": 23922,
+          "token": 67415503,
+          "offset": 272,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34648,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306639,
+          "name": "_waitSwitchSkillDic",
+          "type_index": 4409,
+          "token": 67415504,
+          "offset": 280,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 277480544,
+            "attributes": 1,
+            "kind": 21
+          }
+        }
+      ],
+      "methods": [
+        {
+          "index": 288902,
+          "name": "get_summonerSkillMgr",
+          "return_type_index": 62864,
+          "token": 100952199,
+          "flags": 2182,
+          "parameter_count": 0,
+          "native_address": 82552724,
+          "declaring_module": "Assembly-CSharp.dll"
+        },
+        {
+          "index": 288921,
+          "name": "get_skills",
+          "return_type_index": 4264,
+          "token": 100952218,
+          "flags": 2182,
+          "parameter_count": 0,
+          "native_address": 82555856,
+          "declaring_module": "Assembly-CSharp.dll"
+        },
+        {
+          "index": 288967,
+          "name": "GetSkillAt",
+          "return_type_index": 23921,
+          "token": 100952264,
+          "flags": 134,
+          "parameter_count": 1,
+          "native_address": 82565280,
+          "declaring_module": "Assembly-CSharp.dll"
+        }
+      ]
+    },
+    {
+      "index": 36238,
+      "name": "SummonerSkillMgr",
+      "namespace": "FrameEngine.Logic",
+      "byval_type_index": 62864,
+      "declaring_type_index": -1,
+      "parent_type_index": 52004,
+      "flags": 1048833,
+      "field_start": 312605,
+      "method_start": 299897,
+      "method_count": 37,
+      "field_count": 12,
+      "bitfield": 3072,
+      "token": 33590671,
+      "fields": [
+        {
+          "index": 312605,
+          "name": "TypeID",
+          "type_index": 46144,
+          "token": 67421470,
+          "offset": 0,
+          "static": true,
+          "literal": true,
+          "native_type": {
+            "data": 39296,
+            "attributes": 32854,
+            "kind": 8
+          }
+        },
+        {
+          "index": 312606,
+          "name": "__Instance",
+          "type_index": 46183,
+          "token": 67421471,
+          "offset": 16,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39480,
+            "attributes": 6,
+            "kind": 24
+          }
+        },
+        {
+          "index": 312607,
+          "name": "__InstanceLongValue",
+          "type_index": 46151,
+          "token": 67421472,
+          "offset": 24,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39297,
+            "attributes": 6,
+            "kind": 10
+          }
+        },
+        {
+          "index": 312608,
+          "name": "NativeMap",
+          "type_index": 5588,
+          "token": 67421473,
+          "offset": 0,
+          "static": true,
+          "literal": false,
+          "native_type": {
+            "data": 277510592,
+            "attributes": 19,
+            "kind": 21
+          }
+        },
+        {
+          "index": 312609,
+          "name": "_wrapperPool",
+          "type_index": 15599,
+          "token": 67421474,
+          "offset": 8,
+          "static": true,
+          "literal": false,
+          "native_type": {
+            "data": 277759136,
+            "attributes": 19,
+            "kind": 21
+          }
+        },
+        {
+          "index": 312610,
+          "name": "_skills",
+          "type_index": 4265,
+          "token": 67421475,
+          "offset": 32,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 277478240,
+            "attributes": 1,
+            "kind": 21
+          }
+        },
+        {
+          "index": 312611,
+          "name": "_replaceSkills",
+          "type_index": 4265,
+          "token": 67421476,
+          "offset": 40,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 277478240,
+            "attributes": 1,
+            "kind": 21
+          }
+        },
+        {
+          "index": 312612,
+          "name": "_customVars",
+          "type_index": 32663,
+          "token": 67421477,
+          "offset": 48,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34341,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 312613,
+          "name": "_freeSkillResIds",
+          "type_index": 32736,
+          "token": 67421478,
+          "offset": 56,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34383,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 312614,
+          "name": "_pendingDeleteSkills",
+          "type_index": 4265,
+          "token": 67421479,
+          "offset": 64,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 277478240,
+            "attributes": 1,
+            "kind": 21
+          }
+        },
+        {
+          "index": 312615,
+          "name": "_switchS1List",
+          "type_index": 32736,
+          "token": 67421480,
+          "offset": 72,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34383,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 312616,
+          "name": "_switchS2List",
+          "type_index": 32736,
+          "token": 67421481,
+          "offset": 80,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34383,
+            "attributes": 1,
+            "kind": 18
+          }
+        }
+      ],
+      "methods": [
+        {
+          "index": 299909,
+          "name": "get_skills",
+          "return_type_index": 4264,
+          "token": 100963206,
+          "flags": 2182,
+          "parameter_count": 0,
+          "native_address": 85316948,
+          "declaring_module": "Assembly-CSharp.dll"
+        },
+        {
+          "index": 299933,
+          "name": "GetSkill",
+          "return_type_index": 23921,
+          "token": 100963230,
+          "flags": 131,
+          "parameter_count": 1,
+          "native_address": 85319468,
+          "declaring_module": "Assembly-CSharp.dll"
+        }
+      ]
+    },
+    {
+      "index": 34648,
+      "name": "ActorSkill",
+      "namespace": "FrameEngine.Logic",
+      "byval_type_index": 23921,
+      "declaring_type_index": -1,
+      "parent_type_index": 52004,
+      "flags": 1048577,
+      "field_start": 306762,
+      "method_start": 289235,
+      "method_count": 159,
+      "field_count": 31,
+      "bitfield": 3072,
+      "token": 33589081,
+      "fields": [
+        {
+          "index": 306762,
+          "name": "TypeID",
+          "type_index": 46144,
+          "token": 67415627,
+          "offset": 0,
+          "static": true,
+          "literal": true,
+          "native_type": {
+            "data": 39296,
+            "attributes": 32854,
+            "kind": 8
+          }
+        },
+        {
+          "index": 306763,
+          "name": "__Instance",
+          "type_index": 46183,
+          "token": 67415628,
+          "offset": 16,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39480,
+            "attributes": 6,
+            "kind": 24
+          }
+        },
+        {
+          "index": 306764,
+          "name": "__InstanceLongValue",
+          "type_index": 46151,
+          "token": 67415629,
+          "offset": 24,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39297,
+            "attributes": 6,
+            "kind": 10
+          }
+        },
+        {
+          "index": 306765,
+          "name": "NativeMap",
+          "type_index": 5588,
+          "token": 67415630,
+          "offset": 0,
+          "static": true,
+          "literal": false,
+          "native_type": {
+            "data": 277510592,
+            "attributes": 19,
+            "kind": 21
+          }
+        },
+        {
+          "index": 306766,
+          "name": "_wrapperPool",
+          "type_index": 15599,
+          "token": 67415631,
+          "offset": 8,
+          "static": true,
+          "literal": false,
+          "native_type": {
+            "data": 277759136,
+            "attributes": 19,
+            "kind": 21
+          }
+        },
+        {
+          "index": 306767,
+          "name": "_skillUseObj",
+          "type_index": 61429,
+          "token": 67415632,
+          "offset": 32,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36199,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306768,
+          "name": "_levelVarRelatedSkill",
+          "type_index": 23922,
+          "token": 67415633,
+          "offset": 40,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34648,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306769,
+          "name": "__slot",
+          "type_index": 61330,
+          "token": 67415634,
+          "offset": 48,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36188,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306770,
+          "name": "_skillVarMgr",
+          "type_index": 61443,
+          "token": 67415635,
+          "offset": 56,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36207,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306771,
+          "name": "_skillGemVarMgr",
+          "type_index": 61198,
+          "token": 67415636,
+          "offset": 64,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36158,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306772,
+          "name": "_stockMgr",
+          "type_index": 61358,
+          "token": 67415637,
+          "offset": 72,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36196,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306773,
+          "name": "_necessaryAbility",
+          "type_index": 61275,
+          "token": 67415638,
+          "offset": 80,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36186,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306774,
+          "name": "_interruptMgr",
+          "type_index": 61234,
+          "token": 67415639,
+          "offset": 88,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36184,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306775,
+          "name": "_cdTrigger",
+          "type_index": 61021,
+          "token": 67415640,
+          "offset": 96,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36146,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306776,
+          "name": "_hurtTarget",
+          "type_index": 4377,
+          "token": 67415641,
+          "offset": 104,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 277480032,
+            "attributes": 1,
+            "kind": 21
+          }
+        },
+        {
+          "index": 306777,
+          "name": "_skillStateMgr",
+          "type_index": 61351,
+          "token": 67415642,
+          "offset": 112,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36193,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306778,
+          "name": "__target",
+          "type_index": 59488,
+          "token": 67415643,
+          "offset": 120,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 13600,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306779,
+          "name": "_caster",
+          "type_index": 26097,
+          "token": 67415644,
+          "offset": 128,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34683,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306780,
+          "name": "_originSkill",
+          "type_index": 23922,
+          "token": 67415645,
+          "offset": 136,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34648,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306781,
+          "name": "_castSkill",
+          "type_index": 23922,
+          "token": 67415646,
+          "offset": 144,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34648,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306782,
+          "name": "_operBindSkill",
+          "type_index": 23922,
+          "token": 67415647,
+          "offset": 152,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34648,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306783,
+          "name": "_reflectSkillData",
+          "type_index": 55887,
+          "token": 67415648,
+          "offset": 160,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36106,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306784,
+          "name": "_triggerReflectData",
+          "type_index": 55887,
+          "token": 67415649,
+          "offset": 168,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36106,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306785,
+          "name": "__DC",
+          "type_index": 23929,
+          "token": 67415650,
+          "offset": 176,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36700,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306786,
+          "name": "_cast",
+          "type_index": 46115,
+          "token": 67415651,
+          "offset": 184,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39296,
+            "attributes": 1,
+            "kind": 8
+          }
+        },
+        {
+          "index": 306787,
+          "name": "_targetSystem",
+          "type_index": 63545,
+          "token": 67415652,
+          "offset": 192,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36248,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306788,
+          "name": "_controlPatternsTemplate",
+          "type_index": 32003,
+          "token": 67415653,
+          "offset": 200,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 37667,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306789,
+          "name": "_controlPatternsTemplate0",
+          "type_index": 32003,
+          "token": 67415654,
+          "offset": 208,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 37667,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306790,
+          "name": "_controlPatternsTemplate1",
+          "type_index": 32003,
+          "token": 67415655,
+          "offset": 216,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 37667,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 306791,
+          "name": "_useReplaceControlPatternTemplate",
+          "type_index": 27332,
+          "token": 67415656,
+          "offset": 224,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 306792,
+          "name": "_useReplaceUXPattern",
+          "type_index": 27332,
+          "token": 67415657,
+          "offset": 225,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        }
+      ],
+      "methods": [
+        {
+          "index": 289251,
+          "name": "get_objId",
+          "return_type_index": 72736,
+          "token": 100952548,
+          "flags": 2182,
+          "parameter_count": 0,
+          "native_address": 82624748,
+          "declaring_module": "Assembly-CSharp.dll"
+        },
+        {
+          "index": 289255,
+          "name": "get_level",
+          "return_type_index": 46114,
+          "token": 100952552,
+          "flags": 2182,
+          "parameter_count": 0,
+          "native_address": 82624932,
+          "declaring_module": "Assembly-CSharp.dll"
+        },
+        {
+          "index": 289258,
+          "name": "get_resId",
+          "return_type_index": 46114,
+          "token": 100952555,
+          "flags": 2182,
+          "parameter_count": 0,
+          "native_address": 82624968,
+          "declaring_module": "Assembly-CSharp.dll"
+        },
+        {
+          "index": 289284,
+          "name": "get_cdTrigger",
+          "return_type_index": 61020,
+          "token": 100952581,
+          "flags": 2182,
+          "parameter_count": 0,
+          "native_address": 82626404,
+          "declaring_module": "Assembly-CSharp.dll"
+        },
+        {
+          "index": 289378,
+          "name": "get_cdLeftTime",
+          "return_type_index": 40409,
+          "token": 100952675,
+          "flags": 2182,
+          "parameter_count": 0,
+          "native_address": 82648980,
+          "declaring_module": "Assembly-CSharp.dll"
+        }
+      ]
+    },
+    {
+      "index": 36144,
+      "name": "SkillCDNode",
+      "namespace": "FrameEngine.Logic",
+      "byval_type_index": 61013,
+      "declaring_type_index": -1,
+      "parent_type_index": 52004,
+      "flags": 1048833,
+      "field_start": 311916,
+      "method_start": 298955,
+      "method_count": 25,
+      "field_count": 5,
+      "bitfield": 3072,
+      "token": 33590576,
+      "fields": [
+        {
+          "index": 311916,
+          "name": "TypeID",
+          "type_index": 46144,
+          "token": 67420781,
+          "offset": 0,
+          "static": true,
+          "literal": true,
+          "native_type": {
+            "data": 39296,
+            "attributes": 32854,
+            "kind": 8
+          }
+        },
+        {
+          "index": 311917,
+          "name": "__Instance",
+          "type_index": 46183,
+          "token": 67420782,
+          "offset": 16,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39480,
+            "attributes": 6,
+            "kind": 24
+          }
+        },
+        {
+          "index": 311918,
+          "name": "__InstanceLongValue",
+          "type_index": 46151,
+          "token": 67420783,
+          "offset": 24,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39297,
+            "attributes": 6,
+            "kind": 10
+          }
+        },
+        {
+          "index": 311919,
+          "name": "NativeMap",
+          "type_index": 5588,
+          "token": 67420784,
+          "offset": 0,
+          "static": true,
+          "literal": false,
+          "native_type": {
+            "data": 277510592,
+            "attributes": 19,
+            "kind": 21
+          }
+        },
+        {
+          "index": 311920,
+          "name": "_wrapperPool",
+          "type_index": 15599,
+          "token": 67420785,
+          "offset": 8,
+          "static": true,
+          "literal": false,
+          "native_type": {
+            "data": 277759136,
+            "attributes": 19,
+            "kind": 21
+          }
+        }
+      ],
+      "methods": [
+        {
+          "index": 298967,
+          "name": "get_isLocked",
+          "return_type_index": 27331,
+          "token": 100962264,
+          "flags": 2182,
+          "parameter_count": 0,
+          "native_address": 85117784,
+          "declaring_module": "Assembly-CSharp.dll"
+        },
+        {
+          "index": 298969,
+          "name": "get_remainTime",
+          "return_type_index": 40409,
+          "token": 100962266,
+          "flags": 2182,
+          "parameter_count": 0,
+          "native_address": 85117824,
+          "declaring_module": "Assembly-CSharp.dll"
+        }
+      ]
+    },
+    {
+      "index": 36146,
+      "name": "SkillCDTrigger",
+      "namespace": "FrameEngine.Logic",
+      "byval_type_index": 61020,
+      "declaring_type_index": -1,
+      "parent_type_index": 52004,
+      "flags": 1048833,
+      "field_start": 311929,
+      "method_start": 298980,
+      "method_count": 21,
+      "field_count": 7,
+      "bitfield": 3072,
+      "token": 33590579,
+      "fields": [
+        {
+          "index": 311929,
+          "name": "TypeID",
+          "type_index": 46144,
+          "token": 67420794,
+          "offset": 0,
+          "static": true,
+          "literal": true,
+          "native_type": {
+            "data": 39296,
+            "attributes": 32854,
+            "kind": 8
+          }
+        },
+        {
+          "index": 311930,
+          "name": "__Instance",
+          "type_index": 46183,
+          "token": 67420795,
+          "offset": 16,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39480,
+            "attributes": 6,
+            "kind": 24
+          }
+        },
+        {
+          "index": 311931,
+          "name": "__InstanceLongValue",
+          "type_index": 46151,
+          "token": 67420796,
+          "offset": 24,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39297,
+            "attributes": 6,
+            "kind": 10
+          }
+        },
+        {
+          "index": 311932,
+          "name": "NativeMap",
+          "type_index": 5588,
+          "token": 67420797,
+          "offset": 0,
+          "static": true,
+          "literal": false,
+          "native_type": {
+            "data": 277510592,
+            "attributes": 19,
+            "kind": 21
+          }
+        },
+        {
+          "index": 311933,
+          "name": "_wrapperPool",
+          "type_index": 15599,
+          "token": 67420798,
+          "offset": 8,
+          "static": true,
+          "literal": false,
+          "native_type": {
+            "data": 277759136,
+            "attributes": 19,
+            "kind": 21
+          }
+        },
+        {
+          "index": 311934,
+          "name": "_skill",
+          "type_index": 23922,
+          "token": 67420799,
+          "offset": 32,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34648,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 311935,
+          "name": "_cdNode",
+          "type_index": 61014,
+          "token": 67420800,
+          "offset": 40,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 36144,
+            "attributes": 1,
+            "kind": 18
+          }
+        }
+      ],
+      "methods": [
+        {
+          "index": 298993,
+          "name": "get_cdNode",
+          "return_type_index": 61013,
+          "token": 100962290,
+          "flags": 2182,
+          "parameter_count": 0,
+          "native_address": 85121008,
+          "declaring_module": "Assembly-CSharp.dll"
+        }
+      ]
+    }
+  ],
+  "native_members": {
+    "actor_object_id": {
+      "offset": 24,
+      "format": "uint32"
+    },
+    "actor_transform": {
+      "offset": 32,
+      "format": "pointer"
+    },
+    "transform_position": {
+      "offset": 24,
+      "format": "signed Fix64[3]"
+    },
+    "actor_skill_manager": {
+      "offset": 208,
+      "format": "pointer"
+    },
+    "manager_skills_vector": {
+      "offset": 536,
+      "format": "embedded vector"
+    },
+    "manager_summoner_manager": {
+      "offset": 320,
+      "format": "pointer"
+    },
+    "summoner_skills_vector": {
+      "offset": 40,
+      "format": "embedded vector"
+    },
+    "vector_begin": 0,
+    "vector_end": 8,
+    "vector_stride": 24,
+    "skill_object_id": 32,
+    "skill_level": 56,
+    "skill_resource_id": 68,
+    "skill_cd_node_pointer": 1088,
+    "cd_node_locked": 24,
+    "cd_node_remaining": 32
+  },
+  "verification": {
+    "native_getter_tests": 6,
+    "original_instruction_cases": 129,
+    "core_reader_scenarios": 40,
+    "new_fields_device_verified": true,
+    "prior_baseline_device_verified_version": "0.4.0",
+    "device_evidence": "device-0.5.0-summary.json",
+    "device_evidence_version": "0.5.0",
+    "nonzero_cooldown_device_verified": true,
+    "screen_values_compared": false,
+    "verification_scope": "User-provided numeric read results only; does not prove actual cooldown progression or castability."
+  },
+  "scope": "Managed metadata and selected original methods recovered from pinned inputs. Native members were verified against disassembly; selected reads/indexing/cooldown branches were checked in synthetic ARM64 RAM. No real device execution in this environment."
+}

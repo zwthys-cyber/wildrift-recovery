@@ -1,0 +1,90 @@
+{
+  "source_path": "/root/l/lvlolm-diagnostics.json",
+  "source_sha256": "ef33d8dd0da17d77775e7713a568d67e5c705787c1ae6dbfe86cbc333f133727",
+  "source_kind": "on-disk device diagnostic, unchanged copy privately archived",
+  "recovery_app_version": "0.6.1",
+  "snapshot_sampled_at": "2026-10-10T16:40:01Z",
+  "detection_result": "ready",
+  "detection_actor_count": 47,
+  "hero_samples": [
+    {
+      "object_id": 1,
+      "resource_id": 10098,
+      "camp": 1,
+      "is_local": 1,
+      "position": [
+        -18.2845458984375,
+        0,
+        -19.05792236328125
+      ],
+      "health": 600
+    },
+    {
+      "object_id": 2,
+      "resource_id": 10001,
+      "camp": 2,
+      "is_local": 0,
+      "position": [
+        16.1451416015625,
+        0,
+        13.91485595703125
+      ],
+      "health": 840
+    }
+  ],
+  "hud_launch": {
+    "metrics_protocol_version": 1,
+    "uid": 0,
+    "window_host_request_sent": true,
+    "running": true,
+    "touch_passthrough_requested": true,
+    "task_result": 0,
+    "mode": "read_only_live_hud",
+    "simulation_only": true,
+    "hud_pid": 975,
+    "touch_backend_available": false,
+    "target_pid": 624,
+    "sampling_interval_seconds": 0.5,
+    "visible_on_device_verified": false,
+    "orientation_observer_available": 1
+  },
+  "hud_checked_at": "2026-10-10T16:41:08Z",
+  "hud_at_export": {
+    "hud_pid": 975,
+    "touch_backend_available": false,
+    "mode": "read_only_live_hud",
+    "visible_on_device_verified": false,
+    "sampling": {
+      "smite_cooldown_fixed": 82,
+      "frames_completed": 127,
+      "protocol_version": 1,
+      "freshness_limit_seconds": 3,
+      "scope": "Last HUD sample presented to UILabel; separate from target_probe snapshot. Fresh heartbeat does not prove screen visibility, orientation correctness or touch passthrough.",
+      "last_result": "ready",
+      "skipped_actor_count": 0,
+      "stock_read_ok": 1,
+      "cooldown_read_ok": 1,
+      "smite_stock_maximum": 2,
+      "read_actor_count": 91,
+      "heartbeat_age_seconds": 0.383,
+      "available": true,
+      "fresh": 1,
+      "orientation_raw": 1,
+      "smite_cooldown_seconds": 0.0050048828125,
+      "smite_stock_current": 1,
+      "latest_snapshot_usable": 1
+    },
+    "simulation_only": true,
+    "running": true
+  },
+  "supported_observations": [
+    "0.6.1 HUD published 127 completed samples; latest sample ready with 91 actors",
+    "Heartbeat fresh at approximately 0.383 seconds",
+    "Detection snapshot and HUD telemetry sampled at different times"
+  ],
+  "limitations": [
+    "Report does not verify minimap projection or five enemy heroes in a normal match",
+    "Latest positions mean client memory values; no visibility or fog-update semantics established",
+    "Program visibility flag remains conservative; separate user confirmation applies to 0.6.0"
+  ]
+}

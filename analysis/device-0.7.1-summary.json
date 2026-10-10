@@ -1,0 +1,31 @@
+{
+  "recorded_at": "2026-10-10T17:47:41.657692+00:00",
+  "source": "User screenshot and feedback; no new raw diagnostic JSON",
+  "inferred_recovery_app_version": "0.7.1",
+  "app_version_visible_in_image": false,
+  "screenshot_sha256": "0be248ad6dc61e4eb5d8e22f2a9fe3ef35e355d1d41d160fb0f66c645589dfca",
+  "attachment_dimensions": [
+    2048,
+    465
+  ],
+  "user_feedback": [
+    "这版可以了，但是中间这个会阻挡画面",
+    "还有我的英雄头像的那个+号有什么作用，可以去掉吗",
+    "还有小地图对方的显示标识，移动的时候，显示是一卡一卡的，不是很丝滑",
+    "我只要这个小地图显示对方英雄，需要开启哪些开关"
+  ],
+  "alignment_acceptable_user_confirmed": true,
+  "central_panel_obstruction_reported": true,
+  "movement_stutter_reported": true,
+  "hud_visible_values": {
+    "frames_completed": 418,
+    "actor_count": 92,
+    "local_health_rounded": 240.1,
+    "confirmed_enemy_hero_count": 1,
+    "drawn_enemy_marker_count": 1,
+    "dead_enemy_count": 0,
+    "unplaced_enemy_count": 0,
+    "projection_label": "游戏映射"
+  },
+  "scope": "User accepts corrected alignment in the tested one-enemy scene. No five-enemy match, full-map multi-position test or new animation performance verification."
+}

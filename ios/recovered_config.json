@@ -1,0 +1,923 @@
+{
+  "binary_sha256": "e385f312ecbb5e575d2709a15a3b0157aa6fb37b52299075d9665f14df6fd111",
+  "constructor": "0x426f24",
+  "constructor_stop_before_calls": "0x42718c",
+  "loader": "0x427698",
+  "serializer": "0x429fc8",
+  "format_version": 1,
+  "serialized_float_decimal_places": 4,
+  "fields": [
+    {
+      "key": "drawBox",
+      "serializer_reference": "0x42a0d8",
+      "offsets": [
+        72
+      ],
+      "load_instructions": [
+        "0x42a0dc"
+      ],
+      "type": "bool",
+      "default": true,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427b4c"
+    },
+    {
+      "key": "drawRay",
+      "serializer_reference": "0x42a100",
+      "offsets": [
+        73
+      ],
+      "load_instructions": [
+        "0x42a104"
+      ],
+      "type": "bool",
+      "default": true,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427b6c"
+    },
+    {
+      "key": "drawMinimap",
+      "serializer_reference": "0x42a128",
+      "offsets": [
+        74
+      ],
+      "load_instructions": [
+        "0x42a12c"
+      ],
+      "type": "bool",
+      "default": true,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427b80"
+    },
+    {
+      "key": "showMinimapBorder",
+      "serializer_reference": "0x42a150",
+      "offsets": [
+        75
+      ],
+      "load_instructions": [
+        "0x42a154"
+      ],
+      "type": "bool",
+      "default": true,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427b94"
+    },
+    {
+      "key": "drawSkillPanel",
+      "serializer_reference": "0x42a17c",
+      "offsets": [
+        76
+      ],
+      "load_instructions": [
+        "0x42a180"
+      ],
+      "type": "bool",
+      "default": true,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427ba8"
+    },
+    {
+      "key": "hideSmallSkills",
+      "serializer_reference": "0x42a1a8",
+      "offsets": [
+        77
+      ],
+      "load_instructions": [
+        "0x42a1ac"
+      ],
+      "type": "bool",
+      "default": false,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427bbc"
+    },
+    {
+      "key": "hideEntityAvatar",
+      "serializer_reference": "0x42a1d4",
+      "offsets": [
+        78
+      ],
+      "load_instructions": [
+        "0x42a1d8"
+      ],
+      "type": "bool",
+      "default": false,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427bd0"
+    },
+    {
+      "key": "drawWards",
+      "serializer_reference": "0x42a200",
+      "offsets": [
+        79
+      ],
+      "load_instructions": [
+        "0x42a204"
+      ],
+      "type": "bool",
+      "default": true,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427be4"
+    },
+    {
+      "key": "drawMonsters",
+      "serializer_reference": "0x42a22c",
+      "offsets": [
+        80
+      ],
+      "load_instructions": [
+        "0x42a230"
+      ],
+      "type": "bool",
+      "default": true,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427bf8"
+    },
+    {
+      "key": "hideMonsterHealth",
+      "serializer_reference": "0x42a258",
+      "offsets": [
+        81
+      ],
+      "load_instructions": [
+        "0x42a25c"
+      ],
+      "type": "bool",
+      "default": false,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427c0c"
+    },
+    {
+      "key": "showMonsterRespawn",
+      "serializer_reference": "0x42a284",
+      "offsets": [
+        82
+      ],
+      "load_instructions": [
+        "0x42a288"
+      ],
+      "type": "bool",
+      "default": true,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427c20"
+    },
+    {
+      "key": "autoSmite",
+      "serializer_reference": "0x42a2b0",
+      "offsets": [
+        83
+      ],
+      "load_instructions": [
+        "0x42a2b4"
+      ],
+      "type": "bool",
+      "default": false,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427c3c"
+    },
+    {
+      "key": "smiteRequireEnemy",
+      "serializer_reference": "0x42a2dc",
+      "offsets": [
+        84
+      ],
+      "load_instructions": [
+        "0x42a2e0"
+      ],
+      "type": "bool",
+      "default": true,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427c50"
+    },
+    {
+      "key": "autoMercury",
+      "serializer_reference": "0x42a308",
+      "offsets": [
+        85
+      ],
+      "load_instructions": [
+        "0x42a30c"
+      ],
+      "type": "bool",
+      "default": false,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427c64"
+    },
+    {
+      "key": "showMercuryMarker",
+      "serializer_reference": "0x42a334",
+      "offsets": [
+        86
+      ],
+      "load_instructions": [
+        "0x42a338"
+      ],
+      "type": "bool",
+      "default": false,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427c78"
+    },
+    {
+      "key": "showSmiteRange",
+      "serializer_reference": "0x42a360",
+      "offsets": [
+        87
+      ],
+      "load_instructions": [
+        "0x42a364"
+      ],
+      "type": "bool",
+      "default": true,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427c8c"
+    },
+    {
+      "key": "showSmiteMarker",
+      "serializer_reference": "0x42a38c",
+      "offsets": [
+        88
+      ],
+      "load_instructions": [
+        "0x42a390"
+      ],
+      "type": "bool",
+      "default": false,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427ca0"
+    },
+    {
+      "key": "smiteRedBuff",
+      "serializer_reference": "0x42a3b8",
+      "offsets": [
+        89
+      ],
+      "load_instructions": [
+        "0x42a3bc"
+      ],
+      "type": "bool",
+      "default": true,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427cb4"
+    },
+    {
+      "key": "smiteBlueBuff",
+      "serializer_reference": "0x42a3e4",
+      "offsets": [
+        90
+      ],
+      "load_instructions": [
+        "0x42a3e8"
+      ],
+      "type": "bool",
+      "default": true,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427cc8"
+    },
+    {
+      "key": "smiteDragon",
+      "serializer_reference": "0x42a410",
+      "offsets": [
+        91
+      ],
+      "load_instructions": [
+        "0x42a414"
+      ],
+      "type": "bool",
+      "default": true,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427cdc"
+    },
+    {
+      "key": "smiteHealthThreshold",
+      "serializer_reference": "0x42a43c",
+      "offsets": [
+        92
+      ],
+      "load_instructions": [
+        "0x42a440"
+      ],
+      "type": "int",
+      "default": 1000,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427cf8",
+      "min": 100,
+      "max": 2000,
+      "choices": [
+        600,
+        1000,
+        1400
+      ],
+      "invalid_choice_fallback": 1000
+    },
+    {
+      "key": "smiteRange",
+      "serializer_reference": "0x42a468",
+      "offsets": [
+        96
+      ],
+      "load_instructions": [
+        "0x42a46c"
+      ],
+      "type": "int",
+      "default": 83000,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427d3c",
+      "min": 10000,
+      "max": 100000
+    },
+    {
+      "key": "smiteRangeCenterX",
+      "serializer_reference": "0x42a494",
+      "offsets": [
+        100
+      ],
+      "load_instructions": [
+        "0x42a498"
+      ],
+      "type": "float",
+      "default": 100.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427d60",
+      "min": -300.0,
+      "max": 300.0
+    },
+    {
+      "key": "smiteRangeCenterY",
+      "serializer_reference": "0x42a4c0",
+      "offsets": [
+        104
+      ],
+      "load_instructions": [
+        "0x42a4c4"
+      ],
+      "type": "float",
+      "default": 20.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427d84",
+      "min": -300.0,
+      "max": 300.0
+    },
+    {
+      "key": "smiteTouchX",
+      "serializer_reference": "0x42a4ec",
+      "offsets": [
+        136
+      ],
+      "load_instructions": [
+        "0x42a4f0"
+      ],
+      "type": "float",
+      "default": 0.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427da8",
+      "min": 0.0,
+      "max": 10000.0
+    },
+    {
+      "key": "smiteTouchY",
+      "serializer_reference": "0x42a518",
+      "offsets": [
+        140
+      ],
+      "load_instructions": [
+        "0x42a51c"
+      ],
+      "type": "float",
+      "default": 0.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427dcc",
+      "min": 0.0,
+      "max": 10000.0
+    },
+    {
+      "key": "mercuryTouchX",
+      "serializer_reference": "0x42a544",
+      "offsets": [
+        144
+      ],
+      "load_instructions": [
+        "0x42a548"
+      ],
+      "type": "float",
+      "default": 0.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427df0",
+      "min": 0.0,
+      "max": 10000.0
+    },
+    {
+      "key": "mercuryTouchY",
+      "serializer_reference": "0x42a570",
+      "offsets": [
+        148
+      ],
+      "load_instructions": [
+        "0x42a574"
+      ],
+      "type": "float",
+      "default": 0.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427e14",
+      "min": 0.0,
+      "max": 10000.0
+    },
+    {
+      "key": "godViewEnabled",
+      "serializer_reference": "0x42a59c",
+      "offsets": [
+        152
+      ],
+      "load_instructions": [
+        "0x42a5a0"
+      ],
+      "type": "bool",
+      "default": false,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427e28"
+    },
+    {
+      "key": "godViewValue",
+      "serializer_reference": "0x42a5c8",
+      "offsets": [
+        156
+      ],
+      "load_instructions": [
+        "0x42a5cc"
+      ],
+      "type": "float",
+      "default": 6.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427e48",
+      "min": 1.0,
+      "max": 55.0
+    },
+    {
+      "key": "forcedDrawCamp",
+      "serializer_reference": "0x42a5f4",
+      "offsets": [
+        216
+      ],
+      "load_instructions": [
+        "0x42a5f8"
+      ],
+      "type": "int",
+      "default": 0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427e7c",
+      "min": 0,
+      "max": 2
+    },
+    {
+      "key": "minimapScale",
+      "serializer_reference": "0x42a620",
+      "offsets": [
+        236
+      ],
+      "load_instructions": [
+        "0x42a624"
+      ],
+      "type": "float",
+      "default": 1.0399999618530273,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427e98",
+      "min": 0.5,
+      "max": 1.5
+    },
+    {
+      "key": "minimapAvatarSpacing",
+      "serializer_reference": "0x42a64c",
+      "offsets": [
+        240
+      ],
+      "load_instructions": [
+        "0x42a650"
+      ],
+      "type": "float",
+      "default": -149.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427eb8",
+      "min": -200.0,
+      "max": 0.0
+    },
+    {
+      "key": "minimapOffsetX",
+      "serializer_reference": "0x42a678",
+      "offsets": [
+        244
+      ],
+      "load_instructions": [
+        "0x42a67c"
+      ],
+      "type": "float",
+      "default": -27.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427edc",
+      "min": -500.0,
+      "max": 500.0
+    },
+    {
+      "key": "minimapOffsetY",
+      "serializer_reference": "0x42a6a4",
+      "offsets": [
+        248
+      ],
+      "load_instructions": [
+        "0x42a6a8"
+      ],
+      "type": "float",
+      "default": -25.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427f00",
+      "min": -500.0,
+      "max": 500.0
+    },
+    {
+      "key": "minimapWindowScale",
+      "serializer_reference": "0x42a6d0",
+      "offsets": [
+        252
+      ],
+      "load_instructions": [
+        "0x42a6d4"
+      ],
+      "type": "float",
+      "default": 1.3899999856948853,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427f24",
+      "min": 0.699999988079071,
+      "max": 5.0
+    },
+    {
+      "key": "minimapWindowOffsetX",
+      "serializer_reference": "0x42a6fc",
+      "offsets": [
+        256
+      ],
+      "load_instructions": [
+        "0x42a700"
+      ],
+      "type": "float",
+      "default": 0.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427f48",
+      "min": 0.0,
+      "max": 10000.0
+    },
+    {
+      "key": "minimapWindowOffsetY",
+      "serializer_reference": "0x42a728",
+      "offsets": [
+        260
+      ],
+      "load_instructions": [
+        "0x42a72c"
+      ],
+      "type": "float",
+      "default": 0.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427f6c",
+      "min": 0.0,
+      "max": 10000.0
+    },
+    {
+      "key": "minimapAvatarSize",
+      "serializer_reference": "0x42a754",
+      "offsets": [
+        264
+      ],
+      "load_instructions": [
+        "0x42a758"
+      ],
+      "type": "float",
+      "default": 30.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427f8c",
+      "min": 3.0,
+      "max": 50.0
+    },
+    {
+      "key": "minimapHealthTextSize",
+      "serializer_reference": "0x42a780",
+      "offsets": [
+        268
+      ],
+      "load_instructions": [
+        "0x42a784"
+      ],
+      "type": "float",
+      "default": 30.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427fac",
+      "min": 8.0,
+      "max": 60.0
+    },
+    {
+      "key": "minimapAvatarBorderSize",
+      "serializer_reference": "0x42a7ac",
+      "offsets": [
+        272
+      ],
+      "load_instructions": [
+        "0x42a7b0"
+      ],
+      "type": "float",
+      "default": 2.5,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427fc8",
+      "min": 0.5,
+      "max": 8.0
+    },
+    {
+      "key": "entityOffsetX",
+      "serializer_reference": "0x42a7d8",
+      "offsets": [
+        276
+      ],
+      "load_instructions": [
+        "0x42a7dc"
+      ],
+      "type": "float",
+      "default": 0.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x427fec",
+      "min": -210.0,
+      "max": 210.0
+    },
+    {
+      "key": "entityOffsetY",
+      "serializer_reference": "0x42a804",
+      "offsets": [
+        280
+      ],
+      "load_instructions": [
+        "0x42a808"
+      ],
+      "type": "float",
+      "default": 0.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x428010",
+      "min": -210.0,
+      "max": 210.0
+    },
+    {
+      "key": "entityBoxWidthScale",
+      "serializer_reference": "0x42a830",
+      "offsets": [
+        284
+      ],
+      "load_instructions": [
+        "0x42a834"
+      ],
+      "type": "float",
+      "default": 1.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x42802c",
+      "min": 0.25,
+      "max": 3.0
+    },
+    {
+      "key": "entityBoxHeightScale",
+      "serializer_reference": "0x42a85c",
+      "offsets": [
+        288
+      ],
+      "load_instructions": [
+        "0x42a860"
+      ],
+      "type": "float",
+      "default": 1.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x428048",
+      "min": 0.25,
+      "max": 3.0
+    },
+    {
+      "key": "entityAvatarSize",
+      "serializer_reference": "0x42a888",
+      "offsets": [
+        292
+      ],
+      "load_instructions": [
+        "0x42a88c"
+      ],
+      "type": "float",
+      "default": 50.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x428068",
+      "min": 3.0,
+      "max": 80.0
+    },
+    {
+      "key": "entityHealthTextSize",
+      "serializer_reference": "0x42a8b4",
+      "offsets": [
+        296
+      ],
+      "load_instructions": [
+        "0x42a8b8"
+      ],
+      "type": "float",
+      "default": 40.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x428088",
+      "min": 8.0,
+      "max": 80.0
+    },
+    {
+      "key": "monsterHealthTextSize",
+      "serializer_reference": "0x42a8e0",
+      "offsets": [
+        300
+      ],
+      "load_instructions": [
+        "0x42a8e4"
+      ],
+      "type": "float",
+      "default": 30.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x4280a8",
+      "min": 8.0,
+      "max": 80.0
+    },
+    {
+      "key": "entitySkillIconSize",
+      "serializer_reference": "0x42a90c",
+      "offsets": [
+        304
+      ],
+      "load_instructions": [
+        "0x42a910"
+      ],
+      "type": "float",
+      "default": 50.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x4280c8",
+      "min": 4.0,
+      "max": 100.0
+    },
+    {
+      "key": "skillPanelOffsetX",
+      "serializer_reference": "0x42a938",
+      "offsets": [
+        308
+      ],
+      "load_instructions": [
+        "0x42a93c"
+      ],
+      "type": "float",
+      "default": 0.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x4280ec",
+      "min": 0.0,
+      "max": 10000.0
+    },
+    {
+      "key": "skillPanelOffsetY",
+      "serializer_reference": "0x42a964",
+      "offsets": [
+        312
+      ],
+      "load_instructions": [
+        "0x42a968"
+      ],
+      "type": "float",
+      "default": 0.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x428110",
+      "min": 0.0,
+      "max": 10000.0
+    },
+    {
+      "key": "skillPanelSize",
+      "serializer_reference": "0x42a990",
+      "offsets": [
+        316
+      ],
+      "load_instructions": [
+        "0x42a994"
+      ],
+      "type": "float",
+      "default": 0.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x428130",
+      "min": -30.0,
+      "max": 80.0
+    },
+    {
+      "key": "friendlyColor",
+      "serializer_reference": "0x42a9bc",
+      "offsets": [
+        324,
+        328,
+        332,
+        336
+      ],
+      "load_instructions": [
+        "0x42a9c0",
+        "0x42a9dc",
+        "0x42a9f8",
+        "0x42aa14"
+      ],
+      "type": "color",
+      "default": [
+        0.27450981736183167,
+        0.7450980544090271,
+        1.0,
+        1.0
+      ],
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x428144"
+    },
+    {
+      "key": "enemyColor",
+      "serializer_reference": "0x42aa3c",
+      "offsets": [
+        340,
+        344,
+        348,
+        352
+      ],
+      "load_instructions": [
+        "0x42aa40",
+        "0x42aa5c",
+        "0x42aa78",
+        "0x42aa94"
+      ],
+      "type": "color",
+      "default": [
+        0.9411764740943909,
+        0.27450981736183167,
+        0.27450981736183167,
+        1.0
+      ],
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x428158"
+    },
+    {
+      "key": "wardColor",
+      "serializer_reference": "0x42aabc",
+      "offsets": [
+        356,
+        360,
+        364,
+        368
+      ],
+      "load_instructions": [
+        "0x42aac0",
+        "0x42aadc",
+        "0x42aaf8",
+        "0x42ab14"
+      ],
+      "type": "color",
+      "default": [
+        0.3137255012989044,
+        0.8627451062202454,
+        0.47058823704719543,
+        1.0
+      ],
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x42816c"
+    },
+    {
+      "key": "wardVisionRangeBrightness",
+      "serializer_reference": "0x42ab3c",
+      "offsets": [
+        372
+      ],
+      "load_instructions": [
+        "0x42ab40"
+      ],
+      "type": "float",
+      "default": 25.0,
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x42818c",
+      "min": 0.0,
+      "max": 100.0
+    },
+    {
+      "key": "neutralColor",
+      "serializer_reference": "0x42ab68",
+      "offsets": [
+        376,
+        380,
+        384,
+        388
+      ],
+      "load_instructions": [
+        "0x42ab6c",
+        "0x42ab88",
+        "0x42aba4",
+        "0x42abc0"
+      ],
+      "type": "color",
+      "default": [
+        1.0,
+        0.8235294222831726,
+        0.23529411852359772,
+        1.0
+      ],
+      "confidence": "verified serializer load and bounded initialization emulation",
+      "loader_reference": "0x4281a0"
+    }
+  ]
+}

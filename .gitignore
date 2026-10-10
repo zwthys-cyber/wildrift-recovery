@@ -1,0 +1,8 @@
+build/
+dist/
+toolchain/
+inputs/
+ios-sdk.tar.xz
+__pycache__/
+tests/config_test
+*.pyc

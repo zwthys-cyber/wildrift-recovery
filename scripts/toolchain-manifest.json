@@ -1,0 +1,14 @@
+[
+  {
+    "name": "iPhoneOS16.5.sdk.tar.xz",
+    "url": "https://github.com/theos/sdks/releases/download/master-146e41f/iPhoneOS16.5.sdk.tar.xz",
+    "size": 17446920,
+    "sha256": "5e0fd3f01266cce4ce012d4a99b38eb56578fca40d09edc81cd83dee958202fb"
+  },
+  {
+    "name": "ldid_linux_x86_64",
+    "url": "https://github.com/ProcursusTeam/ldid/releases/download/v2.1.5-procursus7/ldid_linux_x86_64",
+    "size": 2956104,
+    "sha256": "4b8862b2fefa2cd7fa8f88cb0310779619aeaa8c72d6aff22f019b470f2fa99a"
+  }
+]

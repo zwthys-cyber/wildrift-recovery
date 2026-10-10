@@ -1,0 +1,91 @@
+{
+  "recorded_at": "2026-10-10T17:22:12.730195+00:00",
+  "source": "user screenshot and explicit feedback; no new diagnostic JSON or direct device connection",
+  "inferred_recovery_app_version": "0.7.0",
+  "app_version_visible_in_image": false,
+  "screenshot_sha256": "4eecfb412adc692eebd08951c71e748c486c75e8388323d3479b5a3321ed4ff8",
+  "screenshot_bytes": 262948,
+  "attachment_dimensions": [
+    2009,
+    612
+  ],
+  "attachment_is_full_screen": false,
+  "full_screen_dimensions_verified": false,
+  "user_feedback": "位置有些偏移 无视野时坐标也会持续更新",
+  "native_projection_status_visible": true,
+  "enemy_marker_visible": true,
+  "hud_visible_values": {
+    "frames_completed": 92,
+    "actor_count": 75,
+    "local_health_rounded": 553.8,
+    "smite_cooldown_seconds_rounded": 0,
+    "smite_stock_current": 1,
+    "smite_stock_maximum": 2,
+    "confirmed_enemy_hero_count": 1,
+    "drawn_enemy_marker_count": 1,
+    "dead_enemy_count": 0,
+    "unplaced_enemy_count": 0,
+    "projection_label": "游戏映射"
+  },
+  "approximate_image_measurements": {
+    "units": "attachment pixels; manual visual estimates",
+    "cyan_reference_border_ltrb": [
+      142,
+      28,
+      557,
+      437
+    ],
+    "game_minimap_outer_bounds_ltrb": [
+      191,
+      16,
+      621,
+      449
+    ],
+    "local_cross_xy": [
+      470,
+      371
+    ],
+    "local_game_avatar_xy": [
+      532,
+      376
+    ],
+    "enemy_marker_xy": [
+      516,
+      372
+    ],
+    "enemy_game_avatar_xy": [
+      577,
+      378
+    ]
+  },
+  "rectangle_calibration": {
+    "legacy_percent_assumed": [
+      5,
+      2,
+      15,
+      32
+    ],
+    "legacy_values_user_confirmed": false,
+    "recommendation_percent": [
+      6.8,
+      1.2,
+      15.5,
+      33.5
+    ],
+    "order": [
+      "left",
+      "top",
+      "width",
+      "height"
+    ],
+    "method": "Estimate viewport translation/scale using the old rectangle and its 1-point inset border; attachment size is not treated as screen size",
+    "source_scale_estimate": 3,
+    "scale_verified": false,
+    "corrected_phone_alignment_verified": false
+  },
+  "fog_updates_user_confirmed": true,
+  "fog_updates_observation_scope": "User reports continuing client-coordinate updates without vision in the tested scene; not independently measured or compared to server position",
+  "five_enemy_match_verified": false,
+  "red_camp_direction_verified": false,
+  "scope": "Screenshot supports active native-map rendering for one enemy and an offset of both reference/enemy markers. Multi-position alignment remains to be checked after the estimate."
+}

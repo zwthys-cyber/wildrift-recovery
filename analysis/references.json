@@ -1,0 +1,946 @@
+[
+  {
+    "instruction": "0x38dee8",
+    "function": "0x38dca4",
+    "string_address": "0x2b1b3",
+    "text": "已读取缓存卡密: %s\n",
+    "instruction_text": "add x0, x0, #0x1b3",
+    "via": "add"
+  },
+  {
+    "instruction": "0x38df2c",
+    "function": "0x38dca4",
+    "string_address": "0x242e6",
+    "text": "请输入卡密: ",
+    "instruction_text": "add x0, x0, #0x2e6",
+    "via": "add"
+  },
+  {
+    "instruction": "0x38e194",
+    "function": "0x38dca4",
+    "string_address": "0x2898b",
+    "text": "登录失败，请重新输入卡密",
+    "instruction_text": "add x1, x1, #0x98b",
+    "via": "add"
+  },
+  {
+    "instruction": "0x38e2b0",
+    "function": "0x38dca4",
+    "string_address": "0x29328",
+    "text": "卡密不能为空，请重新输入",
+    "instruction_text": "add x1, x1, #0x328",
+    "via": "add"
+  },
+  {
+    "instruction": "0x38f798",
+    "function": "0x38f6d0",
+    "string_address": "0x25c0b",
+    "text": "app=",
+    "instruction_text": "add x0, x0, #0xc0b",
+    "via": "add"
+  },
+  {
+    "instruction": "0x390270",
+    "function": "0x390230",
+    "string_address": "0x25ce5",
+    "text": ">>>正在验证卡密...",
+    "instruction_text": "add x1, x1, #0xce5",
+    "via": "add"
+  },
+  {
+    "instruction": "0x3906d8",
+    "function": "0x390230",
+    "string_address": "0x2ac8b",
+    "text": "kami=",
+    "instruction_text": "add x0, x0, #0xc8b",
+    "via": "add"
+  },
+  {
+    "instruction": "0x390890",
+    "function": "0x390230",
+    "string_address": "0x25c0b",
+    "text": "app=",
+    "instruction_text": "add x0, x0, #0xc0b",
+    "via": "add"
+  },
+  {
+    "instruction": "0x3908cc",
+    "function": "0x390230",
+    "string_address": "0x2ac8b",
+    "text": "kami=",
+    "instruction_text": "add x0, x0, #0xc8b",
+    "via": "add"
+  },
+  {
+    "instruction": "0x390ed0",
+    "function": "0x390230",
+    "string_address": "0x27b57",
+    "text": "卡密验证失败",
+    "instruction_text": "add x1, x1, #0xb57",
+    "via": "add"
+  },
+  {
+    "instruction": "0x3910d0",
+    "function": "0x390230",
+    "string_address": "0x27b57",
+    "text": "卡密验证失败",
+    "instruction_text": "add x1, x1, #0xb57",
+    "via": "add"
+  },
+  {
+    "instruction": "0x3a20c4",
+    "function": "0x3a1870",
+    "string_address": "0x2ac91",
+    "text": "获取屏幕驱动失败",
+    "instruction_text": "add x0, x0, #0xc91",
+    "via": "add"
+  },
+  {
+    "instruction": "0x3a20d4",
+    "function": "0x3a1870",
+    "string_address": "0x28450",
+    "text": "/dev/uinput",
+    "instruction_text": "add x0, x0, #0x450",
+    "via": "add"
+  },
+  {
+    "instruction": "0x417ca8",
+    "function": "0x417bf8",
+    "string_address": "0x268b8",
+    "text": "GName: 0x%llX",
+    "instruction_text": "add x0, x0, #0x8b8",
+    "via": "add"
+  },
+  {
+    "instruction": "0x417cb8",
+    "function": "0x417bf8",
+    "string_address": "0x272c4",
+    "text": "GWorld: 0x%llX",
+    "instruction_text": "add x0, x0, #0x2c4",
+    "via": "add"
+  },
+  {
+    "instruction": "0x417e44",
+    "function": "0x417e28",
+    "string_address": "0x24f11",
+    "text": "com.tencent.lolm",
+    "instruction_text": "add x9, x9, #0xf11",
+    "via": "add"
+  },
+  {
+    "instruction": "0x418920",
+    "function": "0x418378",
+    "string_address": "0x28572",
+    "text": "[action] sampling mode=%s discovery=%lldms health=%lldms actor=%lldms skill=%lldms loop=%lldms\n",
+    "instruction_text": "add x1, x1, #0x572",
+    "via": "add"
+  },
+  {
+    "instruction": "0x419ce0",
+    "function": "0x419710",
+    "string_address": "0x2b884",
+    "text": "[smite] click id=%d health=%lld threshold=%d\n",
+    "instruction_text": "add x1, x1, #0x884",
+    "via": "add"
+  },
+  {
+    "instruction": "0x41a4a4",
+    "function": "0x41a25c",
+    "string_address": "0x2460e",
+    "text": "[mercury] click control=%d cooldown=%.3f\n",
+    "instruction_text": "add x1, x1, #0x60e",
+    "via": "add"
+  },
+  {
+    "instruction": "0x41fb74",
+    "function": "0x41f138",
+    "string_address": "0x259e9",
+    "text": "lvlolm##main_menu",
+    "instruction_text": "add x0, x0, #0x9e9",
+    "via": "add"
+  },
+  {
+    "instruction": "0x420434",
+    "function": "0x41f138",
+    "string_address": "0x24638",
+    "text": "lvlolm内核",
+    "instruction_text": "add x0, x0, #0x638",
+    "via": "add"
+  },
+  {
+    "instruction": "0x4206dc",
+    "function": "0x41f138",
+    "string_address": "0x27ce7",
+    "text": "运行中不可切换驱动，停止后可更换。",
+    "instruction_text": "add x1, x1, #0xce7",
+    "via": "add"
+  },
+  {
+    "instruction": "0x420e90",
+    "function": "0x41f138",
+    "string_address": "0x297f1",
+    "text": "内核版本",
+    "instruction_text": "add x1, x1, #0x7f1",
+    "via": "add"
+  },
+  {
+    "instruction": "0x422338",
+    "function": "0x422284",
+    "string_address": "0x253f8",
+    "text": "/proc/%d/maps",
+    "instruction_text": "add x3, x3, #0x3f8",
+    "via": "add"
+  },
+  {
+    "instruction": "0x4231e4",
+    "function": "0x422e88",
+    "string_address": "0x2739b",
+    "text": "libil2cpp.so:bss",
+    "instruction_text": "add x1, x1, #0x39b",
+    "via": "add"
+  },
+  {
+    "instruction": "0x423208",
+    "function": "0x422e88",
+    "string_address": "0x28bc9",
+    "text": "libil2cpp.so",
+    "instruction_text": "add x1, x1, #0xbc9",
+    "via": "add"
+  },
+  {
+    "instruction": "0x427734",
+    "function": "0x427698",
+    "string_address": "0x26da8",
+    "text": "/DATA/ADB/dynamic_draw_lolm.ini",
+    "instruction_text": "add x1, x1, #0xda8",
+    "via": "add"
+  },
+  {
+    "instruction": "0x427770",
+    "function": "0x427698",
+    "string_address": "0x2a392",
+    "text": "/data/adb/dynamic_draw_lolm.ini",
+    "instruction_text": "add x1, x1, #0x392",
+    "via": "add"
+  },
+  {
+    "instruction": "0x4277c4",
+    "function": "0x427698",
+    "string_address": "0x26da8",
+    "text": "/DATA/ADB/dynamic_draw_lolm.ini",
+    "instruction_text": "add x8, x8, #0xda8",
+    "via": "add"
+  },
+  {
+    "instruction": "0x4277d8",
+    "function": "0x427698",
+    "string_address": "0x2a392",
+    "text": "/data/adb/dynamic_draw_lolm.ini",
+    "instruction_text": "add x8, x8, #0x392",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a010",
+    "function": "0x429fc8",
+    "string_address": "0x23ae3",
+    "text": "drawBox=",
+    "instruction_text": "add x23, x23, #0xae3",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a018",
+    "function": "0x429fc8",
+    "string_address": "0x2112a",
+    "text": "drawRay=",
+    "instruction_text": "add x22, x22, #0x12a",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a030",
+    "function": "0x429fc8",
+    "string_address": "0x24585",
+    "text": "drawMinimap=",
+    "instruction_text": "add x27, x27, #0x585",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a048",
+    "function": "0x429fc8",
+    "string_address": "0x2691f",
+    "text": "showMinimapBorder=",
+    "instruction_text": "add x28, x28, #0x91f",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a174",
+    "function": "0x429fc8",
+    "string_address": "0x24f40",
+    "text": "drawSkillPanel=",
+    "instruction_text": "add x1, x1, #0xf40",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a1a0",
+    "function": "0x429fc8",
+    "string_address": "0x228d6",
+    "text": "hideSmallSkills=",
+    "instruction_text": "add x1, x1, #0x8d6",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a1cc",
+    "function": "0x429fc8",
+    "string_address": "0x25eb6",
+    "text": "hideEntityAvatar=",
+    "instruction_text": "add x1, x1, #0xeb6",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a1f8",
+    "function": "0x429fc8",
+    "string_address": "0x25388",
+    "text": "drawWards=",
+    "instruction_text": "add x1, x1, #0x388",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a224",
+    "function": "0x429fc8",
+    "string_address": "0x24a8b",
+    "text": "drawMonsters=",
+    "instruction_text": "add x1, x1, #0xa8b",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a250",
+    "function": "0x429fc8",
+    "string_address": "0x2b7cc",
+    "text": "hideMonsterHealth=",
+    "instruction_text": "add x1, x1, #0x7cc",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a27c",
+    "function": "0x429fc8",
+    "string_address": "0x20c57",
+    "text": "showMonsterRespawn=",
+    "instruction_text": "add x1, x1, #0xc57",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a2a8",
+    "function": "0x429fc8",
+    "string_address": "0x26dc8",
+    "text": "autoSmite=",
+    "instruction_text": "add x1, x1, #0xdc8",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a2d4",
+    "function": "0x429fc8",
+    "string_address": "0x272f5",
+    "text": "smiteRequireEnemy=",
+    "instruction_text": "add x1, x1, #0x2f5",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a300",
+    "function": "0x429fc8",
+    "string_address": "0x26932",
+    "text": "autoMercury=",
+    "instruction_text": "add x1, x1, #0x932",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a32c",
+    "function": "0x429fc8",
+    "string_address": "0x28b57",
+    "text": "showMercuryMarker=",
+    "instruction_text": "add x1, x1, #0xb57",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a358",
+    "function": "0x429fc8",
+    "string_address": "0x28237",
+    "text": "showSmiteRange=",
+    "instruction_text": "add x1, x1, #0x237",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a384",
+    "function": "0x429fc8",
+    "string_address": "0x294ad",
+    "text": "showSmiteMarker=",
+    "instruction_text": "add x1, x1, #0x4ad",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a3b0",
+    "function": "0x429fc8",
+    "string_address": "0x23aec",
+    "text": "smiteRedBuff=",
+    "instruction_text": "add x1, x1, #0xaec",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a3dc",
+    "function": "0x429fc8",
+    "string_address": "0x2693f",
+    "text": "smiteBlueBuff=",
+    "instruction_text": "add x1, x1, #0x93f",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a408",
+    "function": "0x429fc8",
+    "string_address": "0x2b7df",
+    "text": "smiteDragon=",
+    "instruction_text": "add x1, x1, #0x7df",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a434",
+    "function": "0x429fc8",
+    "string_address": "0x263f5",
+    "text": "smiteHealthThreshold=",
+    "instruction_text": "add x1, x1, #0x3f5",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a460",
+    "function": "0x429fc8",
+    "string_address": "0x28b6a",
+    "text": "smiteRange=",
+    "instruction_text": "add x1, x1, #0xb6a",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a48c",
+    "function": "0x429fc8",
+    "string_address": "0x2ae91",
+    "text": "smiteRangeCenterX=",
+    "instruction_text": "add x1, x1, #0xe91",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a4b8",
+    "function": "0x429fc8",
+    "string_address": "0x27308",
+    "text": "smiteRangeCenterY=",
+    "instruction_text": "add x1, x1, #0x308",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a4e4",
+    "function": "0x429fc8",
+    "string_address": "0x20c6b",
+    "text": "smiteTouchX=",
+    "instruction_text": "add x1, x1, #0xc6b",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a510",
+    "function": "0x429fc8",
+    "string_address": "0x294be",
+    "text": "smiteTouchY=",
+    "instruction_text": "add x1, x1, #0x4be",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a53c",
+    "function": "0x429fc8",
+    "string_address": "0x24592",
+    "text": "mercuryTouchX=",
+    "instruction_text": "add x1, x1, #0x592",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a568",
+    "function": "0x429fc8",
+    "string_address": "0x21133",
+    "text": "mercuryTouchY=",
+    "instruction_text": "add x1, x1, #0x133",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a594",
+    "function": "0x429fc8",
+    "string_address": "0x2bd2d",
+    "text": "godViewEnabled=",
+    "instruction_text": "add x1, x1, #0xd2d",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a5c0",
+    "function": "0x429fc8",
+    "string_address": "0x28247",
+    "text": "godViewValue=",
+    "instruction_text": "add x1, x1, #0x247",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a5ec",
+    "function": "0x429fc8",
+    "string_address": "0x25393",
+    "text": "forcedDrawCamp=",
+    "instruction_text": "add x1, x1, #0x393",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a618",
+    "function": "0x429fc8",
+    "string_address": "0x25ec8",
+    "text": "minimapScale=",
+    "instruction_text": "add x1, x1, #0xec8",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a644",
+    "function": "0x429fc8",
+    "string_address": "0x20c78",
+    "text": "minimapAvatarSpacing=",
+    "instruction_text": "add x1, x1, #0xc78",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a670",
+    "function": "0x429fc8",
+    "string_address": "0x2bd3d",
+    "text": "minimapOffsetX=",
+    "instruction_text": "add x1, x1, #0xd3d",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a69c",
+    "function": "0x429fc8",
+    "string_address": "0x234ce",
+    "text": "minimapOffsetY=",
+    "instruction_text": "add x1, x1, #0x4ce",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a6c8",
+    "function": "0x429fc8",
+    "string_address": "0x20c8e",
+    "text": "minimapWindowScale=",
+    "instruction_text": "add x1, x1, #0xc8e",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a6f4",
+    "function": "0x429fc8",
+    "string_address": "0x2a3b2",
+    "text": "minimapWindowOffsetX=",
+    "instruction_text": "add x1, x1, #0x3b2",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a720",
+    "function": "0x429fc8",
+    "string_address": "0x2b7ec",
+    "text": "minimapWindowOffsetY=",
+    "instruction_text": "add x1, x1, #0x7ec",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a74c",
+    "function": "0x429fc8",
+    "string_address": "0x2694e",
+    "text": "minimapAvatarSize=",
+    "instruction_text": "add x1, x1, #0x94e",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a778",
+    "function": "0x429fc8",
+    "string_address": "0x2aea4",
+    "text": "minimapHealthTextSize=",
+    "instruction_text": "add x1, x1, #0xea4",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a7a4",
+    "function": "0x429fc8",
+    "string_address": "0x2aebb",
+    "text": "minimapAvatarBorderSize=",
+    "instruction_text": "add x1, x1, #0xebb",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a7d0",
+    "function": "0x429fc8",
+    "string_address": "0x27c8a",
+    "text": "entityOffsetX=",
+    "instruction_text": "add x1, x1, #0xc8a",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a7fc",
+    "function": "0x429fc8",
+    "string_address": "0x228e7",
+    "text": "entityOffsetY=",
+    "instruction_text": "add x1, x1, #0x8e7",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a828",
+    "function": "0x429fc8",
+    "string_address": "0x28255",
+    "text": "entityBoxWidthScale=",
+    "instruction_text": "add x1, x1, #0x255",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a854",
+    "function": "0x429fc8",
+    "string_address": "0x2640b",
+    "text": "entityBoxHeightScale=",
+    "instruction_text": "add x1, x1, #0x40b",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a880",
+    "function": "0x429fc8",
+    "string_address": "0x2b802",
+    "text": "entityAvatarSize=",
+    "instruction_text": "add x1, x1, #0x802",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a8ac",
+    "function": "0x429fc8",
+    "string_address": "0x2b814",
+    "text": "entityHealthTextSize=",
+    "instruction_text": "add x1, x1, #0x814",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a8d8",
+    "function": "0x429fc8",
+    "string_address": "0x294cb",
+    "text": "monsterHealthTextSize=",
+    "instruction_text": "add x1, x1, #0x4cb",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a904",
+    "function": "0x429fc8",
+    "string_address": "0x26421",
+    "text": "entitySkillIconSize=",
+    "instruction_text": "add x1, x1, #0x421",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a930",
+    "function": "0x429fc8",
+    "string_address": "0x2a3c8",
+    "text": "skillPanelOffsetX=",
+    "instruction_text": "add x1, x1, #0x3c8",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a95c",
+    "function": "0x429fc8",
+    "string_address": "0x2bd4d",
+    "text": "skillPanelOffsetY=",
+    "instruction_text": "add x1, x1, #0xd4d",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a988",
+    "function": "0x429fc8",
+    "string_address": "0x26436",
+    "text": "skillPanelSize=",
+    "instruction_text": "add x1, x1, #0x436",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42a9b4",
+    "function": "0x429fc8",
+    "string_address": "0x28f98",
+    "text": "friendlyColor=",
+    "instruction_text": "add x1, x1, #0xf98",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42aa34",
+    "function": "0x429fc8",
+    "string_address": "0x2a3db",
+    "text": "enemyColor=",
+    "instruction_text": "add x1, x1, #0x3db",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42aab4",
+    "function": "0x429fc8",
+    "string_address": "0x23afa",
+    "text": "wardColor=",
+    "instruction_text": "add x1, x1, #0xafa",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42ab34",
+    "function": "0x429fc8",
+    "string_address": "0x27841",
+    "text": "wardVisionRangeBrightness=",
+    "instruction_text": "add x1, x1, #0x841",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42ab60",
+    "function": "0x429fc8",
+    "string_address": "0x21142",
+    "text": "neutralColor=",
+    "instruction_text": "add x1, x1, #0x142",
+    "via": "add"
+  },
+  {
+    "instruction": "0x42acd4",
+    "function": "0x429fc8",
+    "string_address": "0x2691f",
+    "text": "showMinimapBorder=",
+    "instruction_text": "add x28, x28, #0x91f",
+    "via": "add"
+  },
+  {
+    "instruction": "0x43edb8",
+    "function": "0x43ebe0",
+    "string_address": "0x2a935",
+    "text": "Qx11 驱动",
+    "instruction_text": "add x0, x0, #0x935",
+    "via": "add"
+  },
+  {
+    "instruction": "0x43ede8",
+    "function": "0x43ebe0",
+    "string_address": "0x23555",
+    "text": "TwT 驱动",
+    "instruction_text": "add x0, x0, #0x555",
+    "via": "add"
+  },
+  {
+    "instruction": "0x43ee1c",
+    "function": "0x43ebe0",
+    "string_address": "0x2900f",
+    "text": "Paradise 驱动",
+    "instruction_text": "add x0, x0, #0xf",
+    "via": "add"
+  },
+  {
+    "instruction": "0x43ee50",
+    "function": "0x43ebe0",
+    "string_address": "0x25f50",
+    "text": "时间驱动",
+    "instruction_text": "add x0, x0, #0xf50",
+    "via": "add"
+  },
+  {
+    "instruction": "0x43ee84",
+    "function": "0x43ebe0",
+    "string_address": "0x2b3ff",
+    "text": "rt-QX 驱动",
+    "instruction_text": "add x0, x0, #0x3ff",
+    "via": "add"
+  },
+  {
+    "instruction": "0x43eeb8",
+    "function": "0x43ebe0",
+    "string_address": "0x24645",
+    "text": "RTHook 驱动",
+    "instruction_text": "add x0, x0, #0x645",
+    "via": "add"
+  },
+  {
+    "instruction": "0x43fa58",
+    "function": "0x43f950",
+    "string_address": "0x23560",
+    "text": "\n[+] TwT 驱动连接成功。",
+    "instruction_text": "add x0, x0, #0x560",
+    "via": "add"
+  },
+  {
+    "instruction": "0x43fb84",
+    "function": "0x43f950",
+    "string_address": "0x229ac",
+    "text": "\n[-] TwT 驱动未加载或无 root 权限",
+    "instruction_text": "add x0, x0, #0x9ac",
+    "via": "add"
+  },
+  {
+    "instruction": "0x44010c",
+    "function": "0x43ffd4",
+    "string_address": "0x25a02",
+    "text": "/proc/%d/mem",
+    "instruction_text": "add x3, x3, #0xa02",
+    "via": "add"
+  },
+  {
+    "instruction": "0x4406e0",
+    "function": "0x440620",
+    "string_address": "0x253f8",
+    "text": "/proc/%d/maps",
+    "instruction_text": "add x3, x3, #0x3f8",
+    "via": "add"
+  },
+  {
+    "instruction": "0x440cd0",
+    "function": "0x4409e4",
+    "string_address": "0x229d7",
+    "text": "\n[-] 驱动已经启动",
+    "instruction_text": "add x0, x0, #0x9d7",
+    "via": "add"
+  },
+  {
+    "instruction": "0x440cec",
+    "function": "0x4409e4",
+    "string_address": "0x2b92d",
+    "text": "[-] 驱动安全守护已激活",
+    "instruction_text": "add x0, x0, #0x92d",
+    "via": "add"
+  },
+  {
+    "instruction": "0x440d00",
+    "function": "0x4409e4",
+    "string_address": "0x2357f",
+    "text": "\n[-] 驱动链接失败",
+    "instruction_text": "add x0, x0, #0x57f",
+    "via": "add"
+  },
+  {
+    "instruction": "0x440d18",
+    "function": "0x4409e4",
+    "string_address": "0x2b92d",
+    "text": "[-] 驱动安全守护已激活",
+    "instruction_text": "add x0, x0, #0x92d",
+    "via": "add"
+  },
+  {
+    "instruction": "0x440d74",
+    "function": "0x4409e4",
+    "string_address": "0x2af9a",
+    "text": "[-] 驱动安全守护执行错误\n",
+    "instruction_text": "add x0, x0, #0xf9a",
+    "via": "add"
+  },
+  {
+    "instruction": "0x440d84",
+    "function": "0x4409e4",
+    "string_address": "0x2af9a",
+    "text": "[-] 驱动安全守护执行错误\n",
+    "instruction_text": "add x0, x0, #0xf9a",
+    "via": "add"
+  },
+  {
+    "instruction": "0x4417bc",
+    "function": "0x441650",
+    "string_address": "0x26e44",
+    "text": "QX驱动FD信息读取失败",
+    "instruction_text": "add x0, x0, #0xe44",
+    "via": "add"
+  },
+  {
+    "instruction": "0x4417d8",
+    "function": "0x441650",
+    "string_address": "0x25a1c",
+    "text": "QX驱动探测失败",
+    "instruction_text": "add x0, x0, #0xa1c",
+    "via": "add"
+  },
+  {
+    "instruction": "0x4417fc",
+    "function": "0x441650",
+    "string_address": "0x21734",
+    "text": "QX驱动探测结果无效",
+    "instruction_text": "add x0, x0, #0x734",
+    "via": "add"
+  },
+  {
+    "instruction": "0x441820",
+    "function": "0x441650",
+    "string_address": "0x2bdd8",
+    "text": "QX驱动探测字段无效",
+    "instruction_text": "add x0, x0, #0xdd8",
+    "via": "add"
+  },
+  {
+    "instruction": "0x441844",
+    "function": "0x441650",
+    "string_address": "0x273ac",
+    "text": "QX驱动探测字段超长",
+    "instruction_text": "add x0, x0, #0x3ac",
+    "via": "add"
+  },
+  {
+    "instruction": "0x44188c",
+    "function": "0x441650",
+    "string_address": "0x2b40c",
+    "text": "QX驱动节点创建失败",
+    "instruction_text": "add x0, x0, #0x40c",
+    "via": "add"
+  },
+  {
+    "instruction": "0x4418b8",
+    "function": "0x441650",
+    "string_address": "0x2b427",
+    "text": "QX驱动连接成功",
+    "instruction_text": "add x9, x9, #0x427",
+    "via": "add"
+  },
+  {
+    "instruction": "0x4418c4",
+    "function": "0x441650",
+    "string_address": "0x2121f",
+    "text": "QX驱动连接失败",
+    "instruction_text": "add x8, x8, #0x21f",
+    "via": "add"
+  },
+  {
+    "instruction": "0x4481b8",
+    "function": "0x448118",
+    "string_address": "0x2870f",
+    "text": "[-] SurfaceComposerClient is unavailable",
+    "instruction_text": "add x2, x2, #0x70f",
+    "via": "add"
+  },
+  {
+    "instruction": "0x4482fc",
+    "function": "0x448240",
+    "string_address": "0x29053",
+    "text": "ro.build.version.release",
+    "instruction_text": "add x0, x0, #0x53",
+    "via": "add"
+  },
+  {
+    "instruction": "0x44ba00",
+    "function": "0x44b8c0",
+    "string_address": "0x2414f",
+    "text": "mCurrentLayerStack=",
+    "instruction_text": "add x2, x2, #0x14f",
+    "via": "add"
+  },
+  {
+    "instruction": "0x44ba28",
+    "function": "0x44b8c0",
+    "string_address": "0x28815",
+    "text": "mCurrentLayerStackRect=",
+    "instruction_text": "add x2, x2, #0x815",
+    "via": "add"
+  },
+  {
+    "instruction": "0x44ba50",
+    "function": "0x44b8c0",
+    "string_address": "0x22fcb",
+    "text": "mCurrentOrientation=",
+    "instruction_text": "add x2, x2, #0xfcb",
+    "via": "add"
+  },
+  {
+    "instruction": "0x50973c",
+    "function": "0x5093bc",
+    "string_address": "0x25546",
+    "text": "\u001b[1;31m[-] 当前驱动版本和SDK不一致 请更换新版本驱动\u001b[0m\n",
+    "instruction_text": "add x0, x0, #0x546",
+    "via": "add"
+  }
+]

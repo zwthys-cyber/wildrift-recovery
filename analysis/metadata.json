@@ -1,0 +1,197 @@
+{
+  "input_name": "lvlolm1.3.sh",
+  "size": 5841224,
+  "sha256": "e385f312ecbb5e575d2709a15a3b0157aa6fb37b52299075d9665f14df6fd111",
+  "machine": "EM_AARCH64",
+  "elf_class": 64,
+  "entry_point": "0x385fc0",
+  "interpreter": "/system/bin/linker64",
+  "dependencies": [
+    "liblog.so",
+    "libandroid.so",
+    "libEGL.so",
+    "libGLESv3.so",
+    "libdl.so",
+    "libm.so",
+    "libc.so",
+    "libz.so"
+  ],
+  "function_range_count": 4410,
+  "has_symbol_table": false,
+  "has_debug_info": false,
+  "compiler_comments": [
+    "",
+    "Android (13691557, +pgo, +bolt, +lto, +mlgo, based on r522817d) clang version 18.0.4 (https://android.googlesource.com/toolchain/llvm-project d8003a456d14a3deb8054cdaa529ffbf02d9b262)",
+    "Android (13691557, based on r522817d) clang version 18.0.4 (https://android.googlesource.com/toolchain/llvm-project d8003a456d14a3deb8054cdaa529ffbf02d9b262)",
+    "Android (dev, +pgo, -bolt, +lto, -mlgo, based on r522817b) clang version 18.0.2 (https://android.googlesource.com/toolchain/llvm-project d8003a456d14a3deb8054cdaa529ffbf02d9b262)",
+    "Android (13624864, based on r530567e) clang version 19.0.1 (https://android.googlesource.com/toolchain/llvm-project 97a699bf4812a18fb657c2779f5296a4ab2694d2)",
+    "Android NDK r26 OLLVM clang version 17.0.6",
+    "Linker: LLD 18.0.4",
+    ""
+  ],
+  "sections": [
+    {
+      "name": "",
+      "address": "0x0",
+      "size": 0,
+      "offset": 0
+    },
+    {
+      "name": ".interp",
+      "address": "0x270",
+      "size": 21,
+      "offset": 624
+    },
+    {
+      "name": ".note.android.ident",
+      "address": "0x288",
+      "size": 152,
+      "offset": 648
+    },
+    {
+      "name": ".note.gnu.build-id",
+      "address": "0x320",
+      "size": 36,
+      "offset": 800
+    },
+    {
+      "name": ".dynsym",
+      "address": "0x348",
+      "size": 6672,
+      "offset": 840
+    },
+    {
+      "name": ".gnu.version",
+      "address": "0x1d58",
+      "size": 556,
+      "offset": 7512
+    },
+    {
+      "name": ".gnu.version_r",
+      "address": "0x1f84",
+      "size": 96,
+      "offset": 8068
+    },
+    {
+      "name": ".gnu.hash",
+      "address": "0x1fe8",
+      "size": 28,
+      "offset": 8168
+    },
+    {
+      "name": ".dynstr",
+      "address": "0x2004",
+      "size": 3208,
+      "offset": 8196
+    },
+    {
+      "name": ".rela.dyn",
+      "address": "0x2c90",
+      "size": 111264,
+      "offset": 11408
+    },
+    {
+      "name": ".rela.plt",
+      "address": "0x1df30",
+      "size": 6552,
+      "offset": 122672
+    },
+    {
+      "name": ".rodata",
+      "address": "0x1f8d0",
+      "size": 3295644,
+      "offset": 129232
+    },
+    {
+      "name": ".gcc_except_table",
+      "address": "0x34426c",
+      "size": 32144,
+      "offset": 3424876
+    },
+    {
+      "name": ".eh_frame_hdr",
+      "address": "0x34bffc",
+      "size": 35292,
+      "offset": 3457020
+    },
+    {
+      "name": ".eh_frame",
+      "address": "0x3549d8",
+      "size": 202204,
+      "offset": 3492312
+    },
+    {
+      "name": ".text",
+      "address": "0x385fc0",
+      "size": 1892040,
+      "offset": 3694528
+    },
+    {
+      "name": ".plt",
+      "address": "0x553e90",
+      "size": 4400,
+      "offset": 5586576
+    },
+    {
+      "name": ".data.rel.ro",
+      "address": "0x555fc0",
+      "size": 52336,
+      "offset": 5590976
+    },
+    {
+      "name": ".init_array",
+      "address": "0x562c30",
+      "size": 88,
+      "offset": 5643312
+    },
+    {
+      "name": ".dynamic",
+      "address": "0x562c88",
+      "size": 480,
+      "offset": 5643400
+    },
+    {
+      "name": ".got",
+      "address": "0x562e68",
+      "size": 1816,
+      "offset": 5643880
+    },
+    {
+      "name": ".got.plt",
+      "address": "0x563580",
+      "size": 2208,
+      "offset": 5645696
+    },
+    {
+      "name": ".relro_padding",
+      "address": "0x563e20",
+      "size": 480,
+      "offset": 5647904
+    },
+    {
+      "name": ".data",
+      "address": "0x564e20",
+      "size": 190576,
+      "offset": 5647904
+    },
+    {
+      "name": ".bss",
+      "address": "0x593690",
+      "size": 62944,
+      "offset": 5838480
+    },
+    {
+      "name": ".comment",
+      "address": "0x0",
+      "size": 742,
+      "offset": 5838480
+    },
+    {
+      "name": ".shstrtab",
+      "address": "0x0",
+      "size": 271,
+      "offset": 5839222
+    }
+  ],
+  "method": "FDE boundaries plus linear ARM64 address propagation; candidate references only"
+}

@@ -1,0 +1,33 @@
+{
+  "input_sha256": "01f145e305df3fbaf0cc5880537441d855a1421a879fa0860067567e9719ab83",
+  "source": "user supplied lvlolm-diagnostics.json from recovery 0.1.0",
+  "ios_version": "17.0",
+  "main_process_uid": 501,
+  "main_self_read_ok": true,
+  "helper_uid": 0,
+  "helper_self_read_ok": true,
+  "target_pid_in_report": 13937,
+  "task_result": 0,
+  "remote_image_headers_read": 45,
+  "unity_framework": {
+    "path": "/private/var/containers/Bundle/Application/BF2EE3F4-107D-45C7-B3A0-2B1E26269445/lolm.app/Frameworks/UnityFramework.framework/UnityFramework",
+    "load_address": "0x11d6c0000",
+    "cpu_type": 16777228,
+    "cpu_subtype": 0,
+    "cryptid": 0,
+    "uuid": "085E1DDF-4A8D-34E2-9D73-A0A28BCC0B83"
+  },
+  "main_executable": {
+    "path": "/private/var/containers/Bundle/Application/BF2EE3F4-107D-45C7-B3A0-2B1E26269445/lolm.app/lolm",
+    "load_address": "0x104510000",
+    "cpu_type": 16777228,
+    "cpu_subtype": 0,
+    "cryptid": 1,
+    "uuid": "34D7B1EF-409C-3BF1-BEC4-122FFAB05100"
+  },
+  "game_layout_verified": false,
+  "touch_capability_verified": false,
+  "game_version_fields_independently_verified": false,
+  "addresses_are_session_specific": true,
+  "collector_0_2_0_device_tested": false
+}

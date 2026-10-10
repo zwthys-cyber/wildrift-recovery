@@ -1,0 +1,263 @@
+{
+  "framework_uuid": "085E1DDF-4A8D-34E2-9D73-A0A28BCC0B83",
+  "framework_sha256": "effa95dbbc2bf16f9474c7c99700b80b3e0b7c793537e2da7089bd01b6a5e394",
+  "metadata_sha256": "0ea4de1fdba5924e75f09a10911692c833ae996ec3df773aba4d9b32c39f90e3",
+  "selected_types": [
+    {
+      "index": 6839,
+      "name": "UIMiniMappingMgr",
+      "namespace": "",
+      "fields": [
+        {
+          "index": 62731,
+          "name": "Instance",
+          "type_index": 69470,
+          "token": 67171596,
+          "offset": 0,
+          "static": true,
+          "literal": false,
+          "native_type": {
+            "data": 6839,
+            "attributes": 54,
+            "kind": 18
+          }
+        },
+        {
+          "index": 62734,
+          "name": "isViewportMode",
+          "type_index": 27332,
+          "token": 67171599,
+          "offset": 16,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 62745,
+          "name": "miniMapSize",
+          "type_index": 73655,
+          "token": 67171610,
+          "offset": 60,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 43499,
+            "attributes": 1,
+            "kind": 17
+          }
+        },
+        {
+          "index": 62746,
+          "name": "scaleX",
+          "type_index": 60901,
+          "token": 67171611,
+          "offset": 68,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39343,
+            "attributes": 4,
+            "kind": 12
+          }
+        },
+        {
+          "index": 62747,
+          "name": "scaleZ",
+          "type_index": 60901,
+          "token": 67171612,
+          "offset": 72,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39343,
+            "attributes": 4,
+            "kind": 12
+          }
+        },
+        {
+          "index": 62754,
+          "name": "halfWidth",
+          "type_index": 60902,
+          "token": 67171619,
+          "offset": 100,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39343,
+            "attributes": 6,
+            "kind": 12
+          }
+        },
+        {
+          "index": 62755,
+          "name": "halfHeight",
+          "type_index": 60902,
+          "token": 67171620,
+          "offset": 104,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39343,
+            "attributes": 6,
+            "kind": 12
+          }
+        },
+        {
+          "index": 62757,
+          "name": "viewportSuspendCount",
+          "type_index": 46115,
+          "token": 67171622,
+          "offset": 112,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39296,
+            "attributes": 1,
+            "kind": 8
+          }
+        },
+        {
+          "index": 62758,
+          "name": "fullMapUniformScale",
+          "type_index": 27332,
+          "token": 67171623,
+          "offset": 116,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        }
+      ],
+      "methods": [
+        {
+          "index": 60020,
+          "name": "get_IsViewportMode",
+          "return_type_index": 27331,
+          "token": 100723317,
+          "flags": 2182,
+          "parameter_count": 0,
+          "native_address": 121635724,
+          "declaring_module": "Assembly-CSharp.dll"
+        },
+        {
+          "index": 60024,
+          "name": "get_isViewportModeSuspended",
+          "return_type_index": 27331,
+          "token": 100723321,
+          "flags": 2177,
+          "parameter_count": 0,
+          "native_address": 121636964,
+          "declaring_module": "Assembly-CSharp.dll"
+        },
+        {
+          "index": 60033,
+          "name": "WorldToMinmap",
+          "return_type_index": 73687,
+          "token": 100723330,
+          "flags": 134,
+          "parameter_count": 3,
+          "native_address": 121621244,
+          "declaring_module": "Assembly-CSharp.dll"
+        },
+        {
+          "index": 60034,
+          "name": "WorldToMiniMap",
+          "return_type_index": 73687,
+          "token": 100723331,
+          "flags": 134,
+          "parameter_count": 3,
+          "native_address": 121640896,
+          "declaring_module": "Assembly-CSharp.dll"
+        }
+      ]
+    },
+    {
+      "index": 6835,
+      "name": "UIMainBattleMiniMapCtrl",
+      "namespace": "",
+      "fields": [
+        {
+          "index": 62679,
+          "name": "isFullMapShowing",
+          "type_index": 27332,
+          "token": 67171544,
+          "offset": 729,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 62693,
+          "name": "zoomState",
+          "type_index": 50589,
+          "token": 67171558,
+          "offset": 816,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 6836,
+            "attributes": 1,
+            "kind": 17
+          }
+        },
+        {
+          "index": 62701,
+          "name": "normalMiniMapInstance",
+          "type_index": 68959,
+          "token": 67171566,
+          "offset": 24,
+          "static": true,
+          "literal": false,
+          "native_type": {
+            "data": 6835,
+            "attributes": 17,
+            "kind": 18
+          }
+        }
+      ],
+      "methods": [
+        {
+          "index": 59949,
+          "name": "get_NormalMiniMapInstance",
+          "return_type_index": 68955,
+          "token": 100723246,
+          "flags": 2198,
+          "parameter_count": 0,
+          "native_address": 121490868,
+          "declaring_module": "Assembly-CSharp.dll"
+        }
+      ]
+    }
+  ],
+  "ordinary_map_branch": "0x740199c..0x7401a04",
+  "native_formula": "rotatedX * scaleX, rotatedZ * scaleZ; optional clamp to +-halfWidth/halfHeight",
+  "normalized_formula": "u = 0.5 + rotatedX*scaleX/(2*halfWidth); v = 0.5 - rotatedZ*scaleZ/(2*halfHeight)",
+  "rotation_source": "Default camp 1 => 0 degrees, camp 2 => 180 degrees; user may override. Native camera rotation getter is NOT re-executed.",
+  "screen_rect_source": "iOS user calibration; 0.7.1 recommendation estimated from a cropped screenshot assuming the old default rectangle. Corrected alignment awaits a multi-position phone check.",
+  "device_geometry_verified": false,
+  "device_screen_alignment_verified": false,
+  "scope": "Offline ordinary-map branch and field layout. Native viewport/full-map branches are suppressed. Current resource hotfix behavior and UI placement still need device verification.",
+  "device_observation": {
+    "summary": "analysis/device-0.7.0-summary.json",
+    "native_projection_status_visible": true,
+    "fog_updates_user_confirmed": true,
+    "scope": "User reports continuing client-coordinate updates without vision in the tested scene; not independently measured or compared to server position"
+  },
+  "recommended_rect_percent": [
+    6.8,
+    1.2,
+    15.5,
+    33.5
+  ]
+}

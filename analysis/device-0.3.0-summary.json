@@ -1,0 +1,393 @@
+{
+  "source": "User-pasted diagnostic in this conversation; derived summary, not the original JSON file or an independently acquired device capture.",
+  "recorded_at": "2026-10-10T14:59:27.728748+00:00",
+  "recovery_version_inferred_from_snapshot_schema": "0.3.0",
+  "ios_version": "17.0",
+  "user_reported_device": "iPhone 15 Pro Max",
+  "task_result": 0,
+  "helper_uid": 0,
+  "framework_uuid": "085E1DDF-4A8D-34E2-9D73-A0A28BCC0B83",
+  "framework_load_address": "0x11bb70000",
+  "snapshot_result": "ready",
+  "snapshot_stage": "actor_values",
+  "reported_actor_count": 50,
+  "read_actor_count": 50,
+  "skipped_actor_count": 0,
+  "all_actors_values_read_ok": true,
+  "all_actors_health_read_ok": true,
+  "all_actors_tid": 0,
+  "actors_values": [
+    {
+      "resource_id": 10001,
+      "camp": 1,
+      "health": 690,
+      "health_fixed": 11304960,
+      "is_local": true
+    },
+    {
+      "resource_id": 10055,
+      "camp": 2,
+      "health": 810,
+      "health_fixed": 13271040,
+      "is_local": false
+    },
+    {
+      "resource_id": 201901,
+      "camp": 1,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 820403,
+      "camp": 1,
+      "health": 50000,
+      "health_fixed": 819200000,
+      "is_local": false
+    },
+    {
+      "resource_id": 820407,
+      "camp": 1,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 820407,
+      "camp": 2,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 820404,
+      "camp": 2,
+      "health": 50000,
+      "health_fixed": 819200000,
+      "is_local": false
+    },
+    {
+      "resource_id": 820405,
+      "camp": 1,
+      "health": 0,
+      "health_fixed": 0,
+      "is_local": false
+    },
+    {
+      "resource_id": 820406,
+      "camp": 2,
+      "health": 0,
+      "health_fixed": 0,
+      "is_local": false
+    },
+    {
+      "resource_id": 820101,
+      "camp": 1,
+      "health": 7000,
+      "health_fixed": 114688000,
+      "is_local": false
+    },
+    {
+      "resource_id": 820102,
+      "camp": 1,
+      "health": 4500,
+      "health_fixed": 73728000,
+      "is_local": false
+    },
+    {
+      "resource_id": 820103,
+      "camp": 1,
+      "health": 4250,
+      "health_fixed": 69632000,
+      "is_local": false
+    },
+    {
+      "resource_id": 820104,
+      "camp": 1,
+      "health": 7000,
+      "health_fixed": 114688000,
+      "is_local": false
+    },
+    {
+      "resource_id": 820105,
+      "camp": 1,
+      "health": 4500,
+      "health_fixed": 73728000,
+      "is_local": false
+    },
+    {
+      "resource_id": 820106,
+      "camp": 1,
+      "health": 4250,
+      "health_fixed": 69632000,
+      "is_local": false
+    },
+    {
+      "resource_id": 820107,
+      "camp": 1,
+      "health": 7000,
+      "health_fixed": 114688000,
+      "is_local": false
+    },
+    {
+      "resource_id": 820108,
+      "camp": 1,
+      "health": 4500,
+      "health_fixed": 73728000,
+      "is_local": false
+    },
+    {
+      "resource_id": 820109,
+      "camp": 1,
+      "health": 4250,
+      "health_fixed": 69632000,
+      "is_local": false
+    },
+    {
+      "resource_id": 820001,
+      "camp": 1,
+      "health": 4000,
+      "health_fixed": 65536000,
+      "is_local": false
+    },
+    {
+      "resource_id": 820201,
+      "camp": 2,
+      "health": 7000,
+      "health_fixed": 114688000,
+      "is_local": false
+    },
+    {
+      "resource_id": 820202,
+      "camp": 2,
+      "health": 4500,
+      "health_fixed": 73728000,
+      "is_local": false
+    },
+    {
+      "resource_id": 820203,
+      "camp": 2,
+      "health": 4250,
+      "health_fixed": 69632000,
+      "is_local": false
+    },
+    {
+      "resource_id": 820204,
+      "camp": 2,
+      "health": 7000,
+      "health_fixed": 114688000,
+      "is_local": false
+    },
+    {
+      "resource_id": 820205,
+      "camp": 2,
+      "health": 4500,
+      "health_fixed": 73728000,
+      "is_local": false
+    },
+    {
+      "resource_id": 820206,
+      "camp": 2,
+      "health": 4250,
+      "health_fixed": 69632000,
+      "is_local": false
+    },
+    {
+      "resource_id": 820207,
+      "camp": 2,
+      "health": 7000,
+      "health_fixed": 114688000,
+      "is_local": false
+    },
+    {
+      "resource_id": 820208,
+      "camp": 2,
+      "health": 4500,
+      "health_fixed": 73728000,
+      "is_local": false
+    },
+    {
+      "resource_id": 820209,
+      "camp": 2,
+      "health": 4250,
+      "health_fixed": 69632000,
+      "is_local": false
+    },
+    {
+      "resource_id": 820002,
+      "camp": 2,
+      "health": 4000,
+      "health_fixed": 65536000,
+      "is_local": false
+    },
+    {
+      "resource_id": 831001,
+      "camp": 4,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 223611,
+      "camp": 4,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 831001,
+      "camp": 4,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 223611,
+      "camp": 4,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 831001,
+      "camp": 4,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 223611,
+      "camp": 4,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 831001,
+      "camp": 4,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 223611,
+      "camp": 4,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 831001,
+      "camp": 4,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 223611,
+      "camp": 4,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 831001,
+      "camp": 4,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 223611,
+      "camp": 4,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 820415,
+      "camp": 1,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 820409,
+      "camp": 1,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 820409,
+      "camp": 1,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 820410,
+      "camp": 2,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 820410,
+      "camp": 2,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 820423,
+      "camp": 1,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 820423,
+      "camp": 2,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 201901,
+      "camp": 1,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    },
+    {
+      "resource_id": 201902,
+      "camp": 1,
+      "health": 1,
+      "health_fixed": 16384,
+      "is_local": false
+    }
+  ],
+  "local_native_address": "0x17aed0750",
+  "local_managed_address": "0x2a1eea960",
+  "local_visual_address": "0x2b3ee4a80",
+  "local_attribute_address": "0x17aed61a0",
+  "trace": {
+    "class_cache": "0x10f1cc020",
+    "drive_class": "0x14031de40",
+    "drive_statics": "0x154172e00",
+    "drive_instance": "0x2aa6a1000",
+    "actor_manager": "0x2a1462d80",
+    "actor_list": "0x17ee7a090",
+    "actor_items": "0x2aa6eb000"
+  },
+  "input_collection_success": true,
+  "metadata_found": true,
+  "game_integration_ready": false,
+  "limits": [
+    "No screen comparison or skill/position values were provided.",
+    "All tid values are zero; tid is not evidence of a unique identity.",
+    "ready verifies successful reads, not all game semantics or automation.",
+    "Addresses and PIDs are runtime-specific."
+  ]
+}
