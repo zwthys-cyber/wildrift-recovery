@@ -1,0 +1,336 @@
+{
+  "framework_uuid": "085E1DDF-4A8D-34E2-9D73-A0A28BCC0B83",
+  "framework_sha256": "effa95dbbc2bf16f9474c7c99700b80b3e0b7c793537e2da7089bd01b6a5e394",
+  "metadata_sha256": "0ea4de1fdba5924e75f09a10911692c833ae996ec3df773aba4d9b32c39f90e3",
+  "selected_types": [
+    {
+      "index": 6835,
+      "name": "UIMainBattleMiniMapCtrl",
+      "namespace": "",
+      "fields": [
+        {
+          "index": 62654,
+          "name": "_entityCtrl",
+          "type_index": 50565,
+          "token": 67171519,
+          "offset": 0,
+          "static": true,
+          "literal": false,
+          "native_type": {
+            "data": 6801,
+            "attributes": 17,
+            "kind": 18
+          }
+        }
+      ],
+      "methods": []
+    },
+    {
+      "index": 6801,
+      "name": "MiniMapEntityCtrl",
+      "namespace": "",
+      "fields": [
+        {
+          "index": 62412,
+          "name": "miniMapIconCtrl",
+          "type_index": 69438,
+          "token": 67171277,
+          "offset": 400,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 6788,
+            "attributes": 1,
+            "kind": 18
+          }
+        }
+      ],
+      "methods": []
+    },
+    {
+      "index": 6788,
+      "name": "UIMiniMapIconCtrl",
+      "namespace": "",
+      "fields": [
+        {
+          "index": 62278,
+          "name": "miniIcons",
+          "type_index": 6172,
+          "token": 67171143,
+          "offset": 128,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 277524832,
+            "attributes": 4,
+            "kind": 21
+          }
+        }
+      ],
+      "methods": [
+        {
+          "index": 59249,
+          "name": "GetIconByBattleActor",
+          "return_type_index": 69418,
+          "token": 100722546,
+          "flags": 134,
+          "parameter_count": 1,
+          "native_address": 121157288,
+          "declaring_module": "Assembly-CSharp.dll"
+        }
+      ]
+    },
+    {
+      "index": 6774,
+      "name": "UIMiniIconBaseCtrl",
+      "namespace": "",
+      "fields": [
+        {
+          "index": 62095,
+          "name": "_actor",
+          "type_index": 26109,
+          "token": 67170960,
+          "offset": 152,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 37453,
+            "attributes": 4,
+            "kind": 18
+          }
+        },
+        {
+          "index": 62102,
+          "name": "isInitiate",
+          "type_index": 27334,
+          "token": 67170967,
+          "offset": 192,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 4,
+            "kind": 2
+          }
+        },
+        {
+          "index": 62103,
+          "name": "isShowing",
+          "type_index": 27334,
+          "token": 67170968,
+          "offset": 193,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 4,
+            "kind": 2
+          }
+        },
+        {
+          "index": 62105,
+          "name": "<isBeRecyle>k__BackingField",
+          "type_index": 27332,
+          "token": 67170970,
+          "offset": 200,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        }
+      ],
+      "methods": []
+    },
+    {
+      "index": 6780,
+      "name": "UIMiniIconHeroCtrl",
+      "namespace": "",
+      "fields": [
+        {
+          "index": 62203,
+          "name": "currentHpPercent",
+          "type_index": 40410,
+          "token": 67171068,
+          "offset": 416,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 37802,
+            "attributes": 1,
+            "kind": 17
+          }
+        },
+        {
+          "index": 62206,
+          "name": "enableHpBar",
+          "type_index": 27332,
+          "token": 67171071,
+          "offset": 436,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39229,
+            "attributes": 1,
+            "kind": 2
+          }
+        },
+        {
+          "index": 62209,
+          "name": "<objId>k__BackingField",
+          "type_index": 72737,
+          "token": 67171074,
+          "offset": 448,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39372,
+            "attributes": 1,
+            "kind": 9
+          }
+        },
+        {
+          "index": 62218,
+          "name": "lastUpdateHpTime",
+          "type_index": 60899,
+          "token": 67171083,
+          "offset": 512,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39343,
+            "attributes": 1,
+            "kind": 12
+          }
+        }
+      ],
+      "methods": [
+        {
+          "index": 59127,
+          "name": "UpdateHpPercent",
+          "return_type_index": 75454,
+          "token": 100722424,
+          "flags": 129,
+          "parameter_count": 0,
+          "native_address": 121078600,
+          "declaring_module": "Assembly-CSharp.dll"
+        }
+      ]
+    },
+    {
+      "index": 12138,
+      "name": "ActorTransformSync",
+      "namespace": "",
+      "fields": [
+        {
+          "index": 103735,
+          "name": "_actor",
+          "type_index": 26108,
+          "token": 67212600,
+          "offset": 24,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 37453,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 103736,
+          "name": "_logicActor",
+          "type_index": 26097,
+          "token": 67212601,
+          "offset": 32,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 34683,
+            "attributes": 1,
+            "kind": 18
+          }
+        },
+        {
+          "index": 103739,
+          "name": "_logicPos",
+          "type_index": 73688,
+          "token": 67212604,
+          "offset": 44,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 43496,
+            "attributes": 1,
+            "kind": 17
+          }
+        },
+        {
+          "index": 103744,
+          "name": "_lastLogicTime",
+          "type_index": 60899,
+          "token": 67212609,
+          "offset": 80,
+          "static": false,
+          "literal": false,
+          "native_type": {
+            "data": 39343,
+            "attributes": 1,
+            "kind": 12
+          }
+        }
+      ],
+      "methods": [
+        {
+          "index": 104549,
+          "name": "OnSync",
+          "return_type_index": 75454,
+          "token": 100767846,
+          "flags": 134,
+          "parameter_count": 2,
+          "native_address": 153807884,
+          "declaring_module": "Assembly-CSharp.dll"
+        }
+      ]
+    },
+    {
+      "index": 34579,
+      "name": "ActorComponentAttribute",
+      "namespace": "FrameEngine.Logic",
+      "fields": [],
+      "methods": [
+        {
+          "index": 288436,
+          "name": "get_lastPosition",
+          "return_type_index": 40591,
+          "token": 100951733,
+          "flags": 2182,
+          "parameter_count": 0,
+          "native_address": 82448856,
+          "declaring_module": "Assembly-CSharp.dll"
+        }
+      ]
+    }
+  ],
+  "health_chain": "Class cache[6835] -> statics+0 -> entity+190 -> icons+80 -> dictionary+18 -> entries",
+  "dictionary_entry_layout": {
+    "array_data": 32,
+    "stride": 24,
+    "hash": 0,
+    "key_uint32": 8,
+    "value": 16
+  },
+  "health_fraction_math": "(currentHP << 14) / maxHP; native UI stores Q14 at hero icon+1a0",
+  "health_scope": "Use only visible, enabled, initialized, non-recycled, identity-checked icons with a finite positive update timestamp and a fraction in [0,16384]. UI cache has its own refresh interval; not an atomic server HP sample. Unknown HP renders gray. Maximum HP is not inferred.",
+  "coordinate_candidate_scope": "Attribute last position, ActorTransformSync logic position/time, host actor native transform and visual visibility/tick are diagnostic only. OnSync copies native logic position; it is not proven to contain a separate, fresh fog coordinate.",
+  "history_position_used_for_overlay": false,
+  "alternative_position_used_for_overlay": false,
+  "fog_realtime_source_verified": false,
+  "new_fields_device_verified": false,
+  "instruction_equivalence": {
+    "tests": 3,
+    "cases": 27,
+    "scope": "Last-position getter, isolated HP math and dictionary stride. External calls and syscalls rejected."
+  }
+}

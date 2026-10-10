@@ -1,5 +1,6 @@
 #include "LVTarget.h"
 #include <string.h>
+#include <math.h>
 
 typedef struct { LVTargetRead read; void *context; } Reader;
 static int address_valid(uint64_t a, size_t n) {
@@ -26,6 +27,32 @@ static int class_matches(Reader *r, uint64_t cls, const char *name) {
     uint64_t np, sp;
     return load(r, cls + 0x10, &np, 8) && load(r, cls + 0x18, &sp, 8) &&
            equals(r, np, name) && equals(r, sp, "FrameEngine.Visual");
+}
+static void position_candidates(Reader *r,LVTargetActor *a) {
+    if(!a->values_ok || !a->classification_ok || !a->is_hero) return;
+    /* ActorComponentAttribute.get_lastPosition 0x4ea11d8 copies +90..a0.
+       A last-position field is diagnostic evidence, never a live fallback. */
+    if(a->attribute) a->attribute_last_position_ok=load(r,a->attribute+0x90,a->attribute_last_position,24);
+    uint8_t visible;
+    if(load(r,a->visual+0x120,&visible,1) && visible<=1 && load(r,a->visual+0xb8,&a->visual_tick,8)) {
+        a->visual_state_ok=1; a->should_be_visible=visible;
+    }
+    uint64_t sync, back_visual, back_actor, same_sync;
+    if(pointer(r,a->visual+0xf0,&sync) && sync && pointer(r,sync+0x18,&back_visual) && back_visual==a->visual &&
+        pointer(r,sync+0x20,&back_actor) && back_actor==a->managed &&
+        load(r,sync+0x2c,a->sync_logic_position,12) && load(r,sync+0x50,&a->sync_logic_time,4) &&
+        pointer(r,a->visual+0xf0,&same_sync) && same_sync==sync) {
+        a->sync_logic_position_ok=isfinite(a->sync_logic_time) && a->sync_logic_time>=0;
+        for(size_t j=0;j<3;++j) if(!isfinite(a->sync_logic_position[j]) || fabsf(a->sync_logic_position[j])>10000)
+            a->sync_logic_position_ok=0;
+    }
+    /* get_host 0x4ee65ac -> native +148; hostVisiPos follows host.actorVisi.
+       The host may be a different actor. Export identity alongside position. */
+    uint64_t host, transform, same_host;
+    if(pointer(r,a->native+0x148,&host) && host && load(r,host+0x18,&a->host_object_id,4) &&
+        load(r,host+0x2c,&a->host_resource_id,4) && load(r,host+0x80,&a->host_camp,4) &&
+        pointer(r,host+0x20,&transform) && transform && load(r,transform+0x18,a->host_position,24) &&
+        pointer(r,a->native+0x148,&same_host) && same_host==host) a->host_position_ok=1;
 }
 static LVTargetResult finish(LVTargetSnapshot *o, LVTargetResult result, const char *stage) {
     o->result = result; o->stage = stage; return result;
@@ -227,12 +254,14 @@ LVTargetResult lv_target_snapshot(LVTargetRead read, void *context, uint64_t bas
             a.classification_ok = 1; a.is_building = flags[0]; a.is_hero = flags[7];
             a.is_soldier = flags[9]; a.is_monster = flags[11]; a.is_red_blue_buff = flags[35];
         }
+        position_candidates(&r,&a);
         uint64_t visual_after = 0, managed_after = 0, native_after = 0; uint32_t id_after = 0;
         if (!pointer(&r, o->items + 0x20 + (uint64_t)i * 8, &visual_after) || visual_after != a.visual ||
             !pointer(&r, a.visual + 0xa0, &managed_after) || managed_after != a.managed ||
             !pointer(&r, a.managed + 0x18, &native_after) || native_after != a.native ||
             (a.object_id_ok && (!load(&r, a.native + 0x18, &id_after, 4) || id_after != a.object_id))) {
             a.values_ok = a.health_ok = a.position_ok = a.object_id_ok = a.classification_ok = 0;
+            a.attribute_last_position_ok=a.host_position_ok=a.sync_logic_position_ok=a.visual_state_ok=0;
             a.resource_id = a.tid = a.camp = 0; a.object_id = 0; a.health_fixed = 0;
             memset(a.position_fixed, 0, sizeof(a.position_fixed));
             a.is_hero = a.is_monster = a.is_soldier = a.is_building = a.is_red_blue_buff = 0;

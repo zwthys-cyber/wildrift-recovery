@@ -31,7 +31,7 @@ def build(sdk, clang, linker, ldid):
     common = [clang, '-target', 'arm64-apple-ios15.0', '-isysroot', sdk,
               '-O2', '-Wall', '-Werror', '-Wno-deprecated-declarations',
               '-fvisibility=hidden', '-I', ROOT / 'core', '-I', ROOT / 'ios']
-    files = ['ios/main.m', 'ios/LVMachReader.m', 'ios/LVHelper.m', 'ios/LVProbe.m', 'ios/LVCollect.m',
+    files = ['ios/main.m', 'ios/LVMachReader.m', 'ios/LVHelper.m', 'ios/LVProbe.m', 'ios/LVCollect.m', 'ios/LVHUDTrace.m',
              'ios/LVSnapshot.m', 'ios/LVSnapshotController.m', 'ios/LVHUD.m', 'ios/LVHeroPortraits.m', 'ios/LVHUDControl.m', 'ios/LVMinimapSettings.m', 'core/LVMinimap.c', 'core/LVMinimapMotion.c', 'core/LVHUDTelemetry.c', 'core/LVConfig.c', 'core/LVActions.c', 'core/LVZip.c', 'core/LVTarget.c', 'core/LVSmitePreview.c']
     objects = {}
     for filename in files:
@@ -44,11 +44,11 @@ def build(sdk, clang, linker, ldid):
              '-syslibroot', sdk, '-lSystem', '-framework', 'Foundation',
              '-adhoc_codesign']
     run(*links, '-framework', 'UIKit', '-framework', 'CoreGraphics', objects['main'], objects['LVConfig'], objects['LVActions'],
-        objects['LVMachReader'], objects['LVHelper'], objects['LVSnapshotController'], objects['LVHUDControl'], objects['LVHUDTelemetry'], objects['LVMinimapSettings'], objects['LVMinimap'], '-o', app / 'LVRecovery')
+        objects['LVMachReader'], objects['LVHelper'], objects['LVSnapshotController'], objects['LVHUDControl'], objects['LVHUDTrace'], objects['LVHUDTelemetry'], objects['LVMinimapSettings'], objects['LVMinimap'], '-o', app / 'LVRecovery')
     run(*links, '-lz', objects['LVProbe'], objects['LVMachReader'], objects['LVCollect'], objects['LVZip'],
-        objects['LVSnapshot'], objects['LVTarget'], objects['LVSmitePreview'], objects['LVActions'], objects['LVConfig'], objects['LVHUDControl'], objects['LVHUDTelemetry'], objects['LVMinimap'], '-o', app / 'LVProbe')
+        objects['LVSnapshot'], objects['LVTarget'], objects['LVSmitePreview'], objects['LVActions'], objects['LVConfig'], objects['LVHUDControl'], objects['LVHUDTrace'], objects['LVHUDTelemetry'], objects['LVMinimap'], '-o', app / 'LVProbe')
     run(*links, '-framework', 'UIKit', '-framework', 'QuartzCore', '-framework', 'CoreGraphics',
-        objects['LVHUD'], objects['LVHUDControl'], objects['LVMachReader'], objects['LVSnapshot'], objects['LVTarget'],
+        objects['LVHUD'], objects['LVHUDControl'], objects['LVHUDTrace'], objects['LVMachReader'], objects['LVSnapshot'], objects['LVTarget'],
         objects['LVSmitePreview'], objects['LVActions'], objects['LVConfig'], objects['LVHUDTelemetry'], objects['LVMinimap'], objects['LVMinimapMotion'], objects['LVHeroPortraits'], '-o', app / 'LVHUD')
     info = plistlib.loads((ROOT / 'ios/Info.plist').read_bytes())
     (app / 'Info.plist').write_bytes(plistlib.dumps(info, fmt=plistlib.FMT_BINARY))
@@ -112,7 +112,20 @@ def build(sdk, clang, linker, ldid):
                 'minimap_hero_portrait_unknown_fallback': 'numeric marker',
                 'minimap_saved_custom_rect_preserved': True,
                 'minimap_expected_enemy_roster': 'Observed confirmed enemy heroes; never pads or truncates to five',
-                'minimap_telemetry_protocol_version': 2,
+                'minimap_telemetry_protocol_version': 3,
+                'minimap_health_ring_implemented': True,
+                'minimap_health_ring_source': 'Original game minimap cached Q14 HP fraction; only enabled, visible, identity-checked, previously updated icons',
+                'minimap_health_ring_device_verified': False,
+                'minimap_unknown_health_ring': 'gray',
+                'minimap_max_health_inferred': False,
+                'minimap_history_position_fallback': False,
+                'minimap_coordinate_candidates_used_for_overlay': False,
+                'minimap_fog_disappearance_resolved': False,
+                'minimap_latest_device_evidence': 'analysis/device-0.7.3-summary.json',
+                'minimap_latest_device_issue': 'Whole markers intermittently disappear, mainly without vision. Latest probe has four (500,500) positions and one slightly outside-map spawn; later HUD prepared four of five markers.',
+                'minimap_coordinate_trace_implemented': True,
+                'minimap_coordinate_trace_device_verified': False,
+                'minimap_coordinate_trace_limits': {'interval_seconds':1,'samples':32,'heroes_per_sample':16,'file_bytes':524288},
                 'clang_version': subprocess.check_output([clang, '--version'], text=True).splitlines()[0],
                 'sdk': sdk.name, 'files': {str(f.relative_to(app)): hashlib.sha256(f.read_bytes()).hexdigest()
                                          for f in sorted(app.rglob('*')) if f.is_file()}}

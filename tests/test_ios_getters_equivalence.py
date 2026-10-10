@@ -130,5 +130,34 @@ class OriginalGetters(unittest.TestCase):
                 uc.emu_start(start, HALT, count=100)
                 self.assertEqual(uc.reg_read(UC_ARM64_REG_X0), int(predicate(state)))
 
+    def test_attribute_last_position(self):
+        for values in ((0,0,0),(-16384,0,8192),(8192000,0,8192000)):
+            start,end=0x4ea11d8,0x4ea11fc
+            uc=machine(self.fw,start,end);q(uc,HEAP+0x18,HEAP+0x1000)
+            raw=struct.pack('<3q',*values);uc.mem_write(HEAP+0x1090,raw)
+            uc.reg_write(UC_ARM64_REG_X0,HEAP);uc.reg_write(UC_ARM64_REG_X8,HEAP+0xb000)
+            uc.emu_start(start,HALT,count=100)
+            self.assertEqual(bytes(uc.mem_read(HEAP+0xb000,24)),raw)
+
+    def test_original_minimap_hp_fraction_math(self):
+        # Only two scalar instructions of UpdateHpPercent, after GetMaxHpVisi
+        # and GetCurHp returned. No UI code or external getter is executed.
+        from unicorn.arm64_const import UC_ARM64_REG_X20,UC_ARM64_REG_X21
+        for maximum in (1,600*16384,690*16384,123456789):
+            for current in (0,maximum//4,maximum//2,maximum-1,maximum):
+                start,end=0x7378554,0x737855c
+                uc=machine(self.fw,start,end);uc.reg_write(UC_ARM64_REG_X20,maximum);uc.reg_write(UC_ARM64_REG_X21,current)
+                uc.emu_start(start,end,count=100)
+                self.assertEqual(uc.reg_read(UC_ARM64_REG_X21),(current<<14)//maximum)
+
+    def test_original_minimap_dictionary_entry_stride(self):
+        for index in (0,1,7,31):
+            start,end=0x738b8d0,0x738b8dc
+            uc=machine(self.fw,start,end);value=HEAP+0x8000+index*8
+            q(uc,HEAP+0x20+index*24+16,value)
+            uc.reg_write(UC_ARM64_REG_X8,HEAP);uc.reg_write(UC_ARM64_REG_X0,index)
+            uc.emu_start(start,end,count=100)
+            self.assertEqual(uc.reg_read(UC_ARM64_REG_X1),value)
+
 
 if __name__ == '__main__': unittest.main()

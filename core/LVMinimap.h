@@ -28,10 +28,19 @@ typedef struct {
 /* UUID must already match LV_TARGET_UUID. No remote calls or writes. */
 void lv_minimap_read(LVTargetRead read, void *context, uint64_t base, LVMinimapGeometry *output);
 typedef struct {
+    const char *reason;
+    size_t matched, enabled, valid;
+} LVMinimapHealthReport;
+/* Read UIMiniIconHeroCtrl.currentHpPercent without executing game methods. */
+void lv_minimap_health_read(LVTargetRead read, void *context, uint64_t base,
+                           LVTargetSnapshot *snapshot, LVMinimapHealthReport *report);
+typedef struct {
     uint32_t object_id;
     int32_t resource_id;
     unsigned ordinal, is_local;
     double u, v; /* UIKit coordinates in the calibrated rectangle, [0,1]. */
+    double health_fraction;
+    unsigned health_fraction_ok, edge_clamped;
 } LVMinimapMarker;
 typedef struct {
     unsigned ready, manual_projection;
@@ -39,6 +48,7 @@ typedef struct {
     int local_camp, rotation_degrees;
     size_t confirmed_enemies, dead_enemies, missing_enemies, outside_enemies, duplicate_ids;
     size_t count;
+    size_t edge_clamped_enemies;
     LVMinimapMarker markers[LV_TARGET_MAX_ACTORS];
 } LVMinimapFrame;
 void lv_minimap_frame(const LVTargetSnapshot *snapshot, const LVMinimapGeometry *geometry,

@@ -7,6 +7,7 @@
 #import "LVSnapshot.h"
 #import "LVHUDControl.h"
 #import "LVHeroPortraits.h"
+#import "LVHUDTrace.h"
 #include "LVMinimapMotion.h"
 #include <notify.h>
 #include <dlfcn.h>
@@ -35,7 +36,7 @@ extern int proc_pidpath(int, void *, uint32_t);
 @end
 
 static int stateToken = -1, stopToken = -1;
-static int metricTokens[LV_HUD_METRIC_WORDS] = {-1, -1, -1, -1, -1, -1, -1, -1};
+static int metricTokens[LV_HUD_METRIC_WORDS] = {-1, -1, -1, -1, -1, -1, -1, -1, -1};
 static NSString *hudSession;
 static LVMachReader *hudReader;
 static NSDictionary *hudMetadata;
@@ -43,6 +44,42 @@ static NSString *targetIdentity;
 static pid_t targetPID;
 static LVConfig hudConfig;
 static LVMinimapSettings hudMapSettings;
+static NSMutableArray *coordinateSamples;
+static NSString *coordinateBattle;
+static double lastCoordinateSampleAt;
+static void recordCoordinateTrace(NSDictionary *snapshot) {
+    double now=NSProcessInfo.processInfo.systemUptime;
+    if(now-lastCoordinateSampleAt<1) return;
+    lastCoordinateSampleAt=now;
+    NSString *result=snapshot[@"result"];
+    if(![result isEqual:@"ready"] && ![result isEqual:@"partial"]) return;
+    NSString *battle=snapshot[@"trace"][@"drive_instance"];
+    if(![coordinateBattle isEqual:battle]) { coordinateBattle=battle; coordinateSamples=[NSMutableArray new]; }
+    NSMutableArray *heroes=[NSMutableArray new]; BOOL truncated=NO;
+    NSArray *keys=@[@"object_id",@"resource_id",@"camp",@"is_local",@"position_read_ok",@"position",
+        @"health_read_ok",@"health",@"minimap_health_fraction_read_ok",@"minimap_health_fraction",@"coordinate_candidates"];
+    for(NSDictionary *actor in snapshot[@"actors"]) {
+        if(![actor[@"classification_read_ok"] boolValue] || ![actor[@"is_hero"] boolValue]) continue;
+        if(heroes.count==16) { truncated=YES; break; }
+        NSMutableDictionary *entry=[NSMutableDictionary new];
+        for(NSString *key in keys) if(actor[key]) entry[key]=actor[key];
+        [heroes addObject:entry];
+    }
+    if(!heroes.count) return;
+    NSDictionary *map=snapshot[@"minimap"];
+    [coordinateSamples addObject:@{ @"sampled_at":[NSISO8601DateFormatter.new stringFromDate:NSDate.date],
+        @"uptime_seconds":@(now), @"result":result, @"read_attempts":snapshot[@"snapshot_read_attempts"] ?: @0,
+        @"local_camp":map[@"local_camp"] ?: @0, @"map_reason":map[@"reason"] ?: @"missing",
+        @"current_enemy_markers":map[@"current_enemy_marker_count"] ?: @0,
+        @"outside_map_enemies":map[@"outside_map_enemy_count"] ?: @0,
+        @"health_cache":map[@"health_cache"] ?: @{}, @"hero_list_truncated":@(truncated), @"heroes":heroes }];
+    if(coordinateSamples.count>32) [coordinateSamples removeObjectAtIndex:0];
+    NSDictionary *trace=@{ @"format_version":@1, @"session":hudSession.lowercaseString,
+        @"producer_pid":@(getpid()), @"profile_uuid":@LV_TARGET_UUID, @"sample_interval_seconds":@1,
+        @"sample_limit":@32, @"hero_limit":@16, @"samples":coordinateSamples,
+        @"scope":@"Bounded local numeric observations for comparing coordinate sources through vision changes. Candidate and last-position fields are not used for drawing. No full-memory dump, historical marker or predicted coordinate." };
+    LVHUDWriteTrace(hudSession,trace);
+}
 static BOOL handshakeClosed = NO;
 static NSDictionary *mapCalibration(void) {
     NSMutableDictionary *settings = [NSMutableDictionary new];
@@ -104,12 +141,17 @@ static void publishMetrics(NSDictionary *snapshot, uint64_t frames, unsigned ori
         .actor_count = [snapshot[@"read_actor_count"] unsignedShortValue],
         .skipped_count = [snapshot[@"skipped_actor_count"] unsignedShortValue], .orientation = orientation };
     metrics.minimap_enabled = hudConfig.values[lv_config_index("drawMinimap")][0] != 0;
+    NSDictionary *map = snapshot[@"minimap"];
+    metrics.edge_clamped_markers=[map[@"edge_clamped_enemy_count"] unsignedShortValue];
+    for (NSDictionary *marker in map[@"markers"]) if (![marker[@"is_local"] boolValue]) {
+        ++metrics.displayed_markers;
+        if([marker[@"health_fraction_read_ok"] boolValue]) ++metrics.health_ring_markers;
+    }
     if (metrics.result == LV_HUD_READY || metrics.result == LV_HUD_PARTIAL) {
-        NSDictionary *map = snapshot[@"minimap"];
         metrics.enemy_count = [map[@"confirmed_enemy_hero_count"] unsignedShortValue];
-        metrics.enemy_unplaced = [map[@"missing_enemy_position_count"] unsignedShortValue] + [map[@"outside_map_enemy_count"] unsignedShortValue];
-        metrics.map_projection_ok = [map[@"projection_ready"] boolValue]; metrics.map_manual = [map[@"manual_projection"] boolValue];
-        for (NSDictionary *marker in map[@"markers"]) if (![marker[@"is_local"] boolValue]) ++metrics.enemy_markers;
+        metrics.enemy_unplaced = [map[@"current_unplaced_enemy_count"] unsignedShortValue];
+        metrics.map_projection_ok = [map[@"current_projection_ready"] boolValue]; metrics.map_manual = [map[@"manual_projection"] boolValue];
+        metrics.enemy_markers = [map[@"current_enemy_marker_count"] unsignedShortValue];
         for (NSDictionary *skill in snapshot[@"local_skills"][@"summoner"][@"skills"]) {
             if (![skill[@"values_read_ok"] boolValue] || [skill[@"resource_id"] unsignedIntValue] != 81110101) continue;
             metrics.cooldown_ok = [skill[@"cooldown_read_ok"] boolValue];
@@ -178,7 +220,9 @@ static NSString *blockLabel(NSString *code) {
             NSDictionary *m = _markers[i];
             targets[i] = (LVMinimapMarker){ .object_id=[m[@"object_id"] unsignedIntValue],
                 .resource_id=[m[@"resource_id"] intValue], .ordinal=[m[@"ordinal"] unsignedIntValue],
-                .is_local=[m[@"is_local"] boolValue], .u=[m[@"u"] doubleValue], .v=[m[@"v"] doubleValue] };
+                .is_local=[m[@"is_local"] boolValue], .u=[m[@"u"] doubleValue], .v=[m[@"v"] doubleValue],
+                .health_fraction_ok=[m[@"health_fraction_read_ok"] boolValue],
+                .health_fraction=[m[@"health_fraction"] doubleValue], .edge_clamped=[m[@"edge_clamped"] boolValue] };
             if (!targets[i].is_local) {
                 UIImage *image = [self.portraitStore imageForResourceID:targets[i].resource_id];
                 if (image) images[@(targets[i].resource_id)] = image;
@@ -213,26 +257,38 @@ static NSString *blockLabel(NSString *code) {
             CGContextMoveToPoint(context, x, y-5); CGContextAddLineToPoint(context, x, y+5); CGContextStrokePath(context);
         } else {
             CGFloat radius = self.markerSize / 2;
+            x=MAX(radius+1,MIN(self.bounds.size.width-radius-1,x));
+            y=MAX(radius+1,MIN(self.bounds.size.height-radius-1,y));
             CGRect circle = CGRectMake(x-radius, y-radius, radius*2, radius*2);
             UIImage *portrait = self.portraitImages[@(marker->resource_id)];
+            CGContextSaveGState(context);
             if (portrait) {
                 CGContextSaveGState(context);
                 CGContextAddEllipseInRect(context, circle); CGContextClip(context);
                 [portrait drawInRect:circle];
                 CGContextRestoreGState(context);
-                CGContextSetStrokeColorWithColor(context, [UIColor colorWithRed:1 green:.15 blue:.15 alpha:1].CGColor);
-                CGContextSetLineWidth(context, 1.5); CGContextStrokeEllipseInRect(context, circle);
-                continue;
+            } else {
+                CGContextSetFillColorWithColor(context, [UIColor colorWithRed:1 green:0.15 blue:0.15 alpha:.95].CGColor);
+                CGContextFillEllipseInRect(context, circle);
+                NSString *text = [NSString stringWithFormat:@"%u", marker->ordinal];
+                NSDictionary *attributes = @{NSFontAttributeName: [UIFont boldSystemFontOfSize:self.markerSize * .7],
+                    NSForegroundColorAttributeName: UIColor.whiteColor};
+                CGSize size = [text sizeWithAttributes:attributes];
+                [text drawAtPoint:CGPointMake(x-size.width/2, y-size.height/2) withAttributes:attributes];
             }
-            CGContextSetFillColorWithColor(context, [UIColor colorWithRed:1 green:0.15 blue:0.15 alpha:0.95].CGColor);
-            CGContextFillEllipseInRect(context, circle);
-            CGContextSetStrokeColorWithColor(context, UIColor.whiteColor.CGColor); CGContextSetLineWidth(context, 1);
+            /* Background = missing HP; progress starts at 12 o'clock and
+               proceeds clockwise in UIKit coordinates. No numeric HP label. */
+            CGContextSetLineWidth(context, 2);
+            CGContextSetStrokeColorWithColor(context,[UIColor colorWithWhite:.25 alpha:.95].CGColor);
             CGContextStrokeEllipseInRect(context, circle);
-            NSString *text = [NSString stringWithFormat:@"%u", marker->ordinal];
-            NSDictionary *attributes = @{NSFontAttributeName: [UIFont boldSystemFontOfSize:self.markerSize * .7],
-                NSForegroundColorAttributeName: UIColor.whiteColor};
-            CGSize size = [text sizeWithAttributes:attributes];
-            [text drawAtPoint:CGPointMake(x-size.width/2, y-size.height/2) withAttributes:attributes];
+            if(marker->health_fraction_ok && marker->health_fraction>0) {
+                double hp=marker->health_fraction;
+                UIColor *color=hp>.5 ? [UIColor colorWithRed:.2 green:1 blue:.3 alpha:1] :
+                    hp>.25 ? UIColor.yellowColor : [UIColor colorWithRed:1 green:.2 blue:.2 alpha:1];
+                CGContextSetStrokeColorWithColor(context,color.CGColor);
+                CGContextAddArc(context,x,y,radius,-M_PI_2,-M_PI_2+2*M_PI*hp,0); CGContextStrokePath(context);
+            }
+            CGContextRestoreGState(context);
         }
     }
 }
@@ -339,6 +395,7 @@ static NSString *blockLabel(NSString *code) {
                 dispatch_async(dispatch_get_main_queue(), ^{ clearState(); exit(0); }); return;
             }
             NSDictionary *snapshot = LVReadTargetSnapshot(hudReader, hudMetadata, &hudConfig, &hudMapSettings);
+            recordCoordinateTrace(snapshot);
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.sampling = NO; self.lastSampleAt = NSProcessInfo.processInfo.systemUptime;
                 ++self.frames; [self presentSnapshot:snapshot];

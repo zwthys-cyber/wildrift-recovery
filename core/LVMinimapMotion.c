@@ -27,6 +27,8 @@ int lv_minimap_motion_update(LVMinimapMotion *m, const LVMinimapMarker *markers,
     for (size_t i = 0; i < count; ++i) {
         const LVMinimapMarker *a = &markers[i];
         if (!a->object_id || a->is_local > 1 || a->ordinal > LV_TARGET_MAX_ACTORS ||
+            a->health_fraction_ok>1 || a->edge_clamped>1 ||
+            (a->health_fraction_ok && (!isfinite(a->health_fraction) || a->health_fraction<0 || a->health_fraction>1)) ||
             !isfinite(a->u) || !isfinite(a->v) || a->u < 0 || a->u > 1 || a->v < 0 || a->v > 1) {
             lv_minimap_motion_clear(m); return 0;
         }

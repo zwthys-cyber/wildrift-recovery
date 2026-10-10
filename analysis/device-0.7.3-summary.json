@@ -1,0 +1,330 @@
+{
+  "version": "0.7.3",
+  "framework_uuid": "085E1DDF-4A8D-34E2-9D73-A0A28BCC0B83",
+  "records": [
+    {
+      "source_name": "lvlolm-diagnostics 2.json",
+      "source_sha256": "c7f7f8f84d009a46e150325d2cac323e4acbfa598108110b5b988494e473bbd8",
+      "source_bytes": 96654,
+      "app_version": "0.7.3",
+      "probe_sampled_at": "2026-10-10T18:10:20Z",
+      "hud_checked_at": "2026-10-10T18:28:32Z",
+      "probe": {
+        "result": "ready",
+        "read_actor_count": 66,
+        "skipped_actor_count": 0,
+        "local_camp": 2,
+        "geometry": {
+          "reason": "ready",
+          "scale_z": 4.158415794372559,
+          "scale_x": 4.158415794372559,
+          "half_height": 210,
+          "zoom_state": 2,
+          "viewport_mode": 0,
+          "half_width": 210,
+          "full_map_showing": 0,
+          "ready": 1
+        },
+        "confirmed_enemy_count": 5,
+        "outside_map_enemy_count": 5,
+        "prepared_marker_count": 0,
+        "enemies": [
+          {
+            "object_id": 1,
+            "resource_id": 10134,
+            "camp": 1,
+            "position_fixed": [
+              8192000,
+              0,
+              8192000
+            ],
+            "position": [
+              500,
+              0,
+              500
+            ],
+            "health": 630,
+            "position_read_ok": 1,
+            "health_read_ok": 1,
+            "classification_read_ok": 1,
+            "is_hero": 1
+          },
+          {
+            "object_id": 2,
+            "resource_id": 10034,
+            "camp": 1,
+            "position_fixed": [
+              8192000,
+              0,
+              8192000
+            ],
+            "position": [
+              500,
+              0,
+              500
+            ],
+            "health": 600,
+            "position_read_ok": 1,
+            "health_read_ok": 1,
+            "classification_read_ok": 1,
+            "is_hero": 1
+          },
+          {
+            "object_id": 3,
+            "resource_id": 10009,
+            "camp": 1,
+            "position_fixed": [
+              -827548,
+              0,
+              -798249
+            ],
+            "position": [
+              -50.509521484375,
+              0,
+              -48.72125244140625
+            ],
+            "health": 690,
+            "position_read_ok": 1,
+            "health_read_ok": 1,
+            "classification_read_ok": 1,
+            "is_hero": 1
+          },
+          {
+            "object_id": 4,
+            "resource_id": 10001,
+            "camp": 1,
+            "position_fixed": [
+              8192000,
+              0,
+              8192000
+            ],
+            "position": [
+              500,
+              0,
+              500
+            ],
+            "health": 840,
+            "position_read_ok": 1,
+            "health_read_ok": 1,
+            "classification_read_ok": 1,
+            "is_hero": 1
+          },
+          {
+            "object_id": 5,
+            "resource_id": 10013,
+            "camp": 1,
+            "position_fixed": [
+              8192000,
+              0,
+              8192000
+            ],
+            "position": [
+              500,
+              0,
+              500
+            ],
+            "health": 630,
+            "position_read_ok": 1,
+            "health_read_ok": 1,
+            "classification_read_ok": 1,
+            "is_hero": 1
+          }
+        ]
+      },
+      "later_hud_sample": {
+        "freshness_limit_seconds": 3,
+        "minimap_enabled": 1,
+        "latest_snapshot_usable": 0,
+        "fresh": 1,
+        "skipped_actor_count": 0,
+        "confirmed_enemy_hero_count": 0,
+        "last_result": "not_in_battle",
+        "read_actor_count": 0,
+        "minimap_projection_ready": 0,
+        "heartbeat_age_seconds": 0.141,
+        "protocol_version": 2,
+        "scope": "Last HUD sample assigned to views; separate from target_probe snapshot. Enemy marker count means prepared coordinates, not proof of visibility or alignment. Fresh heartbeat does not prove screen visibility, orientation correctness or touch passthrough.",
+        "frames_completed": 7264,
+        "orientation_raw": 1,
+        "manual_minimap_projection": 0,
+        "stock_read_ok": 0,
+        "cooldown_read_ok": 0,
+        "prepared_enemy_marker_count": 0,
+        "unplaced_enemy_count": 0,
+        "available": true
+      }
+    },
+    {
+      "source_name": "lvlolm-diagnostics.json",
+      "source_sha256": "94911d292a105c7872a3976f979790152dbbb644d0387cef5d3985df005e5006",
+      "source_bytes": 96320,
+      "app_version": "0.7.3",
+      "probe_sampled_at": "2026-10-10T18:10:20Z",
+      "hud_checked_at": "2026-10-10T18:15:00Z",
+      "probe": {
+        "result": "ready",
+        "read_actor_count": 66,
+        "skipped_actor_count": 0,
+        "local_camp": 2,
+        "geometry": {
+          "reason": "ready",
+          "scale_z": 4.158415794372559,
+          "scale_x": 4.158415794372559,
+          "half_height": 210,
+          "zoom_state": 2,
+          "viewport_mode": 0,
+          "half_width": 210,
+          "full_map_showing": 0,
+          "ready": 1
+        },
+        "confirmed_enemy_count": 5,
+        "outside_map_enemy_count": 5,
+        "prepared_marker_count": 0,
+        "enemies": [
+          {
+            "object_id": 1,
+            "resource_id": 10134,
+            "camp": 1,
+            "position_fixed": [
+              8192000,
+              0,
+              8192000
+            ],
+            "position": [
+              500,
+              0,
+              500
+            ],
+            "health": 630,
+            "position_read_ok": 1,
+            "health_read_ok": 1,
+            "classification_read_ok": 1,
+            "is_hero": 1
+          },
+          {
+            "object_id": 2,
+            "resource_id": 10034,
+            "camp": 1,
+            "position_fixed": [
+              8192000,
+              0,
+              8192000
+            ],
+            "position": [
+              500,
+              0,
+              500
+            ],
+            "health": 600,
+            "position_read_ok": 1,
+            "health_read_ok": 1,
+            "classification_read_ok": 1,
+            "is_hero": 1
+          },
+          {
+            "object_id": 3,
+            "resource_id": 10009,
+            "camp": 1,
+            "position_fixed": [
+              -827548,
+              0,
+              -798249
+            ],
+            "position": [
+              -50.509521484375,
+              0,
+              -48.72125244140625
+            ],
+            "health": 690,
+            "position_read_ok": 1,
+            "health_read_ok": 1,
+            "classification_read_ok": 1,
+            "is_hero": 1
+          },
+          {
+            "object_id": 4,
+            "resource_id": 10001,
+            "camp": 1,
+            "position_fixed": [
+              8192000,
+              0,
+              8192000
+            ],
+            "position": [
+              500,
+              0,
+              500
+            ],
+            "health": 840,
+            "position_read_ok": 1,
+            "health_read_ok": 1,
+            "classification_read_ok": 1,
+            "is_hero": 1
+          },
+          {
+            "object_id": 5,
+            "resource_id": 10013,
+            "camp": 1,
+            "position_fixed": [
+              8192000,
+              0,
+              8192000
+            ],
+            "position": [
+              500,
+              0,
+              500
+            ],
+            "health": 630,
+            "position_read_ok": 1,
+            "health_read_ok": 1,
+            "classification_read_ok": 1,
+            "is_hero": 1
+          }
+        ]
+      },
+      "later_hud_sample": {
+        "freshness_limit_seconds": 3,
+        "smite_cooldown_fixed": 0,
+        "minimap_enabled": 1,
+        "smite_stock_maximum": 2,
+        "latest_snapshot_usable": 1,
+        "smite_cooldown_seconds": 0,
+        "fresh": 1,
+        "skipped_actor_count": 0,
+        "confirmed_enemy_hero_count": 5,
+        "last_result": "ready",
+        "read_actor_count": 183,
+        "minimap_projection_ready": 1,
+        "heartbeat_age_seconds": 0.096,
+        "protocol_version": 2,
+        "scope": "Last HUD sample assigned to views; separate from target_probe snapshot. Enemy marker count means prepared coordinates, not proof of visibility or alignment. Fresh heartbeat does not prove screen visibility, orientation correctness or touch passthrough.",
+        "frames_completed": 1857,
+        "smite_stock_current": 2,
+        "orientation_raw": 1,
+        "manual_minimap_projection": 0,
+        "stock_read_ok": 1,
+        "cooldown_read_ok": 1,
+        "prepared_enemy_marker_count": 4,
+        "unplaced_enemy_count": 1,
+        "available": true
+      }
+    }
+  ],
+  "user_reports": {
+    "whole_marker_disappears": true,
+    "mostly_without_vision": true,
+    "health_ring_requested": true,
+    "historical_position_workaround_rejected": true
+  },
+  "findings": [
+    "The two probe snapshots are identical and contain five enemy heroes; four current positions are (500,0,500).",
+    "One spawn at (-50.5095,0,-48.7213) is only slightly outside the native map and was filtered by the strict edge check.",
+    "A later HUD sample prepared four of five enemy markers; it is not simultaneous with the probe.",
+    "The second later HUD sample is not_in_battle and cannot diagnose active fog behavior."
+  ],
+  "health_fraction_in_old_reports": false,
+  "alternative_coordinates_in_old_reports": false,
+  "root_cause_verified": false,
+  "scope": "Whitelisted numeric summaries of device reports. No private game binaries, runtime addresses or full logs. Sentinel observations do not identify their cause or prove an alternative realtime fog source."
+}

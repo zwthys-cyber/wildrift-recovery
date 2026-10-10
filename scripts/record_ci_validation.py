@@ -17,7 +17,7 @@ if digest != metadata['sha256']:
 
 def checks(name):
     output = (ROOT / 'build' / name).read_text()
-    match = re.search(r'(\d+) checks passed', output)
+    match = re.search(r'(\d+) (?:checks|scenarios) passed', output)
     if not match:
         raise ValueError('Missing completed test output: ' + name)
     return int(match.group(1))
@@ -32,11 +32,14 @@ record = {
     'compiler': metadata['clang_version'], 'sdk': metadata['sdk'],
     'minimap_checks': checks('minimap-checks.txt'),
     'minimap_motion_checks': checks('minimap-motion-checks.txt'),
+    'target_reader_scenarios': checks('target-reader-checks.txt'),
+    'minimap_health_checks': checks('minimap-health-checks.txt'),
+    'hud_telemetry_checks': checks('hud-telemetry-checks.txt'),
     'ipa_signature_tests': 5,
     'ipa_total_tests': 8,
     'bundled_hero_portraits': metadata['minimap_hero_portrait_count'],
     'desktop_icon_payload_verified': True,
-    'scope': 'GitHub CI checks and build provenance. Local validation remains separately recorded. Device animation smoothness is not verified by CI.'
+    'scope': 'GitHub CI checks and build provenance. Local validation remains separately recorded. Ring rendering, diagnostic trace transport and real-time fog coordinates require device evidence; CI does not verify them.'
 }
 text = json.dumps(record, ensure_ascii=False, indent=2) + '\n'
 (ROOT / 'analysis/ci-validation.json').write_text(text)

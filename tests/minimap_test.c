@@ -25,7 +25,7 @@ static void roster(void) {
    instances. It rejects unmapped reads rather than pretending zero is data. */
 typedef struct { uint64_t address; unsigned char bytes[1024]; size_t size; } Block;
 static Block blocks[16]; static size_t block_count;
-static uint64_t failure, change; static unsigned change_reads;
+static uint64_t failure, change; static unsigned change_reads, change_byte;
 static void block(uint64_t a,size_t size) { blocks[block_count++]=(Block){.address=a,.size=size}; }
 static void put(uint64_t a,const void *data,size_t size) {
     for(size_t i=0;i<block_count;++i) if(a>=blocks[i].address && a-blocks[i].address+size<=blocks[i].size) {
@@ -40,13 +40,13 @@ static int reader(void *ctx,uint64_t a,void *out,size_t size) {
     if(a==failure) {memset(out,255,size);return 0;}
     for(size_t i=0;i<block_count;++i) if(a>=blocks[i].address && a-blocks[i].address+size<=blocks[i].size) {
         memcpy(out,blocks[i].bytes+a-blocks[i].address,size);
-        if(a==change && ++change_reads==2) ((unsigned char *)out)[0]^=1;
+        if(a==change && ++change_reads==2) ((unsigned char *)out)[change_byte]^=1;
         return 1;
     }
     return 0;
 }
 static void geometry_fixture(void) {
-    memset(blocks,0,sizeof(blocks));block_count=0;failure=change=change_reads=0;
+    memset(blocks,0,sizeof(blocks));block_count=0;failure=change=change_reads=change_byte=0;
     block(0x110a915f8,8);block(0x200000+6835*8,40); /* cache */
     block(0x300000,0x100);block(0x300100,0x100); /* classes */
     block(0x310003,80); /* deliberately unaligned string addresses */
@@ -75,7 +75,7 @@ int main(void) {
     roster();snapshot.actors[1].position_ok=0;lv_minimap_frame(&snapshot,&geometry,&settings,&frame);
     check(frame.count==5 && frame.missing_enemies==1 && frame.confirmed_enemies==5);
     roster();snapshot.actors[1].health_ok=0;lv_minimap_frame(&snapshot,&geometry,&settings,&frame);
-    check(frame.count==5 && frame.missing_enemies==1);
+    check(frame.count==6 && frame.missing_enemies==0); /* HP failure does not invalidate a current position. */
     roster();snapshot.actors[1].classification_ok=0;lv_minimap_frame(&snapshot,&geometry,&settings,&frame);
     check(frame.confirmed_enemies==4 && frame.count==5);
     roster();snapshot.actors[1].is_hero=0;lv_minimap_frame(&snapshot,&geometry,&settings,&frame);
@@ -87,6 +87,16 @@ int main(void) {
     roster();snapshot.actors[1].object_id=0;lv_minimap_frame(&snapshot,&geometry,&settings,&frame);check(frame.confirmed_enemies==4);
     roster();snapshot.actors[1].position_fixed[0]=INT64_MAX;lv_minimap_frame(&snapshot,&geometry,&settings,&frame);
     check(frame.outside_enemies==1 && frame.count==5);
+    roster();snapshot.actors[1].position_fixed[0]=52*16384;lv_minimap_frame(&snapshot,&geometry,&settings,&frame);
+    check(frame.count==6 && frame.edge_clamped_enemies==1 && frame.markers[5].edge_clamped);
+    close_to(frame.markers[5].u,1);
+    snapshot.actors[1].position_fixed[0]=500*16384;lv_minimap_frame(&snapshot,&geometry,&settings,&frame);
+    check(frame.count==5 && frame.outside_enemies==1 && frame.edge_clamped_enemies==0);
+    snapshot.actors[1].position_fixed[0]=-500*16384;lv_minimap_frame(&snapshot,&geometry,&settings,&frame);
+    check(frame.count==5 && frame.outside_enemies==1);
+    roster();snapshot.actors[1].minimap_health_fraction_ok=1;snapshot.actors[1].minimap_health_fraction_fixed=4096;
+    lv_minimap_frame(&snapshot,&geometry,&settings,&frame);
+    check(frame.markers[5].health_fraction_ok && frame.markers[5].health_fraction==.25);
     roster();snapshot.result=LV_TARGET_CHANGED;lv_minimap_frame(&snapshot,&geometry,&settings,&frame);check(!frame.ready && !frame.count);
     roster();snapshot.actors[1].is_local=1;lv_minimap_frame(&snapshot,&geometry,&settings,&frame);check(!frame.ready && !frame.count);
     roster();snapshot.actors[0].camp=4;lv_minimap_frame(&snapshot,&geometry,&settings,&frame);check(!frame.ready);
@@ -139,10 +149,33 @@ int main(void) {
     check(geometry.ready && geometry.scale_x==2 && geometry.scale_z==3 && geometry.half_width==100);
     failure=0x500010;lv_minimap_read(reader,NULL,0x100000000,&geometry);check(!geometry.ready && !geometry.scale_x);
     geometry_fixture();change=0x500010;lv_minimap_read(reader,NULL,0x100000000,&geometry);check(!geometry.ready && !strcmp(geometry.reason,"geometry_changed"));
+    geometry_fixture();change=0x500010;change_byte=4;lv_minimap_read(reader,NULL,0x100000000,&geometry);
+    check(geometry.ready); /* unrelated camera/animation value must not hide every marker */
+    geometry_fixture();change=0x500010;change_byte=0x34;lv_minimap_read(reader,NULL,0x100000000,&geometry);
+    check(!geometry.ready && !strcmp(geometry.reason,"geometry_changed"));
+    geometry_fixture();change=0x501330;lv_minimap_read(reader,NULL,0x100000000,&geometry);
+    check(!geometry.ready && !strcmp(geometry.reason,"geometry_changed"));
     geometry_fixture();f(0x500044,NAN);lv_minimap_read(reader,NULL,0x100000000,&geometry);check(!geometry.ready && !strcmp(geometry.reason,"geometry_invalid"));
     geometry_fixture();unsigned char one=1;put(0x5012d9,&one,1);lv_minimap_read(reader,NULL,0x100000000,&geometry);check(!geometry.ready && geometry.full_map_showing);
     geometry_fixture();put(0x500010,&one,1);lv_minimap_read(reader,NULL,0x100000000,&geometry);check(!geometry.ready && geometry.viewport_mode);
     geometry_fixture();q(0x500000,0x300100);lv_minimap_read(reader,NULL,0x100000000,&geometry);check(!geometry.ready);
+    /* The 0.7.3 device probe has five enemies: four (500,500) sentinels
+       and one spawn just beyond the native edge. Only the spawn can render. */
+    roster(); snapshot.count=6; lv_minimap_defaults(&settings);
+    snapshot.actors[0].camp=2;
+    for(size_t i=1;i<=5;++i) {
+        snapshot.actors[i].camp=1; snapshot.actors[i].object_id=(uint32_t)i;
+        snapshot.actors[i].position_fixed[0]=snapshot.actors[i].position_fixed[2]=8192000;
+    }
+    snapshot.actors[0].object_id=10;
+    snapshot.actors[3].position_fixed[0]=-827548;
+    snapshot.actors[3].position_fixed[2]=-798249;
+    geometry=(LVMinimapGeometry){.ready=1,.reason="ready",.scale_x=4.158415794372559f,
+        .scale_z=4.158415794372559f,.half_width=210,.half_height=210};
+    lv_minimap_frame(&snapshot,&geometry,&settings,&frame);
+    check(frame.ready && frame.confirmed_enemies==5 && frame.count==1 && frame.outside_enemies==4);
+    check(frame.markers[0].object_id==3 && frame.edge_clamped_enemies==1);
+    close_to(frame.markers[0].u,1); check(frame.markers[0].v>0 && frame.markers[0].v<.02);
     lv_minimap_read(reader,NULL,UINT64_MAX,&geometry);check(!geometry.ready && !geometry.scale_x);
     lv_minimap_read(NULL,NULL,0x100000000,&geometry);check(!geometry.ready);
     printf("Minimap: %u checks passed\n",checks);return 0;

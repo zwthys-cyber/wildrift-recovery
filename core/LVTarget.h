@@ -22,6 +22,16 @@ typedef struct {
     unsigned values_ok, health_ok, is_local;
     unsigned object_id_ok, position_ok;
     unsigned classification_ok, is_hero, is_monster, is_soldier, is_building, is_red_blue_buff;
+    /* Original minimap UI cache, independently validated; not a max-HP guess. */
+    int64_t minimap_health_fraction_fixed;
+    unsigned minimap_health_fraction_ok;
+    /* Diagnostic alternatives only; their freshness is not established. */
+    int64_t attribute_last_position[3], host_position[3];
+    float sync_logic_position[3], sync_logic_time;
+    uint32_t host_object_id;
+    int32_t host_resource_id, host_camp;
+    uint64_t visual_tick;
+    unsigned attribute_last_position_ok, host_position_ok, sync_logic_position_ok, visual_state_ok, should_be_visible;
 } LVTargetActor;
 typedef struct {
     uint64_t native, cd_node;

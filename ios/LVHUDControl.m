@@ -1,4 +1,5 @@
 #import "LVHUDControl.h"
+#import "LVHUDTrace.h"
 #include <mach-o/dyld.h>
 #include <notify.h>
 #include <spawn.h>
@@ -23,7 +24,7 @@ NSString *LVHUDNotification(NSString *session, BOOL stopping) {
 }
 NSString *LVHUDMetricNotification(NSString *session, size_t index) {
     static const char *const names[LV_HUD_METRIC_WORDS] = {
-        "owner", "sequence", "frames", "time", "data", "cooldown", "stock", "reserved"
+        "owner", "sequence", "frames", "time", "data", "cooldown", "stock", "reserved", "mapdetail"
     };
     if (!LVHUDSessionValid(session) || index >= LV_HUD_METRIC_WORDS) return nil;
     return [NSString stringWithFormat:@"local.lvlolm.recovery.hud.%@.metrics.%s", session.lowercaseString, names[index]];
@@ -65,6 +66,9 @@ static NSDictionary *samplingStatus(NSString *session, pid_t pid) {
         @"manual_minimap_projection": @(metrics.map_manual != 0),
         @"confirmed_enemy_hero_count": @(metrics.enemy_count), @"prepared_enemy_marker_count": @(metrics.enemy_markers),
         @"unplaced_enemy_count": @(metrics.enemy_unplaced),
+        @"displayed_enemy_marker_count": @(metrics.displayed_markers),
+        @"health_ring_enemy_marker_count": @(metrics.health_ring_markers),
+        @"edge_clamped_enemy_marker_count": @(metrics.edge_clamped_markers),
         @"scope": @"Last HUD sample assigned to views; separate from target_probe snapshot. Enemy marker count means prepared coordinates, not proof of visibility or alignment. Fresh heartbeat does not prove screen visibility, orientation correctness or touch passthrough." } mutableCopy];
     if (metrics.cooldown_ok) [report addEntriesFromDictionary:@{ @"smite_cooldown_fixed": @(metrics.cooldown_fixed),
         @"smite_cooldown_seconds": @((double)metrics.cooldown_fixed / 16384.0) }];
@@ -88,10 +92,13 @@ NSDictionary *LVHUDStatus(NSString *session) {
     BOOL running = (state & UINT64_C(0xffffffff00000000)) == HUD_MARKER && pid > 0 &&
         proc_pidpath(pid, path, sizeof(path)) > 0 &&
         [[[NSString stringWithUTF8String:path] stringByResolvingSymlinksInPath] isEqualToString:LVHUDExecutablePath()];
-    return @{ @"running": @(running), @"hud_pid": running ? @(pid) : @0,
+    NSMutableDictionary *report=[@{ @"running": @(running), @"hud_pid": running ? @(pid) : @0,
         @"mode": @"read_only_live_hud", @"simulation_only": @YES,
         @"visible_on_device_verified": @NO, @"touch_backend_available": @NO,
-        @"sampling": running ? samplingStatus(session, pid) : @{ @"available": @NO, @"reason": @"hud_not_running" } };
+        @"sampling": running ? samplingStatus(session, pid) : @{ @"available": @NO, @"reason": @"hud_not_running" } } mutableCopy];
+    NSDictionary *trace=LVHUDReadTrace(session);
+    if(trace && (!running || [trace[@"producer_pid"] intValue]==pid)) report[@"coordinate_trace"]=trace;
+    return report;
 }
 NSDictionary *LVHUDStop(NSString *session) {
     if (!LVHUDSessionValid(session)) return @{ @"error": @"invalid HUD session" };
@@ -103,8 +110,10 @@ NSDictionary *LVHUDStop(NSString *session) {
     for (unsigned i = 0; i < 20; ++i) {
         NSDictionary *status = LVHUDStatus(session);
         if (status[@"error"]) return status;
-        if (![status[@"running"] boolValue])
+        if (![status[@"running"] boolValue]) {
+            LVHUDRemoveTrace(session);
             return @{ @"stop_requested": @YES, @"running": @NO, @"prior_status": before };
+        }
         usleep(50000);
     }
     return @{ @"stop_requested": @YES, @"running": @YES, @"prior_status": before };

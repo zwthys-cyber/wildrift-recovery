@@ -8,12 +8,12 @@
    encoder under test. Fields use numeric values observed in device reports,
    but this is not captured device telemetry. */
 static const uint64_t golden[LV_HUD_METRIC_WORDS] = {
-    UINT64_C(0x000000020000039d), 24, 12, 100000,
+    UINT64_C(0x000000030000039d), 24, 12, 100000,
     UINT64_C(0x0003002f00000300), 147130,
-    UINT64_C(0x0000000100000002), UINT64_C(0x0003000500040001)
+    UINT64_C(0x0000000100000002), UINT64_C(0x0003000500040001), UINT64_C(0x0000000400030001)
 };
 static unsigned cases;
-static void check(int condition) { assert(condition); ++cases; }
+static void check(int condition) { if(!condition) fprintf(stderr,"Failed telemetry check %u\n",cases+1); assert(condition); ++cases; }
 static void rejected(const uint64_t *words, uint32_t pid, uint64_t now) {
     LVHUDMetrics m; memset(&m, 0xff, sizeof(m));
     check(!lv_hud_metrics_decode(words, pid, now, &m));
@@ -26,15 +26,20 @@ int main(void) {
     check(m.fresh && m.snapshot_usable && m.age_seconds == .5);
     check(m.cooldown_ok && m.cooldown_fixed == 147130 && m.stock_ok && m.stock_current == 1 && m.stock_maximum == 2 && m.orientation == 3);
     check(m.enemy_count == 5 && m.enemy_markers == 4 && m.enemy_unplaced == 1 && m.map_projection_ok && m.minimap_enabled && !m.map_manual);
+    check(m.displayed_markers==4 && m.health_ring_markers==3 && m.edge_clamped_markers==1);
     check(lv_hud_metrics_encode(&m, words) && !memcmp(golden, words, sizeof(words)));
     check(lv_hud_metrics_decode(golden, 925, 103000, &m) && m.fresh);
     check(lv_hud_metrics_decode(golden, 925, 103001, &m) && !m.fresh && m.snapshot_usable);
     rejected(golden, 926, 100500); rejected(golden, 0, 100500);
     rejected(golden, 925, 99999); rejected(NULL, 925, 100500);
     const struct { unsigned field; uint64_t value; } invalid[] = {
-        {LV_HUD_OWNER, UINT64_C(0x000000030000039d)}, /* unknown protocol */
+        {LV_HUD_OWNER, UINT64_C(0x000000040000039d)}, /* unknown protocol */
         {LV_HUD_OWNER, UINT64_C(0x000000010000039d)}, /* older protocol */
-        {LV_HUD_OWNER, UINT64_C(0x0000000280000000)}, /* invalid process ID */
+        {LV_HUD_OWNER, UINT64_C(0x0000000380000000)}, /* invalid process ID */
+        {LV_HUD_MAPDETAIL, UINT64_C(0x0001000400030001)}, /* reserved high bits */
+        {LV_HUD_MAPDETAIL, UINT64_C(0x0000000500030001)}, /* display exceeds current samples */
+        {LV_HUD_MAPDETAIL, UINT64_C(0x0000000400050001)}, /* HP exceeds displayed markers */
+        {LV_HUD_MAPDETAIL, UINT64_C(0x0000000400030005)}, /* clamps exceed displayed markers */
         {LV_HUD_SEQUENCE, 23}, /* incomplete writer */
         {LV_HUD_SEQUENCE, 0}, /* never sampled */
         {LV_HUD_FRAMES, 13}, /* counts changed during publication */
@@ -69,6 +74,8 @@ int main(void) {
     words[LV_HUD_RESERVED] = UINT64_C(0x0002000000000000);
     rejected(words, 925, 100500); /* even empty map projection must clear */
     words[LV_HUD_RESERVED] = 0;
+    rejected(words, 925, 100500); /* failure also clears protocol-3 ring/display counts */
+    words[LV_HUD_MAPDETAIL] = 0;
     check(lv_hud_metrics_decode(words, 925, 100500, &m) && m.fresh && !m.snapshot_usable);
     check(!m.cooldown_ok && !m.stock_ok && m.actor_count == 0);
     memcpy(words, golden, sizeof(words)); words[LV_HUD_STOCK] = UINT64_C(0xffffffff00000002);
@@ -79,6 +86,8 @@ int main(void) {
     check(!lv_hud_metrics_decode(golden, 925, 100500, NULL));
     check(lv_hud_result_from_name(NULL) == LV_HUD_UNKNOWN);
     check(lv_hud_result_from_name("changed") == LV_HUD_CHANGED);
+    check(lv_hud_result_from_name("changed_during_read") == LV_HUD_CHANGED);
+    check(lv_hud_result_from_name("actor_limit") == LV_HUD_LIMIT);
     check(!strcmp(lv_hud_result_name(LV_HUD_PARTIAL), "partial"));
     printf("HUD telemetry: %u checks passed\n", cases);
     return 0;

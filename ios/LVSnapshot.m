@@ -78,30 +78,64 @@ static NSDictionary *smitePreview(LVTargetSnapshot *snapshot, const LVConfig *co
         r[@"chosen_object_id"] = @(snapshot->actors[p.chosen_actor_index].object_id);
     return r;
 }
+static NSArray *fixedPosition(const int64_t *p) {
+    return @[@((double)p[0]/16384.0),@((double)p[1]/16384.0),@((double)p[2]/16384.0)];
+}
+static NSDictionary *positionCandidates(const LVTargetActor *a) {
+    NSMutableDictionary *r=[@{ @"attribute_last_position_read_ok": @(a->attribute_last_position_ok!=0),
+        @"sync_logic_position_read_ok": @(a->sync_logic_position_ok!=0),
+        @"host_position_read_ok": @(a->host_position_ok!=0), @"visual_state_read_ok": @(a->visual_state_ok!=0),
+        @"used_for_overlay": @NO } mutableCopy];
+    if(a->attribute_last_position_ok) r[@"attribute_last_position"]=fixedPosition(a->attribute_last_position);
+    if(a->sync_logic_position_ok) {
+        r[@"sync_logic_position"]=@[@(a->sync_logic_position[0]),@(a->sync_logic_position[1]),@(a->sync_logic_position[2])];
+        r[@"sync_logic_time"]=@(a->sync_logic_time);
+    }
+    if(a->host_position_ok) {
+        r[@"host_position"]=fixedPosition(a->host_position);
+        r[@"host_object_id"]=@(a->host_object_id); r[@"host_resource_id"]=@(a->host_resource_id); r[@"host_camp"]=@(a->host_camp);
+    }
+    if(a->visual_state_ok) { r[@"should_be_visible"]=@(a->should_be_visible!=0); r[@"visual_tick"]=@(a->visual_tick); }
+    return r;
+}
 static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTargetSnapshot *snapshot,
-                                      const LVMinimapSettings *settings) {
+                                      const LVMinimapSettings *settings, const LVMinimapHealthReport *health) {
     LVMinimapGeometry geometry; lv_minimap_read(readTarget, (__bridge void *)reader, base, &geometry);
+    if (!geometry.ready && [@(geometry.reason) isEqual:@"geometry_changed"])
+        lv_minimap_read(readTarget, (__bridge void *)reader, base, &geometry);
     LVMinimapFrame frame; lv_minimap_frame(snapshot, &geometry, settings, &frame);
+    size_t rawCount=0;
+    for(size_t i=0;i<frame.count;++i) rawCount+=!frame.markers[i].is_local;
+    size_t rawUnplaced=frame.missing_enemies+frame.outside_enemies;
+    unsigned rawReady=frame.ready;
     NSMutableArray *markers = [NSMutableArray new];
     for (size_t i = 0; i < frame.count; ++i) {
         LVMinimapMarker *m = &frame.markers[i];
         [markers addObject:@{ @"object_id": @(m->object_id), @"resource_id": @(m->resource_id),
-            @"ordinal": @(m->ordinal), @"is_local": @(m->is_local != 0), @"u": @(m->u), @"v": @(m->v) }];
+            @"ordinal": @(m->ordinal), @"is_local": @(m->is_local != 0), @"u": @(m->u), @"v": @(m->v),
+            @"health_fraction_read_ok": @(m->health_fraction_ok != 0), @"health_fraction": @(m->health_fraction),
+            @"edge_clamped": @(m->edge_clamped != 0) }];
     }
     return @{ @"projection_ready": @(frame.ready != 0), @"reason": @(frame.reason),
         @"confirmed_enemy_hero_count": @(frame.confirmed_enemies), @"dead_enemy_count": @(frame.dead_enemies),
         @"missing_enemy_position_count": @(frame.missing_enemies), @"outside_map_enemy_count": @(frame.outside_enemies),
         @"duplicate_id_count": @(frame.duplicate_ids), @"local_camp": @(frame.local_camp),
         @"rotation_degrees": @(frame.rotation_degrees), @"manual_projection": @(frame.manual_projection != 0),
+        @"current_projection_ready": @(rawReady != 0), @"current_enemy_marker_count": @(rawCount),
+        @"current_unplaced_enemy_count": @(rawUnplaced),
+        @"edge_clamped_enemy_count": @(frame.edge_clamped_enemies),
+        @"health_cache": @{ @"reason": @(health->reason), @"matched_hero_count": @(health->matched),
+            @"enabled_hero_count": @(health->enabled), @"valid_fraction_count": @(health->valid),
+            @"source": @"game_minimap_cached_percent", @"max_health_inferred": @NO },
         @"markers": markers, @"alignment_device_verified": @NO,
         @"geometry": @{ @"ready": @(geometry.ready != 0), @"reason": @(geometry.reason),
             @"viewport_mode": @(geometry.viewport_mode != 0), @"full_map_showing": @(geometry.full_map_showing != 0),
             @"zoom_state": @(geometry.zoom_state), @"scale_x": @(geometry.scale_x), @"scale_z": @(geometry.scale_z),
             @"half_width": @(geometry.half_width), @"half_height": @(geometry.half_height) },
-        @"scope": @"Current client-memory positions only. No fog-of-war freshness or visibility claim. Ordinary minimap projection uses recovered scale/half-size fields; screen rectangle and camp rotation require device alignment. No guessed extra enemies or last-position cache." };
+        @"scope": @"Current client-memory coordinates only; no historical positions or extrapolation. HP fraction is the original visible/enabled minimap UI cache, not inferred max HP; unavailable data uses a neutral ring. Extra coordinate sources are diagnostic candidates, not established real-time positions. Ordinary map only." };
 }
 NSDictionary *LVReadTargetSnapshot(LVMachReader *reader, NSDictionary *metadata, const LVConfig *config,
-                                    const LVMinimapSettings *mapSettings) {
+                                  const LVMinimapSettings *mapSettings) {
     NSDictionary *image = nil;
     id rawImages = metadata[@"images"];
     if ([rawImages isKindOfClass:NSArray.class]) {
@@ -125,7 +159,11 @@ NSDictionary *LVReadTargetSnapshot(LVMachReader *reader, NSDictionary *metadata,
     uint64_t base = strtoull(text, &end, 0);
     if (errno || end == text || *end) return @{ @"result": @"invalid_image_address" };
     LVTargetSnapshot snapshot;
-    lv_target_snapshot(readTarget, (__bridge void *)reader, base, &snapshot);
+    unsigned attempts=0;
+    do { lv_target_snapshot(readTarget, (__bridge void *)reader, base, &snapshot); ++attempts; }
+    while(snapshot.result==LV_TARGET_CHANGED && attempts<3);
+    LVMinimapHealthReport health;
+    lv_minimap_health_read(readTarget,(__bridge void *)reader,base,&snapshot,&health);
     NSMutableArray *actors = [NSMutableArray new];
     for (size_t i = 0; i < snapshot.count; ++i) {
         LVTargetActor *a = &snapshot.actors[i];
@@ -136,6 +174,9 @@ NSDictionary *LVReadTargetSnapshot(LVMachReader *reader, NSDictionary *metadata,
             @"object_id_read_ok": @(a->object_id_ok != 0), @"position_read_ok": @(a->position_ok != 0),
             @"transform_address": hexAddress(a->transform) } mutableCopy];
         record[@"classification_read_ok"] = @(a->classification_ok != 0);
+        if(a->classification_ok && a->is_hero) record[@"coordinate_candidates"]=positionCandidates(a);
+        record[@"minimap_health_fraction_read_ok"] = @(a->minimap_health_fraction_ok != 0);
+        if(a->minimap_health_fraction_ok) record[@"minimap_health_fraction"] = @((double)a->minimap_health_fraction_fixed/16384.0);
         if (a->classification_ok) [record addEntriesFromDictionary:@{ @"is_hero": @(a->is_hero != 0),
             @"is_monster": @(a->is_monster != 0), @"is_soldier": @(a->is_soldier != 0),
             @"is_building": @(a->is_building != 0), @"is_red_blue_buff": @(a->is_red_blue_buff != 0) }];
@@ -159,7 +200,8 @@ NSDictionary *LVReadTargetSnapshot(LVMachReader *reader, NSDictionary *metadata,
         @"read_actor_count": @(snapshot.count), @"skipped_actor_count": @(snapshot.skipped),
         @"local_native_address": hexAddress(snapshot.local_native), @"actors": actors,
         @"smite_preview": smitePreview(&snapshot, config),
-        @"minimap": minimapSnapshot(reader, base, &snapshot, mapSettings),
+        @"snapshot_read_attempts": @(attempts),
+        @"minimap": minimapSnapshot(reader, base, &snapshot, mapSettings, &health),
         @"trace": @{ @"class_cache": hexAddress(snapshot.class_cache), @"drive_class": hexAddress(snapshot.drive_class),
           @"drive_statics": hexAddress(snapshot.drive_statics), @"drive_instance": hexAddress(snapshot.drive),
           @"actor_manager": hexAddress(snapshot.manager), @"actor_list": hexAddress(snapshot.list),

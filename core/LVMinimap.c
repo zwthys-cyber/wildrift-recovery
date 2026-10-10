@@ -117,6 +117,11 @@ static int class_name(LVTargetRead read, void *ctx, uint64_t cls, const char *na
         load(read, ctx, np, text, n) && !memcmp(text, name, n) && load(read, ctx, sp, &ns, 1) && ns == 0;
 }
 static float f32(const unsigned char *data, size_t offset) { float f; memcpy(&f, data + offset - 0x10, 4); return f; }
+static int geometry_equal(const unsigned char *a, const unsigned char *b) {
+    /* Animation/camera vectors between these fields are unrelated to projection. */
+    return a[0] == b[0] && a[0x64] == b[0x64] &&
+        !memcmp(a+0x34,b+0x34,8) && !memcmp(a+0x54,b+0x54,8) && !memcmp(a+0x60,b+0x60,4);
+}
 void lv_minimap_read(LVTargetRead read, void *ctx, uint64_t base, LVMinimapGeometry *out) {
     if (!out) return;
     memset(out, 0, sizeof(*out)); out->reason = "geometry_unavailable";
@@ -128,20 +133,21 @@ void lv_minimap_read(LVTargetRead read, void *ctx, uint64_t base, LVMinimapGeome
         !ptr(read, ctx, cache + 6835 * 8ULL, &ui_cls) || !class_name(read, ctx, ui_cls, "UIMainBattleMiniMapCtrl") ||
         !ptr(read, ctx, ui_cls + 0xb8, &ui_statics) || !ptr(read, ctx, ui_statics + 0x18, &ui) ||
         !ptr(read, ctx, ui, &object_cls) || object_cls != ui_cls) return;
-    unsigned char data[0x74], after[0x74]; uint8_t full, full_after; uint32_t zoom;
+    unsigned char data[0x74], after[0x74]; uint8_t full, full_after; uint32_t zoom, zoom_after;
     if (!load(read, ctx, instance + 0x10, data, sizeof(data)) || !load(read, ctx, ui + 0x2d9, &full, 1) ||
         !load(read, ctx, ui + 0x330, &zoom, 4)) return;
     int32_t suspended; memcpy(&suspended, data + 0x60, 4);
     if (data[0] > 1 || data[0x64] > 1 || full > 1 || suspended < 0) { out->reason = "geometry_invalid"; return; }
     uint64_t same_cache, same_cls, same_statics, same_instance, same_ui;
-    if (!load(read, ctx, instance + 0x10, after, sizeof(after)) || memcmp(data, after, sizeof(data)) ||
+    if (!load(read, ctx, instance + 0x10, after, sizeof(after)) || !geometry_equal(data,after) ||
         !ptr(read, ctx, base + 0x10a915f8, &same_cache) || same_cache != cache ||
         !ptr(read, ctx, cache + 6839 * 8ULL, &same_cls) || same_cls != cls ||
         !ptr(read, ctx, cls + 0xb8, &same_statics) || same_statics != statics ||
         !ptr(read, ctx, statics, &same_instance) || same_instance != instance ||
         !ptr(read, ctx, ui_cls + 0xb8, &same_statics) || same_statics != ui_statics ||
         !ptr(read, ctx, ui_statics + 0x18, &same_ui) || same_ui != ui ||
-        !load(read, ctx, ui + 0x2d9, &full_after, 1) || full_after != full) {
+        !load(read, ctx, ui + 0x2d9, &full_after, 1) || full_after != full ||
+        !load(read, ctx, ui + 0x330, &zoom_after, 4) || zoom_after != zoom) {
         out->reason = "geometry_changed"; return;
     }
     out->viewport_mode = data[0]; out->full_map_showing = full; out->zoom_state = zoom;
@@ -156,6 +162,79 @@ void lv_minimap_read(LVTargetRead read, void *ctx, uint64_t base, LVMinimapGeome
     out->scale_x = sx; out->scale_z = sz; out->half_width = hw; out->half_height = hh;
     out->ready = 1; out->reason = "ready";
 }
+void lv_minimap_health_read(LVTargetRead read, void *ctx, uint64_t base,
+                           LVTargetSnapshot *s, LVMinimapHealthReport *report) {
+    LVMinimapHealthReport result = {.reason="health_cache_unavailable"};
+    if (report) *report=result;
+    if (!s || s->count > LV_TARGET_MAX_ACTORS) return;
+    for (size_t i=0;i<s->count;++i) {
+        s->actors[i].minimap_health_fraction_ok=0; s->actors[i].minimap_health_fraction_fixed=0;
+    }
+    if ((s->result!=LV_TARGET_READY && s->result!=LV_TARGET_PARTIAL) ||
+        !valid_address(base,8) || base > (UINT64_C(1)<<48)-0x10a91600) return;
+    uint64_t cache, cls, statics, entity, icons, dictionary, entries, hero_cls, object_cls, capacity;
+    if (!ptr(read,ctx,base+0x10a915f8,&cache) || !ptr(read,ctx,cache+6835*8ULL,&cls) ||
+        !class_name(read,ctx,cls,"UIMainBattleMiniMapCtrl") || !ptr(read,ctx,cls+0xb8,&statics) ||
+        !ptr(read,ctx,statics,&entity) || !ptr(read,ctx,entity,&object_cls) ||
+        !class_name(read,ctx,object_cls,"MiniMapEntityCtrl") || !ptr(read,ctx,entity+0x190,&icons) ||
+        !ptr(read,ctx,icons,&object_cls) || !class_name(read,ctx,object_cls,"UIMiniMapIconCtrl") ||
+        !ptr(read,ctx,icons+0x80,&dictionary) || !ptr(read,ctx,dictionary+0x18,&entries) ||
+        !load(read,ctx,entries+0x18,&capacity,8) || capacity>4096 ||
+        !ptr(read,ctx,cache+6780*8ULL,&hero_cls) || !class_name(read,ctx,hero_cls,"UIMiniIconHeroCtrl")) return;
+    unsigned seen[LV_TARGET_MAX_ACTORS]={0};
+    /* GetIconByBattleActor 0x738b8bc..8d8 verifies +18 entries, array +20,
+       24-byte Entry<UInt32,UIMiniIconBaseCtrl> and value +10. Read bounded
+       chunks, including tombstones, rather than invoking Dictionary methods. */
+    for (uint64_t start=0;start<capacity;start+=128) {
+        unsigned char chunk[128*24]; size_t count=(size_t)(capacity-start);
+        if(count>128) count=128;
+        if(!load(read,ctx,entries+0x20+start*24,chunk,count*24)) { result.reason="health_entries_unreadable"; goto discard; }
+        for(size_t j=0;j<count;++j) {
+            const unsigned char *entry=chunk+j*24; int32_t hash; uint32_t key; uint64_t icon;
+            memcpy(&hash,entry,4); memcpy(&key,entry+8,4); memcpy(&icon,entry+16,8);
+            if(hash<0 || !key || (icon&7) || !valid_address(icon,8)) continue;
+            size_t index=SIZE_MAX;
+            for(size_t i=0;i<s->count;++i) if(s->actors[i].values_ok && s->actors[i].classification_ok &&
+                s->actors[i].is_hero && s->actors[i].object_id_ok && s->actors[i].object_id==key) {
+                if(index!=SIZE_MAX) { index=SIZE_MAX; break; } index=i;
+            }
+            if(index==SIZE_MAX || !ptr(read,ctx,icon,&object_cls) || object_cls!=hero_cls) continue;
+            LVTargetActor *a=&s->actors[index];
+            if(++seen[index]>1) { a->minimap_health_fraction_ok=0; continue; }
+            uint64_t visual, visual_after; unsigned char before[0x148], after[0x148], same_entry[24];
+            if(!ptr(read,ctx,icon+0x98,&visual) || visual!=a->visual ||
+                !load(read,ctx,icon+0xc0,before,sizeof(before))) continue;
+            uint32_t object_id; int64_t fraction; float update_time;
+            memcpy(&object_id,before+0x100,4); memcpy(&fraction,before+0xe0,8); memcpy(&update_time,before+0x140,4);
+            if(object_id!=key || before[0]!=1 || before[8]!=0) continue;
+            ++result.matched;
+            if(before[0xf4]!=1) continue;
+            ++result.enabled;
+            /* Hidden or never-updated UI percentages are not fresh HP. Failed
+               reads and disabled game HP rings remain explicitly unknown. */
+            if(before[1]!=1 || !isfinite(update_time) || update_time<=0 || fraction<0 || fraction>16384 ||
+                !load(read,ctx,icon+0xc0,after,sizeof(after)) ||
+                before[0]!=after[0] || before[1]!=after[1] || before[8]!=after[8] || before[0xf4]!=after[0xf4] ||
+                memcmp(before+0xe0,after+0xe0,8) || memcmp(before+0x100,after+0x100,4) ||
+                memcmp(before+0x140,after+0x140,4) || !ptr(read,ctx,icon+0x98,&visual_after) || visual_after!=visual ||
+                !load(read,ctx,entries+0x20+(start+j)*24,same_entry,24) || memcmp(entry,same_entry,24)) continue;
+            a->minimap_health_fraction_fixed=fraction; a->minimap_health_fraction_ok=1;
+        }
+    }
+    uint64_t same;
+    if(!ptr(read,ctx,base+0x10a915f8,&same) || same!=cache ||
+        !ptr(read,ctx,cls+0xb8,&same) || same!=statics || !ptr(read,ctx,statics,&same) || same!=entity ||
+        !ptr(read,ctx,entity+0x190,&same) || same!=icons || !ptr(read,ctx,icons+0x80,&same) || same!=dictionary ||
+        !ptr(read,ctx,dictionary+0x18,&same) || same!=entries ||
+        !load(read,ctx,entries+0x18,&same,8) || same!=capacity) { result.reason="health_cache_changed"; goto discard; }
+    result.reason="ready";
+    for(size_t i=0;i<s->count;++i) result.valid+=s->actors[i].minimap_health_fraction_ok!=0;
+    if(report) *report=result;
+    return;
+discard:
+    for(size_t i=0;i<s->count;++i) s->actors[i].minimap_health_fraction_ok=0;
+    result.valid=0; if(report) *report=result;
+}
 static int duplicate_id(const LVTargetSnapshot *s, size_t index) {
     const LVTargetActor *a = &s->actors[index];
     for (size_t i = 0; i < s->count; ++i)
@@ -164,7 +243,7 @@ static int duplicate_id(const LVTargetSnapshot *s, size_t index) {
 }
 static int add_marker(LVMinimapFrame *out, const LVTargetActor *a, unsigned ordinal,
                        const LVMinimapGeometry *g, const LVMinimapSettings *settings) {
-    if (!a->position_ok || !a->health_ok || a->health_fixed <= 0) return 0;
+    if (!a->position_ok || (a->health_ok && a->health_fixed <= 0)) return 0;
     double x = (double)a->position_fixed[0] / 16384, z = (double)a->position_fixed[2] / 16384;
     /* Red-side 180-degree camera orientation is a default, with a user
        override for camera/layout settings. Native rotation APIs are not called. */
@@ -179,10 +258,17 @@ static int add_marker(LVMinimapFrame *out, const LVTargetActor *a, unsigned ordi
         u = .5 + x * g->scale_x / (2 * g->half_width);
         v = .5 - z * g->scale_z / (2 * g->half_height);
     }
-    if (!isfinite(u) || !isfinite(v) || u < 0 || u > 1 || v < 0 || v > 1) return -1;
+    /* Native WorldToMiniMap has an edge-clamp branch. Permit only a small
+       border overshoot (spawn points); never pin an off-board 500,500 sentinel. */
+    if (!isfinite(u) || !isfinite(v) || u < -.04 || u > 1.04 || v < -.04 || v > 1.04) return -1;
+    unsigned clamped = u < 0 || u > 1 || v < 0 || v > 1;
+    u = fmax(0,fmin(1,u)); v = fmax(0,fmin(1,v));
     if (out->count >= LV_TARGET_MAX_ACTORS) return 0;
     out->markers[out->count++] = (LVMinimapMarker){ .object_id = a->object_id, .resource_id = a->resource_id,
-        .ordinal = ordinal, .is_local = a->is_local, .u = u, .v = v };
+        .ordinal = ordinal, .is_local = a->is_local, .u = u, .v = v, .edge_clamped = clamped,
+        .health_fraction_ok = a->minimap_health_fraction_ok,
+        .health_fraction = (double)a->minimap_health_fraction_fixed / 16384.0 };
+    if (clamped && !a->is_local) ++out->edge_clamped_enemies;
     return 1;
 }
 void lv_minimap_frame(const LVTargetSnapshot *s, const LVMinimapGeometry *g,

@@ -43,6 +43,13 @@ int main(void) {
     check(!lv_minimap_motion_update(&m,a,LV_TARGET_MAX_ACTORS+1,11.6,.15));
     a[0]=marker(1,.5,.5);check(!lv_minimap_motion_update(&m,a,1,NAN,.15));
     check(!lv_minimap_motion_update(&m,a,1,11.6,0));
+    a[0]=marker(1,.5,.5);a[0].health_fraction_ok=1;a[0].health_fraction=.35;
+    check(lv_minimap_motion_update(&m,a,1,11.7,.15) && m.items[0].target.health_fraction==.35);
+    a[0].health_fraction=NAN;check(!lv_minimap_motion_update(&m,a,1,11.8,.15));
+    a[0].health_fraction=1.01;check(!lv_minimap_motion_update(&m,a,1,11.8,.15));
+    a[0].health_fraction=-.01;check(!lv_minimap_motion_update(&m,a,1,11.8,.15));
+    a[0].health_fraction=0;check(lv_minimap_motion_update(&m,a,1,11.9,.15));
+    lv_minimap_motion_clear(&m);
     double u,v;check(!lv_minimap_motion_position(&m,0,12,&u,&v));
     check(!lv_minimap_motion_update(NULL,a,1,12,.15));
     printf("Minimap motion: %u checks passed\n",checks);return 0;

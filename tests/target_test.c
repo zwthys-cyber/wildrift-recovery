@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #define BASE UINT64_C(0x100000000)
 #define CACHE UINT64_C(0x200000000)
@@ -201,5 +202,25 @@ int main(void) {
     lv_target_snapshot(read_fixture, &f, BASE, &s); assert(!s.actors[0].values_ok && !s.actors[0].object_id_ok);
     extended(&f); f.change_address = HEAP + 0x1420; f.replacement = HEAP + 0x2800;
     lv_target_snapshot(read_fixture, &f, BASE, &s); assert(!s.actors[0].values_ok && !s.actors[0].classification_ok);
-    free(f.cache); puts("target reader: 40 scenarios passed"); return 0;
+    /* Candidate coordinates are observations only. Do not substitute them
+       for the independently recovered native FixTransform position. */
+    extended(&f);
+    int64_t last[3]={2*16384,0,-3*16384};put(&f,HEAP+0x5090,last,24);
+    q(&f,HEAP+0x20f0,HEAP+0x25000);q(&f,HEAP+0x25018,HEAP+0x2000);q(&f,HEAP+0x25020,HEAP+0x3000);
+    float logic[3]={4,0,-5},time=12;put(&f,HEAP+0x2502c,logic,12);put(&f,HEAP+0x25050,&time,4);
+    q(&f,HEAP+0x4148,HEAP+0x4000);
+    lv_target_snapshot(read_fixture,&f,BASE,&s);
+    assert(s.actors[0].attribute_last_position_ok && !memcmp(s.actors[0].attribute_last_position,last,24));
+    assert(s.actors[0].sync_logic_position_ok && s.actors[0].sync_logic_time==12 && !memcmp(s.actors[0].sync_logic_position,logic,12));
+    assert(s.actors[0].host_position_ok && s.actors[0].host_object_id==UINT32_MAX && s.actors[0].host_position[0]==-9*16384);
+    assert(s.actors[0].position_fixed[0]==-9*16384); /* candidate does not change the displayed source */
+    f.fail=HEAP+0x5090;lv_target_snapshot(read_fixture,&f,BASE,&s);assert(!s.actors[0].attribute_last_position_ok);
+    f.fail=0;q(&f,HEAP+0x25020,HEAP+0x3200);lv_target_snapshot(read_fixture,&f,BASE,&s);assert(!s.actors[0].sync_logic_position_ok);
+    q(&f,HEAP+0x25020,HEAP+0x3000);time=NAN;put(&f,HEAP+0x25050,&time,4);
+    lv_target_snapshot(read_fixture,&f,BASE,&s);assert(!s.actors[0].sync_logic_position_ok);
+    time=13;put(&f,HEAP+0x25050,&time,4);logic[0]=INFINITY;put(&f,HEAP+0x2502c,logic,12);
+    lv_target_snapshot(read_fixture,&f,BASE,&s);assert(!s.actors[0].sync_logic_position_ok);
+    f.change_address=HEAP+0x4148;f.replacement=HEAP+0x4400;
+    lv_target_snapshot(read_fixture,&f,BASE,&s);assert(!s.actors[0].host_position_ok);
+    free(f.cache); puts("target reader: 46 scenarios passed"); return 0;
 }
