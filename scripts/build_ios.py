@@ -26,12 +26,13 @@ def build(sdk, clang, linker, ldid):
         raise ValueError('SDK directory does not exist')
     build_dir = ROOT / 'build'
     app = build_dir / 'Payload' / 'LVRecovery.app'
+    if app.exists(): shutil.rmtree(app)
     app.mkdir(parents=True, exist_ok=True)
     common = [clang, '-target', 'arm64-apple-ios15.0', '-isysroot', sdk,
               '-O2', '-Wall', '-Werror', '-Wno-deprecated-declarations',
               '-fvisibility=hidden', '-I', ROOT / 'core', '-I', ROOT / 'ios']
     files = ['ios/main.m', 'ios/LVMachReader.m', 'ios/LVHelper.m', 'ios/LVProbe.m', 'ios/LVCollect.m',
-             'ios/LVSnapshot.m', 'ios/LVSnapshotController.m', 'ios/LVHUD.m', 'ios/LVHUDControl.m', 'ios/LVMinimapSettings.m', 'core/LVMinimap.c', 'core/LVMinimapMotion.c', 'core/LVHUDTelemetry.c', 'core/LVConfig.c', 'core/LVActions.c', 'core/LVZip.c', 'core/LVTarget.c', 'core/LVSmitePreview.c']
+             'ios/LVSnapshot.m', 'ios/LVSnapshotController.m', 'ios/LVHUD.m', 'ios/LVHeroPortraits.m', 'ios/LVHUDControl.m', 'ios/LVMinimapSettings.m', 'core/LVMinimap.c', 'core/LVMinimapMotion.c', 'core/LVHUDTelemetry.c', 'core/LVConfig.c', 'core/LVActions.c', 'core/LVZip.c', 'core/LVTarget.c', 'core/LVSmitePreview.c']
     objects = {}
     for filename in files:
         src = ROOT / filename
@@ -48,11 +49,15 @@ def build(sdk, clang, linker, ldid):
         objects['LVSnapshot'], objects['LVTarget'], objects['LVSmitePreview'], objects['LVActions'], objects['LVConfig'], objects['LVHUDControl'], objects['LVHUDTelemetry'], objects['LVMinimap'], '-o', app / 'LVProbe')
     run(*links, '-framework', 'UIKit', '-framework', 'QuartzCore', '-framework', 'CoreGraphics',
         objects['LVHUD'], objects['LVHUDControl'], objects['LVMachReader'], objects['LVSnapshot'], objects['LVTarget'],
-        objects['LVSmitePreview'], objects['LVActions'], objects['LVConfig'], objects['LVHUDTelemetry'], objects['LVMinimap'], objects['LVMinimapMotion'], '-o', app / 'LVHUD')
+        objects['LVSmitePreview'], objects['LVActions'], objects['LVConfig'], objects['LVHUDTelemetry'], objects['LVMinimap'], objects['LVMinimapMotion'], objects['LVHeroPortraits'], '-o', app / 'LVHUD')
     info = plistlib.loads((ROOT / 'ios/Info.plist').read_bytes())
     (app / 'Info.plist').write_bytes(plistlib.dumps(info, fmt=plistlib.FMT_BINARY))
     shutil.copy2(ROOT / 'ios/recovered_config.json', app / 'recovered_config.json')
     shutil.copy2(ROOT / 'ios/TrollSpeed-LICENSE.txt', app / 'TrollSpeed-LICENSE.txt')
+    shutil.copytree(ROOT / 'ios/Assets/Heroes', app / 'Assets/Heroes')
+    shutil.copy2(ROOT / 'ios/Assets/README.md', app / 'Asset-credits.txt')
+    for icon in (ROOT / 'ios/Assets/AppIcon').glob('AppIcon*.png'):
+        shutil.copy2(icon, app / icon.name)
     for filename, entitlement in [('LVRecovery', 'App'), ('LVProbe', 'Probe'), ('LVHUD', 'HUD')]:
         binary = app / filename
         binary.chmod(0o755)
@@ -100,12 +105,17 @@ def build(sdk, clang, linker, ldid):
                 'minimap_motion_interpolation_implemented': True,
                 'minimap_motion_preferred_display_fps': 60,
                 'minimap_motion_device_verified': False,
+                'app_icon_implemented': True,
+                'minimap_hero_portraits_implemented': True,
+                'minimap_hero_portrait_count': len(json.loads((ROOT / 'ios/Assets/Heroes/manifest.json').read_text())['heroes']),
+                'minimap_hero_portraits_device_verified': False,
+                'minimap_hero_portrait_unknown_fallback': 'numeric marker',
                 'minimap_saved_custom_rect_preserved': True,
                 'minimap_expected_enemy_roster': 'Observed confirmed enemy heroes; never pads or truncates to five',
                 'minimap_telemetry_protocol_version': 2,
                 'clang_version': subprocess.check_output([clang, '--version'], text=True).splitlines()[0],
-                'sdk': sdk.name, 'files': {f.name: hashlib.sha256(f.read_bytes()).hexdigest()
-                                         for f in app.iterdir() if f.is_file()}}
+                'sdk': sdk.name, 'files': {str(f.relative_to(app)): hashlib.sha256(f.read_bytes()).hexdigest()
+                                         for f in sorted(app.rglob('*')) if f.is_file()}}
     (dist / 'build-metadata.json').write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + '\n')
     (dist / ('build-metadata-' + info['CFBundleShortVersionString'] + '.json')).write_text(
         json.dumps(metadata, ensure_ascii=False, indent=2) + '\n')

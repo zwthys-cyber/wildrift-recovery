@@ -6,6 +6,7 @@
 #import "LVMachReader.h"
 #import "LVSnapshot.h"
 #import "LVHUDControl.h"
+#import "LVHeroPortraits.h"
 #include "LVMinimapMotion.h"
 #include <notify.h>
 #include <dlfcn.h>
@@ -151,6 +152,8 @@ static NSString *blockLabel(NSString *code) {
 @property(nonatomic, copy) NSArray<NSDictionary *> *markers;
 @property(nonatomic) BOOL references;
 @property(nonatomic) CGFloat markerSize;
+@property(nonatomic, strong) LVHeroPortraits *portraitStore;
+@property(nonatomic, copy) NSDictionary<NSNumber *, UIImage *> *portraitImages;
 @end
 @implementation LVMinimapView
 - (void)stopAnimation { [_displayLink invalidate]; _displayLink = nil; _motion.active = 0; }
@@ -168,6 +171,7 @@ static NSString *blockLabel(NSString *code) {
 }
 - (void)setMarkers:(NSArray<NSDictionary *> *)markers {
     _markers = [markers copy] ?: @[];
+    NSMutableDictionary *images = [NSMutableDictionary new];
     LVMinimapMarker targets[LV_TARGET_MAX_ACTORS]; size_t count = _markers.count;
     if (count <= LV_TARGET_MAX_ACTORS) {
         for (size_t i = 0; i < count; ++i) {
@@ -175,10 +179,15 @@ static NSString *blockLabel(NSString *code) {
             targets[i] = (LVMinimapMarker){ .object_id=[m[@"object_id"] unsignedIntValue],
                 .resource_id=[m[@"resource_id"] intValue], .ordinal=[m[@"ordinal"] unsignedIntValue],
                 .is_local=[m[@"is_local"] boolValue], .u=[m[@"u"] doubleValue], .v=[m[@"v"] doubleValue] };
+            if (!targets[i].is_local) {
+                UIImage *image = [self.portraitStore imageForResourceID:targets[i].resource_id];
+                if (image) images[@(targets[i].resource_id)] = image;
+            }
         }
         lv_minimap_motion_update(&_motion, targets, count, NSProcessInfo.processInfo.systemUptime,
             LV_MINIMAP_SAMPLE_INTERVAL_SECONDS);
     } else lv_minimap_motion_clear(&_motion);
+    self.portraitImages = images;
     if (!_motion.active || self.hidden || !self.window) [self stopAnimation];
     else if (!_displayLink) {
         _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(advanceAnimation:)];
@@ -205,6 +214,16 @@ static NSString *blockLabel(NSString *code) {
         } else {
             CGFloat radius = self.markerSize / 2;
             CGRect circle = CGRectMake(x-radius, y-radius, radius*2, radius*2);
+            UIImage *portrait = self.portraitImages[@(marker->resource_id)];
+            if (portrait) {
+                CGContextSaveGState(context);
+                CGContextAddEllipseInRect(context, circle); CGContextClip(context);
+                [portrait drawInRect:circle];
+                CGContextRestoreGState(context);
+                CGContextSetStrokeColorWithColor(context, [UIColor colorWithRed:1 green:.15 blue:.15 alpha:1].CGColor);
+                CGContextSetLineWidth(context, 1.5); CGContextStrokeEllipseInRect(context, circle);
+                continue;
+            }
             CGContextSetFillColorWithColor(context, [UIColor colorWithRed:1 green:0.15 blue:0.15 alpha:0.95].CGColor);
             CGContextFillEllipseInRect(context, circle);
             CGContextSetStrokeColorWithColor(context, UIColor.whiteColor.CGColor); CGContextSetLineWidth(context, 1);
@@ -249,6 +268,9 @@ static NSString *blockLabel(NSString *code) {
     self.label.text = @"lvlolm · 只读悬浮窗\n正在采样…";
     [self.canvas addSubview:self.label];
     self.minimap = [LVMinimapView new]; self.minimap.opaque = NO;
+    NSString *heroDirectory = [[LVHUDExecutablePath().stringByDeletingLastPathComponent
+        stringByAppendingPathComponent:@"Assets"] stringByAppendingPathComponent:@"Heroes"];
+    self.minimap.portraitStore = [[LVHeroPortraits alloc] initWithDirectory:heroDirectory];
     self.minimap.backgroundColor = UIColor.clearColor; self.minimap.userInteractionEnabled = NO;
     self.minimap.references = hudMapSettings.values[LV_MAP_REFERENCES] != 0;
     self.minimap.markerSize = hudMapSettings.values[LV_MAP_MARKER_SIZE];

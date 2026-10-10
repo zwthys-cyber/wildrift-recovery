@@ -1,0 +1,1431 @@
+{
+  "schema_version": 1,
+  "source_page": "https://lolm.qq.com/v2/champions.html",
+  "source_url": "https://game.gtimg.cn/images/lgamem/act/lrlib/js/heroList/hero_list.js",
+  "source_sha256": "b5308d5c562f79dad778115a03c2615fc9d70ba41e3b8c1f67a9058ce18d7c6b",
+  "retrieved_at": "2026-10-10T17:59:33.938386+00:00",
+  "match_policy": "Exact heroId equals native actor resource_id. No arithmetic or roster-order mapping.",
+  "unknown_policy": "Keep the numeric marker when an ID or image is unavailable.",
+  "heroes": {
+    "10001": {
+      "name": "盖伦",
+      "file": "10001.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10001.png",
+      "sha256": "9ddc742d86c5a610e4232d0f515dd53e100ccbd18426c9860e5352a4d27b6943",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10002": {
+      "name": "亚托克斯",
+      "file": "10002.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10002.png",
+      "sha256": "af0189209f58ba75204b81847c1f0a8aeb5c61cec60fde734af8178e79a208d0",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10003": {
+      "name": "拉克丝",
+      "file": "10003.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10003.png",
+      "sha256": "2bb42e752c125950b3dcc19957fd7908a35f47c0780c121d1256c1d915f78ca2",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10004": {
+      "name": "阿木木",
+      "file": "10004.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10004.png",
+      "sha256": "90fea87dc84e43ec21ab25d21627c26a322326afb434ea37156141cdd7b71896",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10005": {
+      "name": "凯隐",
+      "file": "10005.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10005.png",
+      "sha256": "06648542454b1f211c284ed04b46ee268013b4071b15531c7b564ae66a66fd3e",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10006": {
+      "name": "雷恩加尔",
+      "file": "10006.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10006.png",
+      "sha256": "de690bea12cb2e16b3d8b59a976b7447fb44fe01e5449fbe670d7d86499a7bbd",
+      "dimensions": [
+        256,
+        256
+      ]
+    },
+    "10007": {
+      "name": "卡尔玛",
+      "file": "10007.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10007.png",
+      "sha256": "ff7638ca09fd03d502667963aabac655969d00cb8226ba3bc6bf9377a0233187",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10008": {
+      "name": "努努和威朗普",
+      "file": "10008.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10008.png",
+      "sha256": "eb898b56360f9ba01d883a2e8273d65ec0f8200b45226cd27426f9516c78f903",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10009": {
+      "name": "孙悟空",
+      "file": "10009.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10009.png",
+      "sha256": "6429f8da05491d614b95dfbf6fa82197129b784874e8c553f6f9ceac8f65ea02",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10010": {
+      "name": "薇恩",
+      "file": "10010.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10010.png",
+      "sha256": "4f55d0bebcb995e2a43b531f05ebcf7931670b48f4b07853eabcef6fe26fc13c",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10011": {
+      "name": "艾克",
+      "file": "10011.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10011.png",
+      "sha256": "bb257937e6d2ad97f519e078ec7ed6123863b49bbf2351a68b57d154a7fe9e27",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10012": {
+      "name": "奥莉安娜",
+      "file": "10012.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10012.png",
+      "sha256": "2d3e6e184bbd89510c1b53b3bc59bef7c31f107bce68bcc2a5dce582c5d0cdf5",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10013": {
+      "name": "黛安娜",
+      "file": "10013.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10013.png",
+      "sha256": "72b18f984f315b7e3d2db6bf7932de0cc119525aea7e72db40f282a6491465c4",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10014": {
+      "name": "佐伊",
+      "file": "10014.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10014.png",
+      "sha256": "2a9ca8bf670559c4eb67dc7d616a2ea009def620ce17b1be3d6f5d90e66d7b8c",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10015": {
+      "name": "泰达米尔",
+      "file": "10015.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10015.png",
+      "sha256": "4bbcca0e765b5c185732d4f7cf3d119880cba6e7ab587e90260e5c824279789b",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10016": {
+      "name": "赵信",
+      "file": "10016.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10016.png",
+      "sha256": "cd03f78bfecdbf9d00c832057e90ef6e6624264dd4c8a1d5c44f5941a034c8a2",
+      "dimensions": [
+        256,
+        256
+      ]
+    },
+    "10017": {
+      "name": "卡兹克",
+      "file": "10017.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10017.png",
+      "sha256": "c42ab5c0c6b681a457d25dcd8c28849884fa4660fcb288831da4f1ebac339359",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10018": {
+      "name": "金克丝",
+      "file": "10018.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10018.png",
+      "sha256": "dc8384e2625e8a4c9c154c99f5a6f6816b74ca4350abc937334c8088da290857",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10019": {
+      "name": "赫卡里姆",
+      "file": "10019.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10019.png",
+      "sha256": "da1daf37384cc79e505f1980a78e06562dda7a2787f3a1f2024d59d23dcbcb5f",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10020": {
+      "name": "悠米",
+      "file": "10020.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10020.png",
+      "sha256": "b67144a6380388f7eae361ffe491876a42700b89c0c6ead6675a7340ff990744",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10021": {
+      "name": "布隆",
+      "file": "10021.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10021.png",
+      "sha256": "37a281c42f280e7a9f9836a05b14fe891fe4692e8ac2ee5f757e820776d1349a",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10022": {
+      "name": "烬",
+      "file": "10022.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10022.png",
+      "sha256": "6b08733cc51f24500db4db79e2b520bc995c5c16117fc79e3231257716b9dc17",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10023": {
+      "name": "奥瑞利安·索尔",
+      "file": "10023.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10023.png",
+      "sha256": "4c3bc4de870147ac372bd614fceb775d6a427561eefc4be6cb68293ae03c7587",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10024": {
+      "name": "辛德拉",
+      "file": "10024.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10024.png",
+      "sha256": "0cf4aa21fe1c1a28f48aa044c0ef7a8f3b81660b9d49dbe8595ffe7ca48df7bb",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10025": {
+      "name": "崔斯特",
+      "file": "10025.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10025.png",
+      "sha256": "0a32f7600af225d17a14f9f2865654fcd88ee76ad1bb1959f7c821cadcff2dbb",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10026": {
+      "name": "卡莎",
+      "file": "10026.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10026.png",
+      "sha256": "bfeedddef46dff8f6d163ce6ddedc70eb4fe46b0bc04bc1e05b7a44ba3ce1585",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10027": {
+      "name": "尼菈",
+      "file": "10027.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10027.png",
+      "sha256": "a50ee131888e7a823edc2c720d34a005ce02bfe8bf6efd3c259599233b7d222b",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10028": {
+      "name": "莫甘娜",
+      "file": "10028.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10028.png",
+      "sha256": "e94ee51b578d6aa973411d871a50803ce86804523cdae03b7b3109cd38fbd9b5",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10029": {
+      "name": "伊芙琳",
+      "file": "10029.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10029.png",
+      "sha256": "25109b58b7873a4dca05730d48bc33568a6e5f17a63aaa1f1732eca617ff45bf",
+      "dimensions": [
+        256,
+        256
+      ]
+    },
+    "10030": {
+      "name": "潘森",
+      "file": "10030.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10030.png",
+      "sha256": "deb3cc194f8bfbc4eac20353ac6503259398a85ccaa7c61b444bdb19e0eec6cb",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10031": {
+      "name": "阿卡丽",
+      "file": "10031.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10031.png",
+      "sha256": "9473fd2ffcb40d5dcacab243703948a166dd989e4d1a83c2732170ac3f67bb53",
+      "dimensions": [
+        256,
+        256
+      ]
+    },
+    "10032": {
+      "name": "菲奥娜",
+      "file": "10032.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10032.png",
+      "sha256": "eb54fb8fb57029a37c5e264821202aea064e7871dbf7522716389909890c0f78",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10033": {
+      "name": "布里茨",
+      "file": "10033.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10033.png",
+      "sha256": "e12d4b1adb0e3f673d600c149709faa09295f20d9fdde4394fc59ad1acec4053",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10034": {
+      "name": "萨勒芬妮",
+      "file": "10034.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10034.png",
+      "sha256": "a4ab5570a2f25d7ccf7ac3973d09002749cede9a9058413220cb94ade9ddf5e1",
+      "dimensions": [
+        256,
+        256
+      ]
+    },
+    "10035": {
+      "name": "莫德凯撒",
+      "file": "10035.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10035.png",
+      "sha256": "0cf2933b7e13eb1f3aad5f202335ddb440b4bcbdeb2be668561659985b2a9890",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10036": {
+      "name": "安妮",
+      "file": "10036.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10036.png",
+      "sha256": "ed83a77ac489e76723282d6ed1e4908da05a29805a8e0b184dde26a7ed24ef77",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10037": {
+      "name": "亚索",
+      "file": "10037.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10037.png",
+      "sha256": "be1d3b81b4c3429ae76455bb0755a67b31f00d521c058a3ea4a61f6bba2d7d34",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10038": {
+      "name": "阿狸",
+      "file": "10038.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10038.png",
+      "sha256": "4da4e753714815df34cccefb5b3b820cd1e4c081e52fe6a7545199165f858e85",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10039": {
+      "name": "劫",
+      "file": "10039.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10039.png",
+      "sha256": "8600a7f85893467dcbe76a77a9423d30a85d23d1c18552e2a35d4948a1c04e76",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10040": {
+      "name": "贾克斯",
+      "file": "10040.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10040.png",
+      "sha256": "9bd0ffb932ef9949e62bc2d906505b9b8399e2343e53a181ecc832b696d73757",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10041": {
+      "name": "凯尔",
+      "file": "10041.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10041.png",
+      "sha256": "a54cd5bc0641e0945cc7bee334d41cbc89b9a8c015171f05d4ae4da2e8a2995e",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10042": {
+      "name": "卢锡安",
+      "file": "10042.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10042.png",
+      "sha256": "e99cbdb047f3ee37d0b4399d768c6b4a2c4ec0a88dd84541c7b2a42b99c6a6cd",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10044": {
+      "name": "蕾欧娜",
+      "file": "10044.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10044.png",
+      "sha256": "80d381af0df634fea04f1a88d3dedaecc69b91d0473e0dccc07026a0173d0558",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10045": {
+      "name": "崔丝塔娜",
+      "file": "10045.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10045.png",
+      "sha256": "c8a3c5adc52ee695df30b22c6a51edbb12c2e2bfb54819b0c738b9f3a107857a",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10046": {
+      "name": "提莫",
+      "file": "10046.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10046.png",
+      "sha256": "d500f476f14793572085ec4dcf3765f5e87c91afdd0bacd87fc427b84120bc80",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10047": {
+      "name": "娑娜",
+      "file": "10047.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10047.png",
+      "sha256": "5cdf4803609de25c25f811f91a9cfba0988b79280c57a04548264bc26738a99f",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10048": {
+      "name": "璐璐",
+      "file": "10048.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10048.png",
+      "sha256": "5230f2e99d6dd01c362707c4a46c9536b70c0fa83c1108e86b0ec401fec3b25a",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10049": {
+      "name": "希瓦娜",
+      "file": "10049.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10049.png",
+      "sha256": "e847bff017b4a4cf7dba6f61a719d4e58c31c688559f4182d9829ea24ceffc29",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10050": {
+      "name": "蔚",
+      "file": "10050.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10050.png",
+      "sha256": "2a491b389c3629b2d3ad91a7e5146758b6faaca82e019dfc2743149e1f27aea5",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10051": {
+      "name": "霞",
+      "file": "10051.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10051.png",
+      "sha256": "6b95be7512121b6061af5c561439cf695a7e0d7cfc93926b509779f95d69775c",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10052": {
+      "name": "洛",
+      "file": "10052.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10052.png",
+      "sha256": "dbb3f542ef6cde103cc5094b8a65b344d8cf1c6403ab55179dd582bc6a66e064",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10053": {
+      "name": "图奇",
+      "file": "10053.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10053.png",
+      "sha256": "5a447a9c960aa5ae30450b46427980a4c47473304665afb2addb6c99e079e80a",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10054": {
+      "name": "格温",
+      "file": "10054.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10054.png",
+      "sha256": "1fd7ce721746d4903f20ab2098cc8d6fc61ba5941de63fdb073c54696f6f51f0",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10055": {
+      "name": "卡蜜尔",
+      "file": "10055.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10055.png",
+      "sha256": "b361404bf1d305419fd01cb388cf1cb75204f5db019c774f3414b07beb81eb32",
+      "dimensions": [
+        256,
+        256
+      ]
+    },
+    "10056": {
+      "name": "嘉文四世",
+      "file": "10056.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10056.png",
+      "sha256": "60718ad501bc8ac3493f04f499e207d31b6e74e871fdeecde104503105f39322",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10057": {
+      "name": "佛耶戈",
+      "file": "10057.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10057.png",
+      "sha256": "9426c5e06f74c290e9d1b40db623d724f7c55fc48881cf9a39d8cf3f49a91a36",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10058": {
+      "name": "沃利贝尔",
+      "file": "10058.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10058.png",
+      "sha256": "12e1fab9303c02d2823826ecc6163dfe6783bbfd10fe44e3e2fa8aaf3ab5328a",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10059": {
+      "name": "李青",
+      "file": "10059.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10059.png",
+      "sha256": "3019f9d0bc19af12b3747e39b39a53e8ff603369245e75cbb5e2a35457c0c875",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10060": {
+      "name": "库奇",
+      "file": "10060.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10060.png",
+      "sha256": "393836a51a7924d9ed10217e59fd1b868b4c39413c5b7fa56bd07016652e197b",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10061": {
+      "name": "凯南",
+      "file": "10061.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10061.png",
+      "sha256": "cb2c27d038e0d2a27594330477fbdccfcdc7401eb362625a990e857cb8ae20ab",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10062": {
+      "name": "蒙多医生",
+      "file": "10062.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10062.png",
+      "sha256": "893d6225a91b581b6d1a892f22bee9ab0b141a1e21f8e3725a888b8428282c93",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10063": {
+      "name": "婕拉",
+      "file": "10063.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10063.png",
+      "sha256": "abc1e0fabe56dda55e270fcaa294ae9e6578a6e1844705a3d1f3aec2deb4225c",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10064": {
+      "name": "拉莫斯",
+      "file": "10064.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10064.png",
+      "sha256": "9a5e29b51b4bb05bbe0e4e3e8ae3cda7784cefb57e98c7a9e95dde9929418b37",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10065": {
+      "name": "内瑟斯",
+      "file": "10065.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10065.png",
+      "sha256": "c69cf0ef1c7311d03be959e9080b06ce2c3b352a1f72a061a93877842aef3985",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10066": {
+      "name": "厄运小姐",
+      "file": "10066.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10066.png",
+      "sha256": "5c510059e91067515ba36a6076b6af21185eb44e08c5f9478b583f55f0712d7f",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10067": {
+      "name": "泽丽",
+      "file": "10067.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10067.png",
+      "sha256": "d6ab60f6fc25003611021ec948c07377d3e82cc750e18ee1939b0fd8122db635",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10068": {
+      "name": "瑟提",
+      "file": "10068.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10068.png",
+      "sha256": "d8f0efb91b5cac4421ab19c30c1991a7eab79643a33fcd4a74b8dc0189edf5f2",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10069": {
+      "name": "永恩",
+      "file": "10069.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10069.png",
+      "sha256": "6f59cddc9660d0a389f3de4d04f9b84b273f25b9678547038d1dc3dc618a38f9",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10070": {
+      "name": "易",
+      "file": "10070.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10070.png",
+      "sha256": "390a7bfd083c6d844fdb3971597892f66fa972489a2b835d9829faecc87e886c",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10071": {
+      "name": "德莱厄斯",
+      "file": "10071.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10071.png",
+      "sha256": "756ad557d1991c913889ebc0d4209dca781b94d226e666053268a7ddea647d16",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10072": {
+      "name": "格雷福斯",
+      "file": "10072.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10072.png",
+      "sha256": "db6bede732502fb904cde0783069a08c5779c508e65e5524f0631ecfea57bee8",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10073": {
+      "name": "千珏",
+      "file": "10073.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10073.png",
+      "sha256": "3a66d6e1d7e455116f16a00a6d992b9d1f5b6fbf4b139812c6d3754bab1f83cd",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10074": {
+      "name": "茂凯",
+      "file": "10074.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10074.png",
+      "sha256": "0f55060d27ba550f7995f5eef8499fd6cda5fa4231cbbd455923d66a9715114a",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10075": {
+      "name": "迦娜",
+      "file": "10075.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10075.png",
+      "sha256": "d60ceda396700ec1efea6933407cc4b49169b0a2fe9a34a3adb22386cdb3b71c",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10076": {
+      "name": "波比",
+      "file": "10076.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10076.png",
+      "sha256": "6ae979284fe3cf3a66bdb3c3bba2c93438bbe9b241f8857c5f247cfec66c6df0",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10077": {
+      "name": "德莱文",
+      "file": "10077.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10077.png",
+      "sha256": "5888989478347acb2b25ee5dfbaa8da01a135ffec6b4c54f1af180719c33f8d6",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10078": {
+      "name": "纳尔",
+      "file": "10078.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10078.png",
+      "sha256": "68010f0c3df8c0fcf79c76e6f85f48d1d6e256062e6a5718513047d51b32214e",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10079": {
+      "name": "艾希",
+      "file": "10079.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10079.png",
+      "sha256": "45bf02d10c5e2d5439b3bc969ccc903924609526986c5f38195cb39f4104d0ae",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10080": {
+      "name": "基兰",
+      "file": "10080.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10080.png",
+      "sha256": "2f46063640acfbaf0dd755279eab4377bec2562364b3ca985b78215501431bc2",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10081": {
+      "name": "阿利斯塔",
+      "file": "10081.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10081.png",
+      "sha256": "1586231790cb00f3f1edad18e6e5099472d14a8739b3c9299fe12f4fea3d9812",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10082": {
+      "name": "安蓓萨",
+      "file": "10082.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10082.png",
+      "sha256": "dcbd17c11e0a68b52c49b9182a101c635d7b807d3720699776d4e2a3caa72c2f",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10083": {
+      "name": "墨菲特",
+      "file": "10083.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10083.png",
+      "sha256": "c7144ec717cf1bf89a7c4a44df0f7c6ed289e77bf3062b2d87e76a938cdf7533",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10084": {
+      "name": "奈德丽",
+      "file": "10084.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10084.png",
+      "sha256": "43f62c3c5b9c3608ec4357c04f2c43b22aa90be10c66d37116d60de3df644233",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10085": {
+      "name": "阿萝拉",
+      "file": "10085.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10085.png",
+      "sha256": "c6085bc200b352949f553559dbf00884f3610abeb3387cb1e200d022163da26c",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10086": {
+      "name": "菲兹",
+      "file": "10086.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10086.png",
+      "sha256": "97b28566af81bef8f144eab2c12687ee8636bfb3eb5f77921286c0b77ff046b6",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10087": {
+      "name": "吉格斯",
+      "file": "10087.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10087.png",
+      "sha256": "3b486f6e73ad41fe8f9d0d56e75bba7fe1b2066177cbbcb30414446d9cf8f590",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10088": {
+      "name": "科加斯",
+      "file": "10088.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10088.png",
+      "sha256": "0c72d03fca9fc1e625249e6045a74536f98f4f65f3276b990168e193d0b84b5a",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10089": {
+      "name": "古拉加斯",
+      "file": "10089.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10089.png",
+      "sha256": "55c690984309baa4c7f5861ba8008b7ab8420758d7e51b27eb11aa2a02ba7626",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10090": {
+      "name": "弗拉基米尔",
+      "file": "10090.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10090.png",
+      "sha256": "3c7c216a028cd21d8893bea032a92dfc584e024b518fb812e0ac308915da571e",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10091": {
+      "name": "娜美",
+      "file": "10091.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10091.png",
+      "sha256": "44585be99fa14acbb2987cad50540480cce255d6a9009f6d7663e4413a0d5490",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10092": {
+      "name": "锐雯",
+      "file": "10092.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10092.png",
+      "sha256": "8dd139361b057cc949d876f04d09b21dc8a78a489a319bf241d8aee8529b4e4f",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10093": {
+      "name": "韦鲁斯",
+      "file": "10093.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10093.png",
+      "sha256": "b07fd1b25ab677e238645b273f9ffcc6866684e5dc90262a517e2986fb3fa0cb",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10094": {
+      "name": "艾瑞莉娅",
+      "file": "10094.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10094.png",
+      "sha256": "ff0d392ceb194be44ff035803ee93e894490d6756b3f7ab2d3ed8f27ad1462d3",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10095": {
+      "name": "卡特琳娜",
+      "file": "10095.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10095.png",
+      "sha256": "0ad7456675a65a01ddea484461e1a3657e9685cc11720aa139a1e4cfa52bd2eb",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10096": {
+      "name": "辛吉德",
+      "file": "10096.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10096.png",
+      "sha256": "485564f8707cda1991dbcad2a7014ef79c8eab80555771b99a0d50b8af094edc",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10097": {
+      "name": "索拉卡",
+      "file": "10097.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10097.png",
+      "sha256": "b454ad9d1eb9bc0732ab44ec5ef0758f532c4668d6afef57c07f65c81a7457ad",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10098": {
+      "name": "伊泽瑞尔",
+      "file": "10098.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10098.png",
+      "sha256": "8a88fa1831b5ac7b9e3bb8bc0728580658e0f1e39643f61f1b6134dccb326fa0",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10099": {
+      "name": "加里奥",
+      "file": "10099.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10099.png",
+      "sha256": "eba99e50428453297481341aa49541bcfb44e700472b8070c74d862673382197",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10100": {
+      "name": "阿克尚",
+      "file": "10100.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10100.png",
+      "sha256": "e8892d4bfacbf396f8f9ff0313351e42823d76f11bea42bb3df88a1bbf6f39ff",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10101": {
+      "name": "杰斯",
+      "file": "10101.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10101.png",
+      "sha256": "de3c2fd564b80dd2a4ddc879cc1049c0e661ff7eea778e4354db0da7717187e8",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10102": {
+      "name": "厄加特",
+      "file": "10102.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10102.png",
+      "sha256": "4d40257986fec7263a5ed47a07340ff3f8d2f77fa02c8658222c1511ec37faf4",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10103": {
+      "name": "卡萨丁",
+      "file": "10103.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10103.png",
+      "sha256": "8ea2f6bad7dd2947bdc7f19a2342ad2969addfb308735add69e471b50177f3c8",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10104": {
+      "name": "莎弥拉",
+      "file": "10104.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10104.png",
+      "sha256": "2e36df89f3332c9b194cbab5e74f37ba6f563b1d4103324542702838293796fd",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10105": {
+      "name": "巴德",
+      "file": "10105.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10105.png",
+      "sha256": "3724da6ce502a956b6c7a71582d86a9d9ee68e1973201f18477223071f4c974a",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10106": {
+      "name": "奥拉夫",
+      "file": "10106.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10106.png",
+      "sha256": "cc0328ff07f35b0c5a46932d9145f02d23d990798db516e90e69b46f11f6fcf8",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10107": {
+      "name": "希维尔",
+      "file": "10107.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10107.png",
+      "sha256": "3f7dce050f42992bd765d44b10abe3c6584e63289533cc432cda0fbcc07c9d05",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10108": {
+      "name": "米利欧",
+      "file": "10108.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10108.png",
+      "sha256": "649a5e6862d469c378e247cc149904571cb2234559fd3d6b2de2cbfa6cc01bce",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10109": {
+      "name": "丽桑卓",
+      "file": "10109.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10109.png",
+      "sha256": "b0699e04adee2138777c6b67c2f4c74bace69f057d2b7b80968cab618e6986d5",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10110": {
+      "name": "克格莫",
+      "file": "10110.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10110.png",
+      "sha256": "ededa0f60a21d308853b945e846558932f2f58e31f13620e5ee47266a639cf4c",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10112": {
+      "name": "凯特琳",
+      "file": "10112.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10112.png",
+      "sha256": "eb93bb35f2988068e7e3ceb2871c86a68eb478a8ff23382740c60ce76a72b4d6",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10116": {
+      "name": "芮尔",
+      "file": "10116.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10116.png",
+      "sha256": "30766ac83b8fc558ace5d266734ee68920b6c23e65b6a1cf09867b36e43db5f3",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10117": {
+      "name": "斯卡纳",
+      "file": "10117.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10117.png",
+      "sha256": "7af187b580e5a56303e4e3d94236bf872d0bb248d2b7c689e1eaa4fe0958430e",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10118": {
+      "name": "慎",
+      "file": "10118.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10118.png",
+      "sha256": "d90d46330d9f9ad1d3fd3f551375d05c1bb02e3e050bfaf250f15d7d7e75a579",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10119": {
+      "name": "布兰德",
+      "file": "10119.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10119.png",
+      "sha256": "25fff6a1eabda1420fcc23eff375293e788aff2597fb38173fbe03222eab1980",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10121": {
+      "name": "雷克顿",
+      "file": "10121.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10121.png",
+      "sha256": "a7958847c28d8660af6f1d92cc93e164bbc2ef6925252fae0a842b599465aff1",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10122": {
+      "name": "维迦",
+      "file": "10122.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10122.png",
+      "sha256": "061911b916afac4c92c0ee49159e9e02260bf91e20704710eeaaffdafafadcee",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10123": {
+      "name": "赛娜",
+      "file": "10123.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10123.png",
+      "sha256": "be394e61aca3703c6686562b25811a4918ef1eac0c2644a7c36bec9f1038bc72",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10124": {
+      "name": "派克",
+      "file": "10124.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10124.png",
+      "sha256": "5a7e0f92c915d49f4e0b20fc86acc584be1675d6aee4186e38e8be5ecaaf13c9",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10125": {
+      "name": "赛恩",
+      "file": "10125.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10125.png",
+      "sha256": "2e50d77f3e9e9f07887b1d660639d90767e9c1e7ddfdc99741d4b902e6c16226",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10126": {
+      "name": "斯维因",
+      "file": "10126.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10126.png",
+      "sha256": "d23b51345729788cc1d4cdfe5c5ea0728bd852658e31e932388f249cce5458ba",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10127": {
+      "name": "黑默丁格",
+      "file": "10127.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10127.png",
+      "sha256": "338e5ac450ccf5fcbb4d4adafae447a8322610361f4dcbcb7fb3cc22e5d1285e",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10128": {
+      "name": "泰隆",
+      "file": "10128.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10128.png",
+      "sha256": "9758dd49f3646f0c5162307ee672983654c6a9891dda2692a865a8a90aee1503",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10129": {
+      "name": "维克兹",
+      "file": "10129.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10129.png",
+      "sha256": "efce378d812f998a6035371eac69d071baedd7e6edf07b74f1c1cca17264dd52",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10130": {
+      "name": "锤石",
+      "file": "10130.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10130.png",
+      "sha256": "73363fb0a7cdd0ecbb8d54b9078275df0c88d314c559566f0e0553f75efc43cd",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10131": {
+      "name": "沃里克",
+      "file": "10131.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10131.png",
+      "sha256": "e388410081b395479d02e947a9de953c912f74f8ceeb7275d5e96660ea857355",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10132": {
+      "name": "诺提勒斯",
+      "file": "10132.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10132.png",
+      "sha256": "5370b4b8c0c31cdd19571ae81665b6efaeab36975a85fdaade00f3db02dc445d",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10133": {
+      "name": "费德提克",
+      "file": "10133.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10133.png",
+      "sha256": "314c0c634a720492fbfb0ca9d8a998cda91c080e8138c1d2e43a444e472f71e8",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10134": {
+      "name": "卡莉丝塔",
+      "file": "10134.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10134.png",
+      "sha256": "fc67766c4d0ffed12192590a531d6c9b010f40fa800dd67f5a14285592c4d3e0",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10135": {
+      "name": "莉莉娅",
+      "file": "10135.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10135.png",
+      "sha256": "d19a40b4cf22993f40ee7b33acb2557fd42532aedd8c0b8469abda4c95502116",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10136": {
+      "name": "奥恩",
+      "file": "10136.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10136.png",
+      "sha256": "a8dc6ad61242f4d6717dda8ccc5d4486284e133c1ee599f5d11e7cee027ae3e9",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10137": {
+      "name": "瑞兹",
+      "file": "10137.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10137.png",
+      "sha256": "c3c6ecc7fc2d8a153a017aa6ef0ffbe17e80645f256c9960b6220c6f0191294d",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10138": {
+      "name": "斯莫德",
+      "file": "10138.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10138.png",
+      "sha256": "737b51b87cd4e55fc2aedb91eadc0f15e9885077185bc40235d7236ae39eb596",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10139": {
+      "name": "梅尔",
+      "file": "10139.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10139.png",
+      "sha256": "ab64fe86d36971bba0f9335e93f82391ab51823e0dfa0f2147fb055b6fa91261",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10140": {
+      "name": "兰博",
+      "file": "10140.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10140.png",
+      "sha256": "a3933b1182a329921494ef036104d13811a08a318cc8c72d4fb9cf508fc5bed8",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10141": {
+      "name": "薇古丝",
+      "file": "10141.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10141.png",
+      "sha256": "0cd7b2d82dce056c4980b2d4b5be1d733a8ecb7e0767b4f77d6b82c9f36bce33",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10144": {
+      "name": "维克托",
+      "file": "10144.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10144.png",
+      "sha256": "9bc1eabbc54fcc6dbc85e62257d82e74a114ff513430db382981f3c7f80b0a86",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10146": {
+      "name": "塔莉垭",
+      "file": "10146.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10146.png",
+      "sha256": "5df512d6e72a0c70bd55dd7a5933ec7b6ff48252b42cd07250f473c47979dc8d",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10147": {
+      "name": "彗",
+      "file": "10147.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10147.png",
+      "sha256": "a06a52aa466190b248033c1ba382bd7a9259f4ad9659da68d8f0d87c88e3797b",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10148": {
+      "name": "芸阿娜",
+      "file": "10148.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10148.png",
+      "sha256": "81de51e589b222c795ddede3df185fa1eedf0cff3802ab3e9e8f7ce9b15af01d",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10151": {
+      "name": "魔腾",
+      "file": "10151.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10151.png",
+      "sha256": "af75243670158f6b4981cd24702f255600ff8358c897f5817961679cba18f499",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10152": {
+      "name": "奎桑提",
+      "file": "10152.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10152.png",
+      "sha256": "76dff047e5da8ff65663a0c541e45be876a070b5f63bf32f184a5a8ee1fb1838",
+      "dimensions": [
+        128,
+        128
+      ]
+    },
+    "10166": {
+      "name": "诺拉",
+      "file": "10166.png",
+      "url": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10166.png",
+      "sha256": "626d3de87aec9b9c66e2292002d2e219233f03575a4e40260c00a1c87a207b4a",
+      "dimensions": [
+        128,
+        128
+      ]
+    }
+  }
+}

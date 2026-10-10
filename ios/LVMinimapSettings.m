@@ -36,7 +36,7 @@ NSDictionary *LVMinimapSettingsDictionary(const LVMinimapSettings *s) {
 }
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section { return LV_MINIMAP_FIELDS; }
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
-    return @"信息面板（中央及地图下方文字）和本机“＋”默认隐藏，各有独立开关。只显示敌方标记时，可关闭对齐框、信息面板和本机定位点。需要核对坐标时打开本机定位点，用青色十字对照本机头像。“应用推荐对齐”只更改左／上／宽／高，其他设置保留。坐标从横屏左上角起算，位置和大小用屏幕百分比。方向 -1 按阵营选择，亦可填 0、90、180、270。默认读取游戏映射参数；手动映射仅供读取失败时校准。修改后回到首页启动／更新悬浮窗。";
+    return @"敌方自动显示已收录的英雄头像，未知英雄保留数字标记，无需单独开启头像开关。可调整敌方标记直径改变头像大小。信息面板（中央及地图下方文字）和本机“＋”默认隐藏，各有独立开关。只显示敌方标记时，可关闭对齐框、信息面板和本机定位点。需要核对坐标时打开本机定位点，用青色十字对照本机头像。“应用推荐对齐”只更改左／上／宽／高，其他设置保留。坐标从横屏左上角起算，位置和大小用屏幕百分比。方向 -1 按阵营选择，亦可填 0、90、180、270。默认读取游戏映射参数；手动映射仅供读取失败时校准。修改后回到首页启动／更新悬浮窗。";
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)path {
     UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];

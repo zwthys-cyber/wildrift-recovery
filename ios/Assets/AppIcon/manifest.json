@@ -1,0 +1,22 @@
+{
+  "generator": "built-in image_gen via imagegen skill",
+  "created_at": "2026-10-10",
+  "prompt_summary": "Opaque navy iOS app icon, stylized diagonal minimap, cyan map paths and red enemy location signal; no text, watermark, or existing game logo.",
+  "source_file": "source.png",
+  "source_sha256": "f405668b82676be25d6ca5e41a081f90942eca54d175ab69778c3c8a1aa9379a",
+  "packaging": "Original art retained. ImageMagick produces opaque RGB PNG sizes for iPhone/iPad; only dimension conversion, no change to the artwork.",
+  "icons": {
+    "AppIcon1024.png": "237bc8464b3beab58ed684f13d3e179125d65a2cfc278cc3e962a8da65129ecd",
+    "AppIcon20@2x.png": "a9f5d2217217aaa537dad46899687f869b5a42b5c579640a8fd796d4779b5751",
+    "AppIcon20@3x.png": "8967beb888c3b237dd18869722e4a91b024615f37a803cd150cbf334a34bc01e",
+    "AppIcon29@2x.png": "df640f08efd7035da3c2d57113c5282968d1a7e252b0997026087659ea2647cd",
+    "AppIcon29@3x.png": "fd409dea03d5690d6084d6fd95736f9eb7f0d575bfd7355f06414a846142b332",
+    "AppIcon40@2x.png": "b53ae6015d4e296aeaa34abef492aeea60b2bbd51cb906d198d046b5c58497e4",
+    "AppIcon40@3x.png": "2f8a050b990a1f6de60ae8c652775a5b266ce9e689f3798f9e64f87bc7eb7da1",
+    "AppIcon60@2x.png": "2f8a050b990a1f6de60ae8c652775a5b266ce9e689f3798f9e64f87bc7eb7da1",
+    "AppIcon60@3x.png": "5e7e05797c23f0ac2b7eaf97c3fca95a5056c47a3c9135ebad3f1e9fd8e3344b",
+    "AppIcon76.png": "23b55ba183e6a9be4027612da3ec5db1edb26d40646c12ab3cd6eed6da09b645",
+    "AppIcon76@2x.png": "f15648ccf5b68b61ab6d1dd23626918d41e1a26094be655a1e26a98b4409a8b2",
+    "AppIcon83.5@2x.png": "533abcad464db0db4b3f72bdb5069875391e7619d708d4edcdf458e5a04af452"
+  }
+}

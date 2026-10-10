@@ -1,0 +1,6 @@
+Use case: logo-brand
+Asset type: iOS desktop app icon for a small minimap overlay utility named lvlolm.
+Primary request: Create one polished square app icon, a bold stylized diagonal battle minimap with one red enemy location dot and a subtle cyan location signal, easily recognizable at tiny icon size.
+Style: crisp clean modern game utility icon, dark navy background, cyan map paths and one strong red dot, a little dimensional lighting, restrained details.
+Composition: one centered full-bleed square 1024x1024 image; generous clear margins inside the square; fill all corners with the opaque navy background, iOS will round corners itself. No external frame, no mockup, no multiple panels.
+Constraints: no lettering, no numbers, no words, no trademark or existing game logo; opaque background. The icon should feel appropriate next to mobile game apps but remain a unique minimap utility mark.

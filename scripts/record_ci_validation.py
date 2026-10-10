@@ -33,6 +33,9 @@ record = {
     'minimap_checks': checks('minimap-checks.txt'),
     'minimap_motion_checks': checks('minimap-motion-checks.txt'),
     'ipa_signature_tests': 5,
+    'ipa_total_tests': 8,
+    'bundled_hero_portraits': metadata['minimap_hero_portrait_count'],
+    'desktop_icon_payload_verified': True,
     'scope': 'GitHub CI checks and build provenance. Local validation remains separately recorded. Device animation smoothness is not verified by CI.'
 }
 text = json.dumps(record, ensure_ascii=False, indent=2) + '\n'
