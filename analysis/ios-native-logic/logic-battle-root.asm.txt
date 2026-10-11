@@ -1,20 +1,20 @@
 ; Original FEProj UUID D5B32037-47A3-3EFF-B0E5-04B071EFBEE3
 ; Relative image addresses, offline disassembly only.
+; Actual Battle root/store and actual actor lookup caller; FrameRoot +28 is not Battle.
 
-00d03bcc: adrp x8, #0x523c000
-00d03bd0: add x8, x8, #0xf28
-00d03bd4: ldr x19, [x8]
-00d03bd8: ldr x8, [x19, #0x38]
-00d03bdc: cbnz x8, #0xd03bfc
-00d03be0: adrp x2, #0x45eb000
-00d03be4: add x2, x2, #0x4e1
-00d03be8: mov w0, #0
-00d03bec: mov w1, #2
-00d03bf0: bl #0x3ca7950
-00d03bf4: ldr x8, [x19, #0x38]
-00d03bf8: cbz x8, #0xd03c34
-00d03bfc: ldr x0, [x8, #0x28]
-00d03c00: cbz x0, #0xd03c10
-00d03c04: ldp x29, x30, [sp, #0x10]
-00d03c08: ldp x20, x19, [sp], #0x20
-00d03c0c: ret
+03afb3c0: ldr x0, [x8, #0x38]
+03afb3c4: bl #0xcce8e4
+
+00cceaac: ldr x8, [x19, #0x10]
+00cceab0: adrp x9, #0x523c000
+00cceab4: add x9, x9, #0xf30
+00cceab8: str x8, [x9]
+
+00434748: adrp x8, #0x523c000
+0043474c: add x8, x8, #0xf30
+00434750: ldr x8, [x8]
+00434754: ldr x9, [x8, #0x1e0]
+00434758: ldr x9, [x9, #0xb0]
+0043475c: add x0, x8, #0x1e0
+00434760: mov x1, x19
+00434764: blr x9

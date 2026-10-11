@@ -1,0 +1,42 @@
+; Original FEProj UUID D5B32037-47A3-3EFF-B0E5-04B071EFBEE3
+; Relative image addresses, offline disassembly only.
+; Rejected 0.7.8 path: getter +28, distinct logger factory and logger vptr store.
+
+00d03bcc: adrp x8, #0x523c000
+00d03bd0: add x8, x8, #0xf28
+00d03bd4: ldr x19, [x8]
+00d03bd8: ldr x8, [x19, #0x38]
+00d03bdc: cbnz x8, #0xd03bfc
+00d03be0: adrp x2, #0x45eb000
+00d03be4: add x2, x2, #0x4e1
+00d03be8: mov w0, #0
+00d03bec: mov w1, #2
+00d03bf0: bl #0x3ca7950
+00d03bf4: ldr x8, [x19, #0x38]
+00d03bf8: cbz x8, #0xd03c34
+00d03bfc: ldr x0, [x8, #0x28]
+00d03c00: cbz x0, #0xd03c10
+00d03c04: ldp x29, x30, [sp, #0x10]
+00d03c08: ldp x20, x19, [sp], #0x20
+00d03c0c: ret 
+
+00cceb54: ldr x8, [x19, #0x28]
+00cceb58: cbnz x8, #0xccea60
+00cceb5c: bl #0xcd2e24
+00cceb60: str x0, [x19, #0x28]
+
+00cd2e68: mov w0, #0x28
+00cd2e6c: bl #0x4585f00
+00cd2e70: mov x19, x0
+00cd2e74: mov w1, #0
+00cd2e78: bl #0x3ca82e8
+00cd2e7c: mov x0, x19
+00cd2e80: ldp x29, x30, [sp, #0x10]
+00cd2e84: ldp x20, x19, [sp], #0x20
+
+03ca82f8: str xzr, [x0, #0x20]
+03ca82fc: stp xzr, xzr, [x0, #8]
+03ca8300: adrp x8, #0x501c000
+03ca8304: add x8, x8, #0x898
+03ca8308: str x8, [x0]
+03ca830c: strb w1, [x0, #0x18]

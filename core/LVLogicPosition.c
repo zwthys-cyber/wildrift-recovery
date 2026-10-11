@@ -68,10 +68,11 @@ static LVLogicPositionStatus find(Reader *r,uint64_t tree,uint32_t id,uint64_t *
     *object=candidate; return LV_LOGIC_READY;
 }
 static int roots(Reader *r,uint64_t base,const LVLogicPositionReport *v,uint64_t key) {
-    uint64_t desk,frame,battle,tree,same_key;
+    uint64_t desk,frame,battle,cached_battle,tree,same_key;
     return pointer(r,base+0x523cf28,&desk) && desk==v->desk &&
         pointer(r,desk+0x38,&frame) && frame==v->frame_root &&
-        pointer(r,frame+0x28,&battle) && battle==v->battle &&
+        pointer(r,frame+0x10,&battle) && battle==v->frame_battle &&
+        pointer(r,base+0x523cf30,&cached_battle) && cached_battle==v->battle &&
         pointer(r,v->manager+0x20,&tree) && tree==v->tree &&
         load(r,base+0x523cf38,&same_key,8) && same_key==key;
 }
@@ -85,13 +86,17 @@ void lv_target_logic_position_read(LVTargetRead read,void *context,uint64_t base
     v.profile_matches=1;
     if(s->result!=LV_TARGET_READY && s->result!=LV_TARGET_PARTIAL) goto done;
     Reader r={read,context}; uint64_t key;
-    /* Original runtime battle accessor 0xd03bc0: FEDesk.frameroot +38,
-       frame.battle +28. The data-root +10/+18 path used in 0.7.7
-       points to resource/configuration data, not live battle actors. */
+    /* Original FrameRoot initialization 0xcceaac..0xcceab8 copies its
+       +10 Battle to global 0x523cf30. Actual actor dispatch 0x434748
+       loads THAT global and manager +1e0, virtual slot +b0.
+       FrameRoot +28 (0.7.8) is a separately allocated logger, created
+       by 0xcd2e24 -> 0x3ca82e8, not a Battle or its ActorMgr. */
     if(!pointer(&r,base+0x523cf28,&v.desk) || !v.desk ||
         !pointer(&r,v.desk+0x38,&v.frame_root) || !v.frame_root ||
-        !pointer(&r,v.frame_root+0x28,&v.battle) || !v.battle ||
+        !pointer(&r,v.frame_root+0x10,&v.frame_battle) || !v.frame_battle ||
+        !pointer(&r,base+0x523cf30,&v.battle) || !v.battle ||
         !load(&r,base+0x523cf38,&key,8)) { v.reason="logic_root_unreadable"; goto done; }
+    if(v.battle!=v.frame_battle) { v.reason="logic_battle_root_mismatch"; goto done; }
     if(!address_valid(v.battle+0x1e0,0x30)) { v.reason="logic_manager_invalid"; goto done; }
     /* Runtime battle constructors 0x4b89cc/0x4b9acc embed ActorMgr at
        +1e0 and call its constructor 0x74858c. That constructor writes

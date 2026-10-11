@@ -11,7 +11,7 @@ import struct
 import unittest
 from pathlib import Path
 from unicorn import Uc, UC_ARCH_ARM64, UC_MODE_ARM, UC_HOOK_CODE
-from unicorn.arm64_const import UC_ARM64_REG_X0, UC_ARM64_REG_X1, UC_ARM64_REG_X2, UC_ARM64_REG_X8, UC_ARM64_REG_X19, UC_ARM64_REG_SP, UC_ARM64_REG_LR
+from unicorn.arm64_const import UC_ARM64_REG_X0, UC_ARM64_REG_X1, UC_ARM64_REG_X2, UC_ARM64_REG_X8, UC_ARM64_REG_X9, UC_ARM64_REG_X19, UC_ARM64_REG_SP, UC_ARM64_REG_LR
 
 ROOT=Path(__file__).resolve().parents[1]
 ENGINE=Path(os.environ.get('LVLOLM_IOS_ENGINE',str(ROOT/'inputs/ios-engine-0.7.5/Bundle/Frameworks/FEProj.framework/FEProj')))
@@ -50,17 +50,79 @@ class OriginalEngineGetters(unittest.TestCase):
         cls.data=ENGINE.read_bytes()
         if hashlib.sha256(cls.data).hexdigest()!=ENGINE_SHA: raise ValueError('Wrong native engine profile')
 
-    def test_original_logic_battle_root(self):
-        # Original runtime helper: FEDesk.frameroot +38, battle +28.
-        # The 0.7.7 +10/+18 path instead reaches resource data. Both
-        # paths exist in this fixture so swapping them cannot pass.
+    def test_original_logger_accessor_is_not_the_runtime_battle(self):
+        # The 0.7.8 test correctly executed this helper, but incorrectly
+        # named its result Battle. It actually returns a distinct logger.
         for delta in (0,0x100,0x800):
-            u=machine(self.data,((0xd03bc0,0xd03c44),))
+            u=machine(self.data,((0xd03bc0,0xd03c44),(0x3ca82f8,0x3ca8310)))
+            u.reg_write(UC_ARM64_REG_X0,HEAP+0x2000+delta)
+            u.emu_start(0x3ca82f8,0x3ca8310,count=10)
+            self.assertEqual(struct.unpack('<Q',bytes(u.mem_read(HEAP+0x2000+delta,8)))[0],0x501c898)
             q(u,0x523cf28,HEAP);q(u,HEAP+0x38,HEAP+0x1000)
             q(u,HEAP+0x1028,HEAP+0x2000+delta)
+            q(u,HEAP+0x1010,HEAP+0x5000)
             q(u,HEAP+0x10,HEAP+0x3000);q(u,HEAP+0x3018,HEAP+0x4000)
             u.emu_start(0xd03bc0,HALT,count=100)
             self.assertEqual(u.reg_read(UC_ARM64_REG_X0),HEAP+0x2000+delta)
+            self.assertNotEqual(u.reg_read(UC_ARM64_REG_X0),HEAP+0x5000)
+
+    def test_original_frame_runtime_dispatch_and_positions(self):
+        # Execute the original FrameRoot-to-global store, original Battle
+        # manager address calculation, original ActorMgr vptr store, and
+        # the ACTUAL game lookup caller. Its method is loaded from the
+        # original static vtable, never seeded with a guessed function.
+        # Stop before BLR, then execute the separately whitelisted pure
+        # lookup/getters/decoder over six independently identified actors.
+        ranges=((0xcceaac,0xcceabc),(0x4b9acc,0x4b9ad4),
+                (0x748618,0x74862c),(0x4b22650,0x4b22710),
+                (0x434748,0x434768),(0x32f2318,0x32f232c),
+                (0x1011910,0x1011a18),(0x3326590,0x3326598),
+                (0x33269c8,0x33269d0),(0x3959e5c,0x3959e64),
+                (0x395c260,0x395c268),(0x1030de8,0x1030e10))
+        for delta in (0,0x80,0x100):
+            u=machine(self.data,ranges);frame=HEAP+0x1000;battle=HEAP+0x2000+delta
+            q(u,frame+0x10,battle);q(u,frame+0x28,HEAP+0x3000)
+            u.reg_write(UC_ARM64_REG_X19,frame)
+            u.emu_start(0xcceaac,0xcceabc,count=10)
+            self.assertEqual(struct.unpack('<Q',bytes(u.mem_read(0x523cf30,8)))[0],battle)
+            u.reg_write(UC_ARM64_REG_X19,battle)
+            u.emu_start(0x4b9acc,0x4b9ad0,count=10)
+            manager=u.reg_read(UC_ARM64_REG_X0)
+            u.reg_write(UC_ARM64_REG_X19,manager)
+            u.emu_start(0x748618,0x74862c,count=10)
+            header=HEAP+0x5000;q(u,manager+0x20,header);q(u,header,HEAP+0x4400)
+            key=0xd501a084d9240301;q(u,0x523cf38,key)
+            for actor_id,left,right in ((4,2,5),(2,1,3),(5,0,6),(1,0,0),(3,0,0),(6,0,0)):
+                node=HEAP+0x4000+actor_id*0x100;actor=HEAP+0x6000+actor_id*0x400
+                transform=HEAP+0xa000+actor_id*0x80
+                q(u,node+8,HEAP+0x4000+left*0x100 if left else 0)
+                q(u,node+0x10,HEAP+0x4000+right*0x100 if right else 0)
+                u.mem_write(node+0x20,struct.pack('<I',actor_id));q(u,node+0x28,actor)
+                for member,value in ((0x14,actor_id),(0xc4,10000+actor_id),(0x198,1 if actor_id==1 else 2)):
+                    u.mem_write(actor+member,struct.pack('<I',value))
+                q(u,actor+0x20,transform)
+                position=((actor_id-3)*16384+delta,0,(actor_id-1)*16384-delta)
+                u.mem_write(transform+0x28,b''.join(struct.pack('<Q',(p&((1<<64)-1))^key) for p in position))
+            for actor_id in range(1,7):
+                u.reg_write(UC_ARM64_REG_X19,actor_id)
+                u.emu_start(0x434748,0x434764,count=20)
+                self.assertEqual(u.reg_read(UC_ARM64_REG_X0),manager)
+                self.assertEqual(u.reg_read(UC_ARM64_REG_X1),actor_id)
+                # The original table is the independent virtual target oracle.
+                lookup=u.reg_read(UC_ARM64_REG_X9);self.assertEqual(lookup,0x32f2318)
+                u.emu_start(lookup,HALT,count=300)
+                actor=u.reg_read(UC_ARM64_REG_X0)
+                self.assertEqual(actor,HEAP+0x6000+actor_id*0x400)
+                for start,expected in ((0x3326590,actor_id),(0x3959e5c,10000+actor_id),
+                                       (0x395c260,1 if actor_id==1 else 2),
+                                       (0x33269c8,HEAP+0xa000+actor_id*0x80)):
+                    u.reg_write(UC_ARM64_REG_X0,actor);u.emu_start(start,HALT,count=10)
+                    self.assertEqual(u.reg_read(UC_ARM64_REG_X0),expected)
+                u.reg_write(UC_ARM64_REG_X8,u.reg_read(UC_ARM64_REG_X0))
+                u.reg_write(UC_ARM64_REG_X19,HEAP+0xf000)
+                u.emu_start(0x1030de8,0x1030e10,count=20)
+                self.assertEqual(struct.unpack('<3q',bytes(u.mem_read(HEAP+0xf000,24))),
+                                 ((actor_id-3)*16384+delta,0,(actor_id-1)*16384-delta))
 
     def test_original_runtime_actor_manager_constructor_and_vtable(self):
         # Recover the embedded manager from the ACTUAL battle constructor,

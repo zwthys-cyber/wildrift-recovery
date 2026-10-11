@@ -3,13 +3,17 @@
   "engine_sha256": "69ed33e4b969139bda80946404528584a879f63ae4032c65fcb7412c3db4431e",
   "unity_uuid": "085E1DDF-4A8D-34E2-9D73-A0A28BCC0B83",
   "native_engine_collection_version": "0.7.5",
-  "scope": "Corrected runtime native logic path. The 0.7.7 device log exposed that its data-root resource manager was not a live actor manager. New offsets are independently backed by the original runtime accessor, battle/ActorMgr constructors and original static vtable. Offline instruction checks do not prove live fog rendering.",
+  "scope": "0.7.9 corrects the 0.7.8 logger/root mistake using the actual game actor-lookup caller, its global Battle pointer, and the original FrameRoot initialization that sets that global. The original native instruction chain is checked in bounded synthetic memory. Live fog rendering still requires device evidence.",
   "root": {
     "desk_global": "0x523cf28",
     "desk_frame_root": "0x38",
-    "frame_root_runtime_battle": "0x28",
-    "original_accessor": "0xd03bc0",
-    "rejected_0_7_7_path": "FEDesk.data_root +10 -> resource battle +18 -> resource manager +d10; this is not the live BattleActor object tree"
+    "frame_root_runtime_battle": "0x10",
+    "battle_global": "0x523cf30",
+    "original_frame_root_to_global_store": "0xcceaac..0xcceabc",
+    "original_actual_actor_dispatch": "0x434748..0x434768",
+    "root_consistency": "FrameRoot +10 must equal global Battle before and after reading actors.",
+    "rejected_0_7_8_path": "FrameRoot +28 is a separately allocated 0x28-byte logger; accessor 0xd03bc0 returns it.",
+    "rejected_0_7_7_path": "FEDesk.data_root +10 -> resource battle +18 -> resource manager +d10; resource objects are not live actors."
   },
   "actor_lookup": {
     "battle_embedded_manager": "0x1e0",
@@ -74,20 +78,29 @@
   "consistency": "Check sync and logic object ID/resource/camp, resolve logic object twice, recheck transform pointer, global desk/frame/battle/tree/XOR key and original manager vtable/lookup method. No last-position cache.",
   "integration": "The minimap prefers validated native logic position and retains the existing current sync fallback; other preview behavior is unchanged. Primary sync and logic coordinates are exported separately.",
   "original_instruction_checks": {
-    "tests": 10,
-    "cases": 102,
+    "tests": 11,
+    "cases": 120,
     "calls_and_syscalls_rejected": true,
-    "actor_manager_dispatch_stop": "runtime constructor stopped before call; original ActorMgr vptr store executed in bounded synthetic RAM and original on-disk vtable examined",
-    "private_binary_bundled_or_uploaded": false
+    "actor_manager_dispatch_stop": "Execute original FrameRoot/global store, manager address and vptr stores, actual game lookup caller with the original static function table. Stop before BLR; separately emulate only whitelisted pure lookup, identity getters and decoder.",
+    "private_binary_bundled_or_uploaded": false,
+    "end_to_end_actor_inputs": 18
   },
   "device_verified": false,
   "evidence_files": {
     "analysis/ios-native-logic/logic-battle-root.asm.txt": {
-      "sha256": "4f6f6ed7a04740fa2a27033d6b9300f7dfa0f51293f7ce674991eed78ff51707",
+      "sha256": "ea217dcca9ef9121426acc75d5b1bb675ad2bac33b1b8aa18109a1cc6f99dea0",
       "ranges": [
         [
-          "0xd03bcc",
-          "0xd03c10"
+          "0x3afb3c0",
+          "0x3afb3c8"
+        ],
+        [
+          "0xcceaac",
+          "0xcceabc"
+        ],
+        [
+          "0x434748",
+          "0x434768"
         ]
       ]
     },
@@ -167,8 +180,29 @@
           "0x37c950"
         ]
       ]
+    },
+    "analysis/ios-native-logic/frame-logger-comparison.asm.txt": {
+      "sha256": "8f4d35f1abba362ff0f6bd40600c0ef04a1ee1ceae594626932fabdb275fa7ac",
+      "ranges": [
+        [
+          "0xd03bcc",
+          "0xd03c10"
+        ],
+        [
+          "0xcceb54",
+          "0xcceb64"
+        ],
+        [
+          "0xcd2e68",
+          "0xcd2e88"
+        ],
+        [
+          "0x3ca82f8",
+          "0x3ca8310"
+        ]
+      ]
     }
   },
-  "layout_version": 2,
-  "latest_device_evidence": "analysis/device-0.7.7-summary.json"
+  "layout_version": 3,
+  "latest_device_evidence": "analysis/device-0.7.8-summary.json"
 }

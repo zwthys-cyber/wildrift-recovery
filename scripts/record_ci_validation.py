@@ -41,6 +41,7 @@ record = {
     'ipa_total_tests': 8,
     'zip_export_tests': 3,
     'collection_inspector_tests': 6,
+    'device_minimap_checker_tests': 9,
     'native_engine_collection_device_verified': metadata['native_engine_collection_device_verified'],
     'native_health_device_verified': False,
     'logic_position_device_verified': False,
@@ -48,7 +49,7 @@ record = {
     'prior_native_health_ring_user_confirmed': True,
     'bundled_hero_portraits': metadata['minimap_hero_portrait_count'],
     'desktop_icon_payload_verified': True,
-    'scope': 'GitHub CI checks and build provenance. Local original FEProj getter emulation is separately recorded; private engine bytes are absent from CI. The 0.7.6 native HP ring was confirmed by the user. The 0.7.8 runtime-root/ActorMgr correction is locally checked against original constructors/vtable and requires device validation through fog changes. The 0.7.7 reader failed its lookup gate in all 32 logged samples.'
+    'scope': 'GitHub CI checks and build provenance. Local original FEProj getter emulation is separately recorded; private engine bytes are absent from CI. The 0.7.6 native HP ring was confirmed by the user. The 0.7.9 global Battle correction is checked against the original FrameRoot store and actual actor dispatch, with an 18-actor native-instruction pipeline locally. Device acceptance checks are separately tested. 0.7.8 failed its lookup gate in all 32 samples. Live 0.7.9 fog display still requires device evidence.'
 }
 text = json.dumps(record, ensure_ascii=False, indent=2) + '\n'
 (ROOT / 'analysis/ci-validation.json').write_text(text)

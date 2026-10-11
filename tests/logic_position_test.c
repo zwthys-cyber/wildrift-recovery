@@ -8,7 +8,7 @@
 #define BASE UINT64_C(0x100000000)
 #define HEAP UINT64_C(0x350000000)
 static unsigned char heap[0x20000];
-static uint64_t desk,key,lookup,failure,mutation;
+static uint64_t desk,battle,key,lookup,failure,mutation;
 static unsigned mutation_reads,mutate_at,mutation_byte,checks;
 static LVTargetSnapshot snapshot;
 static LVLogicPositionReport report;
@@ -30,6 +30,7 @@ static int reader(void *ctx,uint64_t a,void *p,size_t n) {
     (void)ctx;
     if(a==failure) { memset(p,255,n); return 0; }
     if(a==BASE+0x523cf28 && n==8) memcpy(p,&desk,8);
+    else if(a==BASE+0x523cf30 && n==8) memcpy(p,&battle,8);
     else if(a==BASE+0x523cf38 && n==8) memcpy(p,&key,8);
     else if(a==BASE+0x4b22700 && n==8) memcpy(p,&lookup,8);
     else if(a>=HEAP && a-HEAP+n<=sizeof(heap)) memcpy(p,heap+a-HEAP,n);
@@ -44,7 +45,12 @@ static void fixture(void) {
        reaches resource tables whose actual +78 lookup is 0x37c868. */
     q(desk+0x10,HEAP+0x200); q(HEAP+0x218,HEAP+0x2200);
     q(HEAP+0x2f10,BASE+0x4ac9df8);
-    q(desk+0x38,HEAP+0x100); q(HEAP+0x128,HEAP+0x800);
+    /* FrameRoot +28 is a logger. Its unrelated heap pointers caused
+       every 0.7.8 device lookup gate to fail. The actual Battle at +10
+       is independently cached in global 0x523cf30. */
+    q(desk+0x38,HEAP+0x100); q(HEAP+0x128,HEAP+0x1800);
+    q(HEAP+0x19e0,HEAP+0x1900); q(HEAP+0x19b0,0);
+    q(HEAP+0x110,HEAP+0x800); battle=HEAP+0x800;
     q(HEAP+0x9e0,BASE+0x4b22650); lookup=BASE+0x32f2318;
     q(HEAP+0xa00,HEAP+0x2000); q(HEAP+0x2000,node(4));
     q(node(4)+8,node(2)); q(node(4)+0x10,node(5));
@@ -83,7 +89,15 @@ int main(void) {
     fixture();sample();check(report.profile_matches && report.eligible==6 && report.valid==6 && !strcmp(report.reason,"ready"));
     check(report.desk==HEAP && report.frame_root==HEAP+0x100 && report.battle==HEAP+0x800 && report.manager==HEAP+0x9e0);
     check(report.manager_vtable_offset==0x4b22650 && report.lookup_method_offset==0x32f2318);
+    check(report.frame_battle==battle);
     fixture();failure=desk+0x10;sample();check(report.valid==6);
+    fixture();failure=HEAP+0x128;sample();check(report.valid==6);
+    fixture();q(HEAP+0x110,HEAP+0x1800);sample();check(!report.valid && !strcmp(report.reason,"logic_battle_root_mismatch"));
+    fixture();battle=HEAP+0x1800;sample();check(!report.valid && !strcmp(report.reason,"logic_battle_root_mismatch"));
+    fixture();battle=0;sample();check(!report.valid && !strcmp(report.reason,"logic_root_unreadable"));
+    fixture();failure=BASE+0x523cf30;sample();check(!report.valid && !strcmp(report.reason,"logic_root_unreadable"));
+    fixture();q(HEAP+0x110,0);sample();check(!report.valid && !strcmp(report.reason,"logic_root_unreadable"));
+    fixture();sample();
     for(size_t i=0;i<6;++i) check(snapshot.actors[i].logic_native==logic(i) &&
         snapshot.actors[i].logic_position_fixed[0]==((int64_t)i-3)*16384 &&
         snapshot.actors[i].logic_position_fixed[2]==((int64_t)i-1)*16384 &&
@@ -126,18 +140,18 @@ int main(void) {
     fixture();q(HEAP+0x2000,HEAP+0x18000);
     for(size_t i=0;i<65;++i) { uint64_t p=HEAP+0x18000+i*0x60;u(p+0x20,77);q(p+8,i<64?p+0x60:0); }
     sample();check(!report.valid && report.invalid==6);
-    for(size_t i=0;i<6;++i) {
-        const uint64_t a[]={0x523cf28,0x523cf38,0x38,0x128,0xa00,0x10020};
-        fixture();mutation=i<2 ? BASE+a[i] : HEAP+a[i];sample();
+    for(size_t i=0;i<7;++i) {
+        const uint64_t a[]={0x523cf28,0x523cf38,0x523cf30,0x38,0x110,0xa00,0x10020};
+        fixture();mutation=i<3 ? BASE+a[i] : HEAP+a[i];sample();
         check(!snapshot.actors[0].logic_position_ok && report.changed>0);
-        if(i<5) check(!report.valid && !strcmp(report.reason,"logic_root_changed"));
+        if(i<6) check(!report.valid && !strcmp(report.reason,"logic_root_changed"));
     }
     fixture();mutation=logic(0)+0x14;first_failed(LV_LOGIC_CHANGED);
     fixture();mutation=logic(0)+0xc4;first_failed(LV_LOGIC_CHANGED);
     fixture();mutation=logic(0)+0x198;first_failed(LV_LOGIC_CHANGED);
     fixture();mutation=node(1);mutation_byte=0x20;first_failed(LV_LOGIC_CHANGED);
     fixture();desk=0;sample();check(!report.valid && !strcmp(report.reason,"logic_root_unreadable"));
-    fixture();q(HEAP+0x128,0);sample();check(!report.valid);
+    fixture();q(HEAP+0x110,0);sample();check(!report.valid);
     fixture();q(HEAP+0xa00,0);sample();check(!report.valid);
     fixture();q(HEAP+0x2000,0);sample();check(!report.valid && report.not_found==6);
     fixture();failure=BASE+0x523cf38;sample();check(!report.valid);
@@ -150,6 +164,37 @@ int main(void) {
     fixture();lv_target_logic_position_read(reader,NULL,BASE,NULL,&snapshot,&report);check(!report.valid);
     fixture();lv_target_logic_position_read(NULL,NULL,BASE,LV_NATIVE_ENGINE_UUID,&snapshot,&report);check(!report.valid);
     fixture();lv_target_logic_position_read(reader,NULL,UINT64_MAX,LV_NATIVE_ENGINE_UUID,&snapshot,&report);check(!report.valid);
+    /* Both map orientations, five simultaneous hidden enemies, changing
+       current logical positions and repeated visible/hidden transitions.
+       Sync positions remain the invalid 500,500 sentinel throughout. */
+    for(unsigned side=1;side<=2;++side) {
+        fixture();
+        for(size_t i=0;i<6;++i) {
+            snapshot.actors[i].camp=i ? 3-(int32_t)side : (int32_t)side;
+            u(snapshot.actors[i].native+0x80,(uint32_t)snapshot.actors[i].camp);
+            u(logic(i)+0x198,(uint32_t)snapshot.actors[i].camp);
+        }
+        for(unsigned tick=0;tick<48;++tick) {
+            for(size_t i=0;i<6;++i) {
+                position(i,((int64_t)i*3+(int64_t)tick-30)*16384,0,
+                         ((int64_t)i*2-(int64_t)tick+20)*16384);
+                snapshot.actors[i].fog_cut_disappear=tick%12>=3;
+                snapshot.actors[i].should_be_visible=!snapshot.actors[i].fog_cut_disappear;
+            }
+            sample();map();unsigned seen=0;int good=report.valid==6 && frame.count==5 && !frame.outside_enemies;
+            for(size_t j=0;j<frame.count;++j) {
+                LVMinimapMarker *m=&frame.markers[j];
+                if(m->object_id<2 || m->object_id>6) { good=0; continue; }
+                size_t i=m->object_id-1; double x=(double)(i*3)+(double)tick-30;
+                double z=(double)(i*2)-(double)tick+20;
+                if(side==2) { x=-x;z=-z; }
+                good=good && m->position_source==2 && m->health_source==1 &&
+                    m->health_fraction==.5 && m->u==.5+x/100 && m->v==.5-z/100;
+                seen|=1u<<(i-1);
+            }
+            check(good && seen==31);
+        }
+    }
     check(!strcmp(lv_logic_position_status_name(LV_LOGIC_READY),"ready"));
     printf("Logic position: %u checks passed\n",checks);return 0;
 }

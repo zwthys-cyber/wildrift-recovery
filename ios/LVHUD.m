@@ -55,6 +55,7 @@ static void recordCoordinateTrace(NSDictionary *snapshot) {
     if(![result isEqual:@"ready"] && ![result isEqual:@"partial"]) return;
     NSString *battle=snapshot[@"trace"][@"drive_instance"];
     if(![coordinateBattle isEqual:battle]) { coordinateBattle=battle; coordinateSamples=[NSMutableArray new]; }
+    NSDictionary *map=snapshot[@"minimap"];
     NSMutableArray *heroes=[NSMutableArray new]; BOOL truncated=NO;
     NSArray *keys=@[@"object_id",@"resource_id",@"camp",@"is_local",@"position_read_ok",@"position",
         @"health_read_ok",@"health",@"minimap_health_fraction_read_ok",@"minimap_health_fraction",@"coordinate_candidates",
@@ -65,10 +66,20 @@ static void recordCoordinateTrace(NSDictionary *snapshot) {
         if(heroes.count==16) { truncated=YES; break; }
         NSMutableDictionary *entry=[NSMutableDictionary new];
         for(NSString *key in keys) if(actor[key]) entry[key]=actor[key];
+        entry[@"minimap_marker_prepared"]=@NO;
+        entry[@"minimap_position_source"]=@"unavailable";
+        for(NSDictionary *marker in map[@"markers"]) {
+            if([marker[@"object_id"] isEqual:actor[@"object_id"]] &&
+               [marker[@"resource_id"] isEqual:actor[@"resource_id"]] &&
+               [marker[@"is_local"] boolValue]==[actor[@"is_local"] boolValue]) {
+                entry[@"minimap_marker_prepared"]=@YES;
+                entry[@"minimap_position_source"]=marker[@"position_source"] ?: @"unavailable";
+                break;
+            }
+        }
         [heroes addObject:entry];
     }
     if(!heroes.count) return;
-    NSDictionary *map=snapshot[@"minimap"];
     [coordinateSamples addObject:@{ @"sampled_at":[NSISO8601DateFormatter.new stringFromDate:NSDate.date],
         @"uptime_seconds":@(now), @"result":result, @"read_attempts":snapshot[@"snapshot_read_attempts"] ?: @0,
         @"local_camp":map[@"local_camp"] ?: @0, @"map_reason":map[@"reason"] ?: @"missing",
@@ -79,6 +90,7 @@ static void recordCoordinateTrace(NSDictionary *snapshot) {
         @"hero_list_truncated":@(truncated), @"heroes":heroes }];
     if(coordinateSamples.count>32) [coordinateSamples removeObjectAtIndex:0];
     NSMutableDictionary *trace=[@{ @"format_version":@1, @"session":hudSession.lowercaseString,
+        @"battle_instance":coordinateBattle ?: @"",
         @"producer_pid":@(getpid()), @"profile_uuid":@LV_TARGET_UUID, @"sample_interval_seconds":@1,
         @"sample_limit":@32, @"hero_limit":@16, @"samples":coordinateSamples,
         @"scope":@"Bounded numeric observations through vision changes. Identity-matched native logic coordinates may be used for drawing; candidate and last-position fields are diagnostic only. No full-memory dump, history marker or predicted coordinate." } mutableCopy];
@@ -291,8 +303,7 @@ static NSString *blockLabel(NSString *code) {
             CGContextStrokeEllipseInRect(context, circle);
             if(marker->health_fraction_ok && marker->health_fraction>0) {
                 double hp=marker->health_fraction;
-                UIColor *color=hp>.5 ? [UIColor colorWithRed:.2 green:1 blue:.3 alpha:1] :
-                    hp>.25 ? UIColor.yellowColor : [UIColor colorWithRed:1 green:.2 blue:.2 alpha:1];
+                UIColor *color=[UIColor colorWithRed:1 green:.2 blue:.2 alpha:1];
                 CGContextSetStrokeColorWithColor(context,color.CGColor);
                 CGContextAddArc(context,x,y,radius,-M_PI_2,-M_PI_2+2*M_PI*hp,0); CGContextStrokePath(context);
             }

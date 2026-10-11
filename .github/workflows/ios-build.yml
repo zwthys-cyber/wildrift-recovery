@@ -46,6 +46,7 @@ jobs:
           python3 tests/test_ipa.py
           python3 tests/test_zip.py
           python3 tests/test_collection_inspector.py
+          python3 tests/test_device_minimap_check.py
       - name: Record CI provenance and package source
         run: |
           python3 scripts/record_ci_validation.py
@@ -56,4 +57,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "$GITHUB_REF_NAME" dist/*.ipa dist/*source*.zip dist/SHA256SUMS.txt dist/build-metadata-*.json dist/ci-validation-*.json --verify-tag --title "lvlolm $GITHUB_REF_NAME" --notes-file .github/release-notes.md
+          release_flags=()
+          if [[ "$GITHUB_REF_NAME" == *-rc.* ]]; then
+            release_flags+=(--prerelease)
+          fi
+          gh release create "$GITHUB_REF_NAME" dist/*.ipa dist/*source*.zip dist/SHA256SUMS.txt dist/build-metadata-*.json dist/ci-validation-*.json --verify-tag --title "lvlolm $GITHUB_REF_NAME" --notes-file .github/release-notes.md "${release_flags[@]}"

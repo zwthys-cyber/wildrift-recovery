@@ -1,0 +1,53 @@
+{
+  "recovery_app_version": "0.7.8",
+  "input_sha256": "eadfb5c4b2f41257522151f1bbc037cc139ae45e598636cce4ec724c6a4a4835",
+  "input_bytes": 838383,
+  "snapshot_sampled_at": "2026-10-11T00:33:59Z",
+  "hud_checked_at": "2026-10-11T00:46:53Z",
+  "probe": {
+    "actor_count": 141,
+    "confirmed_enemies": 5,
+    "markers": 5,
+    "logic_positions": {
+      "valid_position_count": 0,
+      "not_found_count": 0,
+      "layout_version": 2,
+      "profile_matches": 1,
+      "unreadable_count": 0,
+      "lookup_method_offset": "0x0",
+      "invalid_count": 0,
+      "changed_count": 0,
+      "source": "native_logic_transform",
+      "reason": "logic_lookup_layout_mismatch",
+      "eligible_hero_count": 0
+    },
+    "valid_native_hp_pairs": 10
+  },
+  "trace": {
+    "sample_count": 32,
+    "first_sample_at": "2026-10-11T00:46:20Z",
+    "last_sample_at": "2026-10-11T00:46:53Z",
+    "lookup_failure_counts": {
+      "logic_lookup_layout_mismatch": 32
+    },
+    "logic_valid_position_total": 0,
+    "observed_lookup_offsets": [
+      "0x0"
+    ],
+    "manager_pointer_was_outside_engine_image": true,
+    "enemy_marker_histogram": {
+      "2": 14,
+      "3": 18
+    },
+    "fog_hidden_live_enemy_observations": 66,
+    "valid_native_hp_pair_count": 320
+  },
+  "diagnosis": {
+    "runtime_logic_actors_read": false,
+    "root_path_failed": "0.7.8 misidentified FrameRoot +28 logger as Battle. Its supposed ActorMgr vptr was a heap pointer and method slot was zero, so every lookup was rejected.",
+    "original_root_proof": "FrameRoot initialization 0xcceaac..0xcceab8 copies +10 Battle to global 0x523cf30. Actual actor lookup 0x434748..0x434764 loads that global, then embedded +1e0 manager and +b0 method.",
+    "logger_proof": "FrameRoot +28 is allocated by 0xcd2e24 -> 0x3ca82e8 as a separate 0x28-byte logger. Getter 0xd03bc0 returns that logger.",
+    "new_version_runtime_verified": false
+  },
+  "scope": "Whitelisted numeric counts and static-code references only. Raw addresses, process IDs, sessions, device paths and player identifiers excluded. No claim of 0.7.9 live fog success."
+}

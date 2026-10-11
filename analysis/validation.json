@@ -1,5 +1,5 @@
 {
-  "recorded_at": "2026-10-11T00:23:06.149163+00:00",
+  "recorded_at": "2026-10-11T01:06:02.584281+00:00",
   "original_sha256": "e385f312ecbb5e575d2709a15a3b0157aa6fb37b52299075d9665f14df6fd111",
   "target": {
     "device": "iPhone 15 Pro Max",
@@ -37,10 +37,10 @@
       "passed": true,
       "tests": 8,
       "runtime_installation_tested": false,
-      "version": "0.7.8",
+      "version": "0.7.9",
       "signature_tests": 5,
       "asset_tests": 3,
-      "tested_version": "0.7.8"
+      "tested_version": "0.7.9"
     },
     "zip_export": {
       "passed": true,
@@ -51,14 +51,14 @@
       ],
       "independent_reader": "Python zipfile",
       "input_rejection_cases": 7,
-      "tested_version": "0.7.8"
+      "tested_version": "0.7.9"
     },
     "collection_inspector": {
       "passed": true,
       "tests": 6,
       "framework_uuid_match_and_mismatch_tested": true,
       "encryption_reporting_tested": true,
-      "tested_version": "0.7.8",
+      "tested_version": "0.7.9",
       "engine_only_without_unity_tested": true,
       "engine_uuid_match_and_mismatch_tested": true,
       "missing_engine_and_mixed_file_rejection_tested": true
@@ -84,7 +84,7 @@
       "new_extended_fields_device_verified": false,
       "prior_extended_fields_device_evidence_version": "0.5.0",
       "new_coordinate_candidates_device_verified": false,
-      "tested_version": "0.7.8"
+      "tested_version": "0.7.9"
     },
     "ios_getters": {
       "passed": true,
@@ -192,7 +192,7 @@
       "stock_signed_bits_checked": true,
       "scope": "Current ASan/UBSan: independently specified protocol-3 record, ring/clamp bounds, result aliases, owner/sequence/freshness rejection. Phone lifecycle remains unverified.",
       "protocol_version": 3,
-      "tested_version": "0.7.8"
+      "tested_version": "0.7.9"
     },
     "minimap": {
       "passed": true,
@@ -206,7 +206,7 @@
       "legacy_default_migration_tested": true,
       "customized_rect_edges_preserved": true,
       "non_rectangle_preferences_preserved": true,
-      "tested_version": "0.7.8"
+      "tested_version": "0.7.9"
     },
     "ios_minimap_projection": {
       "passed": true,
@@ -225,12 +225,12 @@
         "UndefinedBehaviorSanitizer"
       ],
       "scope": "Current ASan/UBSan: all prior interpolation/removal cases, HP fraction preservation and invalid HP rejection. No history marker or extrapolation.",
-      "tested_version": "0.7.8"
+      "tested_version": "0.7.9"
     },
     "minimap_health": {
       "passed": true,
       "checks": 25,
-      "tested_version": "0.7.8",
+      "tested_version": "0.7.9",
       "sanitizers": [
         "AddressSanitizer",
         "UndefinedBehaviorSanitizer"
@@ -240,41 +240,49 @@
     "native_health": {
       "passed": true,
       "checks": 50,
-      "tested_version": "0.7.8",
+      "tested_version": "0.7.9",
       "sanitizers": [
         "AddressSanitizer",
         "UndefinedBehaviorSanitizer"
       ],
-      "scope": "50 synthetic ASan/UBSan checks. The native HP implementation remains device-supported by 320 valid pairs in each 0.7.6 and 0.7.7 trace and the earlier user-confirmed circular rendering. The 0.7.8 package has not been installed on the device."
+      "scope": "50 synthetic ASan/UBSan checks passed. Earlier circular rendering is user-confirmed; 320 native HP pairs remain valid in the latest 0.7.8 trace. Uniform red styling is compiled in 0.7.9 but has not yet been observed on the phone."
     },
     "native_engine_getters": {
       "passed": true,
-      "tests": 10,
-      "original_instruction_cases": 102,
-      "tested_version": "0.7.8",
+      "tests": 11,
+      "original_instruction_cases": 120,
+      "tested_version": "0.7.9",
       "private_engine_sha256": "69ed33e4b969139bda80946404528584a879f63ae4032c65fcb7412c3db4431e",
       "unknown_calls_and_syscalls_rejected": true,
-      "scope": "Original FEProj getters and pure constructor instructions in bounded synthetic RAM: runtime frame/battle accessor, actual embedded ActorMgr constructor argument, actual vptr store and original static vtable, rejected resource manager layout, unsigned object tree, identity, Q14 decode and native HP. Unknown calls/syscalls rejected. Corrected runtime fog reading still needs device validation."
+      "scope": "Original FEProj FrameRoot +10 store to global Battle, actual game ActorMgr dispatch up to BLR, constructor vptr and original static vtable, separate +28 logger, unsigned object tree, identity, Q14 decode and native HP in bounded synthetic RAM. The complete pure-read chain runs for 18 actor samples; unknown calls/syscalls rejected. Does not prove device fog success.",
+      "full_pipeline_cases": 18
     },
     "logic_position": {
       "passed": true,
-      "checks": 72,
-      "tested_version": "0.7.8",
+      "checks": 177,
+      "tested_version": "0.7.9",
       "sanitizers": [
         "AddressSanitizer",
         "UndefinedBehaviorSanitizer"
       ],
-      "scope": "Distinct resource and runtime roots; five hidden enemies at sync (500,0,500) use current logic coordinates. Regressions cover the resource-root error, original ActorMgr vtable/slot, unavailable/changed lookups, identity/tree/key/root races and no historical fallback. Synthetic test only."
+      "scope": "177 ASan/UBSan checks: actual global Battle and FrameRoot +10 consistency, rejection of resource and logger roots, original ActorMgr layout, 96 continuous five-hidden-enemy synthetic movement samples across both team orientations and vision transitions, identity/tree/key/root races, unavailable reads and no historical fallback.",
+      "continuous_five_enemy_samples": 96
     },
     "coordinate_trace_budget": {
       "passed": true,
-      "tested_version": "0.7.8",
-      "source": "0.7.7 actual trace expanded to 16 heroes with valid logic vectors and new layout fields",
-      "serialized_bytes_before_trim": 537250,
-      "serialized_bytes_after_trim": 520437,
-      "retained_samples": 31,
+      "tested_version": "0.7.9",
+      "source": "0.7.8 actual trace expanded to 16 heroes with valid logic vectors, current layout and prepared-marker fields",
+      "serialized_bytes_before_trim": 569909,
+      "serialized_bytes_after_trim": 516139,
+      "retained_samples": 29,
       "limit_bytes": 524288,
-      "scope": "Python JSON budget check of the existing trim rule; Objective-C trace path compiled with warnings as errors."
+      "scope": "Synthetic Python JSON budget check of the existing trim rule; does not establish live fog behavior. Objective-C trace path compiled with warnings as errors."
+    },
+    "device_minimap_checker": {
+      "passed": true,
+      "tests": 9,
+      "tested_version": "0.7.9",
+      "scope": "Independent acceptance cases for five moving hidden enemies, prior-version/layout rejection, missing markers, wrong sources/coordinates, death, one-enemy coverage, stale/profile/trace failure, mixed matches and duplicate exports. A pass verifies observed client data and prepared markers, not screen rendering."
     }
   },
   "ipa_images": {
@@ -306,10 +314,10 @@
   "recovered_config_fields": 57,
   "game_integration_complete": false,
   "source_digests": {
-    ".github/release-notes.md": "1d00937734b2c83a526671182c0eff568aec582a482f699c22cf74ddc257b36c",
-    ".github/workflows/ios-build.yml": "6e8bfe1540d4e16aceb1287dc11713d63758d0b402982ddd46606fe686124bde",
+    ".github/release-notes.md": "2531c5ec08db4359fbc863d1c717a90c525b39f020ce281120ed35ddcc0f090e",
+    ".github/workflows/ios-build.yml": "5b7f11bc741091624525c372c7eba3167383a750d04a2090fe148f26a8713dc5",
     ".gitignore": "74756e9c4f0f361e32f76976411745577cdcc938965acd09181de0b1b009bcb7",
-    "README.md": "807df8dcdf0fa0e8a7faedc73e9405d9bab42996d713bddb72aca379ee579f81",
+    "README.md": "723fa5c5dd8e9e60e689ab65fc8dd1dc2c9936e8f9ad5b313aa291165a5ff8bd",
     "analysis/DEVICE.md": "0ef193f3367456cff24b7b51ba26f52d58e544da6085782d7e1a7fbebfa4907d",
     "analysis/IOS.md": "1477c0a49d51132bff6695de7e11ec17a5ee451d8ca2063bd7d972d10ee950c8",
     "analysis/RECOVERY.md": "6677d420ac5269f0cf3d832641574f271a801a317a9cd9b914a7f71d89a3e541",
@@ -357,7 +365,8 @@
     "analysis/device-0.7.3-summary.json": "fb272c4eee59a0b0002ad9be57489a21f8e9b233172666d9407b0f30d975775e",
     "analysis/device-0.7.4-summary.json": "7a3570a628868cd06e46163a24579becf845da501fb89eeba47c77887d9acbf5",
     "analysis/device-0.7.6-summary.json": "c400037783ec6c870137687ec1b5168be3044b06206b9e916fbf015d249546a6",
-    "analysis/device-0.7.7-summary.json": "924ffeb73831d23cac2351f91e3b95b0751d70f27fe4983584de07d3fc2d83e4",
+    "analysis/device-0.7.7-summary.json": "7d15ec6bc00c428668db83f6eed58813b7b0feca5ec2958a61633a8c14a6e3e3",
+    "analysis/device-0.7.8-summary.json": "4837067ef011bcb3ac5e044c36bcd4adddbd01cfaa84c9450511f314d3f0042a",
     "analysis/device-diagnostics-summary.json": "ac1dda2b5045c59a104787be6fd3400edd121e9667bf1834a0af2bbad6917009",
     "analysis/functions.json": "5b0795e539d534d563aa3551f94df5e638895e6b919c039ce0faa0ced841a94f",
     "analysis/imports.json": "b7dcfc4ddb093d6692b995530c62415cafc89f71b0c6f3c7d4c6d3383b3015b0",
@@ -478,12 +487,13 @@
     "analysis/ios-native-engine-dependency.json": "401e34456884fca8e84f4b633a1eb2a5ffef1ffea0071ff76d325395d2d1d0e2",
     "analysis/ios-native-health-layout.json": "b5844d92ee334861a2b569547129e1e55ee0d2de84ae6919a9e107d619bb9c95",
     "analysis/ios-native-logic/battle-actor-manager.asm.txt": "e44282d8a5a75e0aa12f37a1c810d6c27fe19d52c46e3ee7ff749cfd29ebd56c",
+    "analysis/ios-native-logic/frame-logger-comparison.asm.txt": "8f4d35f1abba362ff0f6bd40600c0ef04a1ee1ceae594626932fabdb275fa7ac",
     "analysis/ios-native-logic/logic-actor-identity.asm.txt": "c3cf906cabed70f8eafefc0a567a563925543e7e4493f8ac20e073c635ef2bd9",
-    "analysis/ios-native-logic/logic-battle-root.asm.txt": "4f6f6ed7a04740fa2a27033d6b9300f7dfa0f51293f7ce674991eed78ff51707",
+    "analysis/ios-native-logic/logic-battle-root.asm.txt": "ea217dcca9ef9121426acc75d5b1bb675ad2bac33b1b8aa18109a1cc6f99dea0",
     "analysis/ios-native-logic/logic-object-tree.asm.txt": "e4c194d95b64cd1056b3965fde0df3560768f5b898ffa767e7376310c7125bcf",
     "analysis/ios-native-logic/logic-transform-decode.asm.txt": "8e5d24890332b3a93da93c2ecc3bf1d34fe7a8e34e64fa14237bd2f43135186a",
     "analysis/ios-native-logic/resource-manager-comparison.asm.txt": "5ebcffa9ba64fdf16f4438f1c29ff3763b6400eb7760f2645dcec1f99d154989",
-    "analysis/ios-native-logic-position-layout.json": "9cc980ce8a6c2cb0aa2f203b78609ae00238bb1ad84648fd52aeecfebb0ac0c0",
+    "analysis/ios-native-logic-position-layout.json": "d5a0a42a1f64f316f7ffd4a88187a21c809c83d1991814af7a02f63b24af481c",
     "analysis/ios-skill-layout.json": "63a7e66c07117d1f41308b46ffbfa8c374d72a6a664bb66ab8135cc9e1a88517",
     "analysis/ios-state-layout.json": "98b3c8e6a35c9f3d4cbfb403dcc11f64b30046b17f84d67c843e9cc27cdc877d",
     "analysis/ios-symbols.json": "bb9ef5df2bdefbc3c8fe3c186e0a3338bae600a09f6e4894aaf3e7b5600e7c55",
@@ -501,7 +511,7 @@
     "core/LVFields.inc": "202dcd55d30d267e6e5225577a380569d818921e0ca3b0020d1e1c3efaf8765b",
     "core/LVHUDTelemetry.c": "5d718c37bae32ed326adbbd736bb2b1dd8a382820f9cbf7d052151420b04a4ae",
     "core/LVHUDTelemetry.h": "fb554dd75855d511ea43ee78ad310e83d3e11ad60606167f3efc68540eb3b57e",
-    "core/LVLogicPosition.c": "f90c6e1a08fe59d1d98e8c257634a2aaceab261016b28eeac5e54dd20a239396",
+    "core/LVLogicPosition.c": "acc291e8ce680fdca51191b7e408d401f8c9f2df5bc5ff7c8b7378f486793e63",
     "core/LVMinimap.c": "5fbe4c33483c25b0b41e798c90dbcc5258e5bb4e005be97967a772b168ff435a",
     "core/LVMinimap.h": "663a211d13855352982bccbbad8dbda80887b5376cfcd9bc948c10ab7f4f1869",
     "core/LVMinimapMotion.c": "d1ba1a80963884716c2494eaa92c906218b020498a4840d58149ebbf392d5591",
@@ -509,7 +519,7 @@
     "core/LVSmitePreview.c": "b64038a6a7bb2d5fcd238aa8e50b1c9e1d533ce2e89dc2520e37fcf5c0cb6001",
     "core/LVSmitePreview.h": "a6eca440c2d5e59cc1da6d5573516441d409d077c29e693fcdcdd4724ee15ad9",
     "core/LVTarget.c": "7497377242138274f00552a0ee6067b1b3132a80ede8ddd164a3182e0b13c1d5",
-    "core/LVTarget.h": "179c4b1c8fc7e15ac9efbfed883ee6e50d2062f58d9dd097adf90ffdc55eae33",
+    "core/LVTarget.h": "68e6c571ea9d31a73fea3eb43eff72cd89960ce99ef730a91e30b441774a8b7c",
     "core/LVZip.c": "4897c5326b5f20099f55b7dcc18290010baab861134549e9a93b94559ee07b41",
     "core/LVZip.h": "0f85cace7a443af9b0addbafe7ebcec862d905e702d6ac493a91b706a505fb17",
     "ios/App.entitlements.plist": "138f6ee79fcc36428c166f62ea0c095ae9b43e43fc2419d18c629f848bd226db",
@@ -673,10 +683,10 @@
     "ios/Assets/Heroes/manifest.json": "7453b65ea6d876e95be1f82e5443adf03b9af5ccf12e45e7835e97fcfdda5347",
     "ios/Assets/README.md": "3662e0e42d136ac718c196653698fc716df6c3d338c000e8c8fd115e21747fa8",
     "ios/HUD.entitlements.plist": "5138509be47c9c826012bf47becde036af67cc094ebf0a8ee98ce7e5191e8938",
-    "ios/Info.plist": "b07c25fc6471db9cefd6bdf125929e1037a39f7ca3300d70e2fd76b48f9b95a7",
+    "ios/Info.plist": "ad26c8c4a214caf277c96de745151c95dcda234b9e93f1bf648528fb35df304b",
     "ios/LVCollect.h": "61e645970536dac99745ade202d386ec8fa959d3dcc00602ac3a2beb87e1b6a8",
     "ios/LVCollect.m": "d619c3c91f2148d6d6cc2cd85f072f9fb06fdb665539d578a4fbadadfa7c7fd7",
-    "ios/LVHUD.m": "ffcfc490a3c6a7a3a23874008b997c2274f9f7dbf77c6775657dfb510b134b0e",
+    "ios/LVHUD.m": "c73bf249f416f8de3f5799dea953fcad893dde65e93d8ffe5b25ce72a67885d2",
     "ios/LVHUDControl.h": "5dff57d1d4fff6ab6f155262a896473e0353f21c099f5a800b5bf185fb0f3975",
     "ios/LVHUDControl.m": "28008277b140d95d662b640a5339df3171c4da416e2f59534d8f4830fda0b43f",
     "ios/LVHUDTrace.h": "248f2412cf8efe157ab7ac99f99d89ad6638654bc83de42b9b40dddce5ae8ed3",
@@ -691,22 +701,22 @@
     "ios/LVMinimapSettings.m": "02c4b6d14f828a51a02828f5d94a72acdccaa57f844c5520cddc96ab13d6d476",
     "ios/LVProbe.m": "1bcc81d3c56cd1a4cf467e79d57da0b21ab9df3aa4e8d1cfa54808ba53b12fd9",
     "ios/LVSnapshot.h": "13963bb97f5a54c4172c1c03e661bb908997f430eb24b2b3c3a8f6446ae1b670",
-    "ios/LVSnapshot.m": "c381737de07bbb9d8970a6ee1aa6f29ec2bef0edbc42e2c7c79f74242d3de566",
+    "ios/LVSnapshot.m": "6b0b2295375d888355bede44453244c6376e28ca10ae6053129f160b91fece71",
     "ios/LVSnapshotController.h": "52188829a89e5acf62139a2710c295d49c8a8a12436d6225b178b281f2f4493c",
     "ios/LVSnapshotController.m": "6a5e3451b353a41fcf4e6502ed049344928072cc790562442dfffb27b7449194",
     "ios/Probe.entitlements.plist": "df2f6f045bbcb0d39ed063634a1e4931184cd809ad1d3ae2db52b06fed44f8d4",
     "ios/TrollSpeed-LICENSE.txt": "cc81c2a899100c1f4877876bbf969d5f8d9c8f491283db36027bd8cabfdc0a12",
     "ios/main.m": "767c7ac9879a31101e39ccc9991735780db8045805dc77d7785eadec2a80eb25",
     "ios/recovered_config.json": "8c2b3d6196ce02534f3c3f573a3345b04a7d7d1436cf8908be5f94dbb6799323",
-    "scripts/build_ios.py": "8aa6efc9c2b08a72338d30b143e6df1f0c202561c7717716c5c67c3513454d08",
+    "scripts/build_ios.py": "b2bc5810c5aef1663ac20f4489247f778857f557bd3397afb6008bd6fc9d23de",
     "scripts/fetch_toolchain.py": "107cc2f4cfe0ad099704f8e6626567ce322b6f7b4b807801b9e769f4e0d24961",
     "scripts/package_source.py": "30bfe0fd1f1820ad6874c77e1c50bfe83005942f9643bd15812755e868b4926a",
-    "scripts/record_ci_validation.py": "44038360034b7e1eb7cb2da08842ff3b44da10d4db5ebcac191c5f92ec5c4622",
+    "scripts/record_ci_validation.py": "2a690d157980cf18200dacda3ca9826edef39ea63a3748bec0c1275d8d20bb9f",
     "scripts/toolchain-manifest.json": "1b4aed57e731c093bef85768e522173d581ed921c59925478fa6068f45cf3de8",
     "tests/config_test.c": "0ea5e4cdc0477b83ecb774d63cbf1aea8c98a04327587f6f98b5f7486a0b9b40",
     "tests/fixtures/device-0.5.0-preview.json": "f480a4448f3a54824871357690869f976b329d6b65d06e84816fd4dbc9c37b70",
     "tests/hud_telemetry_test.c": "1f232f6403ae81f59ca1fd3cad6d41f977e8f12de1c81c6d524479062d53245e",
-    "tests/logic_position_test.c": "79d77c92e9d16d82cbd59885c1e49377897c10c23c94c8724661b257df95ba61",
+    "tests/logic_position_test.c": "5d8ada33c1350fa52c17d9b7af1ce2bff1f649a024feeeb260e06c85dcef8ee7",
     "tests/minimap_health_test.c": "5c3b1861f25f12b310ea68c089894df94ff4351884446c7c5b9bae8ba0e5697f",
     "tests/minimap_motion_test.c": "d0bbc7f2c5e264b6ec084b99f63b69bbcfd6d64910bdf8d98b95ee3966e5625a",
     "tests/minimap_projection_fixture.c": "1a4bf72e7c16b1a5df05f261b061e96f48f8568dd23c67fc8c1d39ef12c81882",
@@ -715,17 +725,19 @@
     "tests/smite_preview_test.c": "1ddb395249b2bea56f07bb198cb1897b2a0c89049ad44da8f722d8a157747eb8",
     "tests/target_test.c": "9f0fc9d397cb5a82ccc944f1aa64210416aecf9723d64407d93c3d18f46a59c9",
     "tests/test_collection_inspector.py": "4da5f339c1b1a9823143a6b3bf136e570cbcbf4713ba109386b881d9a12265f7",
+    "tests/test_device_minimap_check.py": "9ae733682d934a72bf6c6be225ae966560ec650775fcb93ab9873434523e3e47",
     "tests/test_device_preview_replay.py": "ff1c883337f7bd8a929f4950aecaddf4eb50424bcd2cb55a1e86ef519e3b43bc",
     "tests/test_ios_getters_equivalence.py": "46c5f115aeea05b2d1bb6fbeab9a8dde79003936cf7614cd44a34c7e7fb18af4",
     "tests/test_ios_metadata_equivalence.py": "b55cd7749143a1bbf0546ad5d1032a342825bdb733bbafa9dbb2053acd204da0",
     "tests/test_ios_minimap_projection.py": "907cf54265becc0721ba36797260bbdc4f41270802e1dfd9f9a3555ef829d0cf",
     "tests/test_ipa.py": "bb1d95071dc8b0474cf71b74e2e3ee2bdc0b0e9c786035dc2eb9dccfd3def703",
     "tests/test_mercury_equivalence.py": "406d4089e36653c7513f2821e4e519e41f515d88f2797b1737060ad25fdc63fc",
-    "tests/test_native_engine_getters.py": "446002a3d6f5806ec08c61e74f2c73d952481764299a1f7c59c9c6bf4a469987",
+    "tests/test_native_engine_getters.py": "287b22a272e86313ead1eb843e1932e3ef20ec3eed9d2bdf4795ce9cd50f2d1d",
     "tests/test_smite_equivalence.py": "66b539e8869aa5cfbea5e06996ffc52e8e93e7dad758e0963c28ed0f4f253529",
     "tests/test_zip.py": "b731bafa482d84b34b208e9ddf282bb0bb8afa740adbf7c4423ee3a5f0193d46",
     "tests/zip_fixture.c": "f67ed06adec04dd4445f9238b33abcd064d25265ce0181bed4a888d0c9eee859",
     "tools/analyze_binary.py": "217a3e2532dc1c7351ef38443adfa26f1306dda2ed6b5d015b1c88be9011760a",
+    "tools/check_device_minimap.py": "9225236e3776e9f3cda03fb62194fa3b4519ec9b5a8cab67469a9d888ebf30dc",
     "tools/generate_fields.py": "426aba8154dc8fdb354c2ea5f1a89cf31cc0009908cebda8962c674785607021",
     "tools/inspect_ios_target.py": "b0067523d5d9da26bbb8db4c7f8eefc1f44cac350fa966b7063859ec6bf1831d",
     "tools/recover_config.py": "0536ccc8a854c427dfe3b4ddfdbad29abc7b8cb15e6ff92cece04860980b0d71",
@@ -734,7 +746,7 @@
     "tools/recover_ios_minimap_layout.py": "e975f0d5f4bf8e365ecf5d2d723ca4c1a391d25a6d8c0eedf13db6b480b5b803",
     "tools/write_report.py": "2a92b45a72014983bbf8a8ee734bd8d97989cdb178f6c82d8d8cda36625756ef"
   },
-  "artifact_version": "0.7.8",
+  "artifact_version": "0.7.9",
   "user_device_evidence": {
     "collector_version": "0.1.0",
     "task_result": 0,
@@ -771,14 +783,14 @@
   },
   "read_only_game_reader_implemented": true,
   "read_only_game_reader_device_verified": false,
-  "ipa_sha256": "e0dd97ff4bb78839d1950cb1f98cb8e6230c4c40f94f3a54d6f1e006e0a549a5",
+  "ipa_sha256": "69cb51a23a955458eabe9f7dd574213750c6d6bc87bfc7f3426cca7e4f9209f2",
   "baseline_actor_reader_device_verified": true,
   "positions_and_local_skills_device_verified": true,
   "positions_and_local_skills_device_evidence_version": "0.4.0",
   "classification_stock_slot_cast_device_verified": false,
   "read_only_smite_preview_implemented": true,
   "smite_preview_device_verified": false,
-  "verification_record_scope": "Local 0.7.8 build, core and IPA checks. Original accessor/constructor/vtable evidence corrects the wrong 0.7.7 resource root. Latest device log verifies the failure and native HP reads, not the new fog path. GitHub provenance recorded separately.",
+  "verification_record_scope": "Local 0.7.9 build, core and IPA checks. Original FrameRoot Battle store and actual game actor-lookup dispatch establish the corrected dual root. Original-instruction full-pipeline checks, five-hidden-enemy synthetic movement and the device acceptance checker passed. The latest 0.7.8 device trace confirms the old failure, not new-version success. GitHub provenance is separate.",
   "device_evidence": {
     "version": "0.5.0",
     "summary": "analysis/device-0.5.0-summary.json",
@@ -802,13 +814,13 @@
     "minimap_enemy_marker_visible": true,
     "minimap_screen_offset_user_reported": true,
     "fog_position_updates_user_confirmed": true,
-    "fog_observation_scope": "0.7.7 probe and trace capture live hidden enemies at sync (500,0,500); all 32 trace samples fail logic_lookup_layout_mismatch before any logic object is read. The 0.7.8 correction uses original runtime root and constructor-verified ActorMgr; device validation is pending.",
+    "fog_observation_scope": "All 32 latest 0.7.8 trace samples fail logic_lookup_layout_mismatch before any logic actor is read; 66 live hidden-enemy observations are recorded. Original code proves FrameRoot +28 is a logger. Corrected 0.7.9 uses global Battle and FrameRoot +10; device acceptance pending.",
     "corrected_minimap_alignment_device_verified": false,
     "minimap_alignment_evidence_version": "0.7.1",
     "minimap_alignment_summary": "analysis/device-0.7.1-summary.json",
     "prior_minimap_alignment_acceptable_user_confirmed": true,
-    "latest_minimap_version": "0.7.7",
-    "latest_minimap_summary": "analysis/device-0.7.7-summary.json",
+    "latest_minimap_version": "0.7.8",
+    "latest_minimap_summary": "analysis/device-0.7.8-summary.json",
     "whole_marker_loss_user_confirmed": true,
     "mainly_without_vision_user_confirmed": true,
     "historical_position_workaround_rejected": true,
@@ -817,7 +829,8 @@
     "native_health_ring_user_confirmed": true,
     "native_health_ring_evidence_version": "0.7.6",
     "native_health_valid_trace_pairs": 320,
-    "latest_probe_live_hidden_sync_sentinel_enemy_count": 4
+    "latest_probe_live_hidden_sync_sentinel_enemy_count": 0,
+    "latest_trace_live_hidden_enemy_observations": 66
   },
   "minimap_overlay_implemented": true,
   "minimap_alignment_device_verified": false,
@@ -842,10 +855,10 @@
   "minimap_hero_portrait_count": 142,
   "minimap_hero_portraits_device_verified": false,
   "previous_local_artifact_record": {
-    "version": "0.7.7",
-    "ipa_sha256": "c3505e566b71e7a0e510236ee853c557f0245e6c911e12a654bc8d6d6eb734b0",
-    "recorded_at": "2026-10-10T23:52:19.062581+00:00",
-    "scope": "Local 0.7.7 build/core/IPA tests. New independent logic position path is implemented and original-getter checked in synthetic RAM. Prior 0.7.6 native health ring is user-confirmed; new fog runtime not verified. GitHub build provenance recorded separately."
+    "version": "0.7.8",
+    "ipa_sha256": "e0dd97ff4bb78839d1950cb1f98cb8e6230c4c40f94f3a54d6f1e006e0a549a5",
+    "recorded_at": "2026-10-11T00:23:06.149163+00:00",
+    "scope": "Local 0.7.8 build, core and IPA checks. Original accessor/constructor/vtable evidence corrects the wrong 0.7.7 resource root. Latest device log verifies the failure and native HP reads, not the new fog path. GitHub provenance recorded separately."
   },
   "minimap_health_ring_implemented": true,
   "minimap_health_ring_device_verified": true,
@@ -867,5 +880,7 @@
   "minimap_logic_position_layout_evidence": "analysis/ios-native-logic-position-layout.json",
   "native_health_reader_device_evidence_version": "0.7.6",
   "minimap_health_ring_device_evidence_version": "0.7.6",
-  "minimap_logic_position_layout_version": 2
+  "minimap_logic_position_layout_version": 3,
+  "minimap_enemy_health_ring_color": "red",
+  "minimap_enemy_health_ring_color_device_verified": false
 }
