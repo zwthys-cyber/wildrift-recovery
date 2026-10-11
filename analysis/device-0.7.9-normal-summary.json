@@ -1,0 +1,116 @@
+{
+  "recovery_app_version": "0.7.9",
+  "reviewed_at": "2026-10-11T02:14:28.773708+00:00",
+  "input_sha256": "298362259c829b837db4f2f46f1ce912f9e4b956e7f7f3b9a33d686739491afd",
+  "input_bytes": 820975,
+  "user_observation": {
+    "mode": "ordinary match; exact queue not specified",
+    "ordinary_match_tested": true,
+    "display_normal": true,
+    "source": "Explicit user observation; no direct device connection"
+  },
+  "capture": {
+    "hud_running": false,
+    "hud_sampling_available": false,
+    "hud_sampling_reason": "hud_not_running",
+    "probe_sampled_at": "2026-10-11T01:10:22Z",
+    "probe_is_current_match_evidence": false,
+    "scope": "The saved target probe predates this HUD trace and is not treated as evidence of the ordinary match. HUD was stopped when the report was exported."
+  },
+  "trace": {
+    "first_sample_at": "2026-10-11T02:07:13Z",
+    "last_sample_at": "2026-10-11T02:07:45Z",
+    "sample_count": 32,
+    "local_camp": 2,
+    "logic_reader_reason_counts": {
+      "ready": 32
+    },
+    "all_runtime_battle_roots_match": true,
+    "logic_position_total": 320,
+    "valid_native_hp_pairs": 320,
+    "map_reason_counts": {
+      "geometry_unavailable": 32
+    },
+    "enemy_marker_histogram": {
+      "0": 32
+    },
+    "enemies": [
+      {
+        "object_id": 1,
+        "resource_id": 10082,
+        "samples": 32,
+        "health_reads": 32,
+        "alive_samples": 0,
+        "logic_reads": 32,
+        "markers": 0,
+        "distinct_logic_positions": 1
+      },
+      {
+        "object_id": 2,
+        "resource_id": 10122,
+        "samples": 32,
+        "health_reads": 32,
+        "alive_samples": 0,
+        "logic_reads": 32,
+        "markers": 0,
+        "distinct_logic_positions": 1
+      },
+      {
+        "object_id": 3,
+        "resource_id": 10110,
+        "samples": 32,
+        "health_reads": 32,
+        "alive_samples": 0,
+        "logic_reads": 32,
+        "markers": 0,
+        "distinct_logic_positions": 1
+      },
+      {
+        "object_id": 4,
+        "resource_id": 10086,
+        "samples": 32,
+        "health_reads": 32,
+        "alive_samples": 0,
+        "logic_reads": 32,
+        "markers": 0,
+        "distinct_logic_positions": 1
+      },
+      {
+        "object_id": 5,
+        "resource_id": 10035,
+        "samples": 32,
+        "health_reads": 32,
+        "alive_samples": 0,
+        "logic_reads": 32,
+        "markers": 0,
+        "distinct_logic_positions": 1
+      }
+    ]
+  },
+  "strict_capture_checker": {
+    "result": "failed",
+    "app_version": "0.7.9",
+    "samples_checked": 0,
+    "enemy_identities_observed": 0,
+    "hidden_enemy_observations": 0,
+    "enemies_with_repeated_hidden_position_updates": 0,
+    "failures": {
+      "hud_sampling_unusable": 1,
+      "map_sample_unusable": 32
+    },
+    "screen_rendering_verified": false,
+    "scope": "Observed client-memory data and prepared marker checks only. Five enemy identities each need at least three hidden samples and two distinct valid positions. Reports must belong to one match. Screen visibility/alignment require user confirmation; this does not prove all future games.",
+    "input_sha256": [
+      "298362259c829b837db4f2f46f1ce912f9e4b956e7f7f3b9a33d686739491afd"
+    ]
+  },
+  "assessment": {
+    "ordinary_match_display_user_confirmed": true,
+    "logic_root_layout_failure_observed": false,
+    "ordinary_living_enemy_marker_behavior_assessable_from_trace": false,
+    "full_five_enemy_hidden_trace_acceptance_complete": false,
+    "app_regression_identified": false,
+    "scope": "Ordinary-match display is confirmed by the user. This export contains 32 geometry-unavailable samples with no live enemies and a stopped HUD, so strict capture checks fail on sampling/map availability. These data do not establish a live enemy marker defect or provide complete five-enemy hidden coverage. Prior custom-room trace independently supports four moving hidden enemies."
+  },
+  "privacy_scope": "Whitelisted counts, game object/resource IDs, static hashes and timestamps only; raw device addresses, process IDs, sessions, player identifiers, paths and reports excluded."
+}

@@ -3,7 +3,7 @@
   "engine_sha256": "69ed33e4b969139bda80946404528584a879f63ae4032c65fcb7412c3db4431e",
   "unity_uuid": "085E1DDF-4A8D-34E2-9D73-A0A28BCC0B83",
   "native_engine_collection_version": "0.7.5",
-  "scope": "0.7.9 uses the actual game actor-lookup global Battle and verifies FrameRoot +10. Original native instruction checks passed. The custom-room device trace contains 32 successful samples, 320 logic positions and 73 living hidden-enemy observations across four enemies. User reports normal display. The fifth enemy stayed visible; complete five-enemy hidden coverage and ordinary matches remain untested.",
+  "scope": "0.7.9 uses the actual game actor-lookup global Battle and verifies FrameRoot +10. Original native instruction checks passed. Custom-room device trace supports four moving hidden enemies in 73 live-hidden observations. User confirms normal display in custom-room and ordinary matches. The ordinary export has 32 successful logic-read samples, but its map geometry is unavailable, all enemies have zero health and the HUD is stopped; complete five-live-enemy hidden trace coverage remains absent.",
   "root": {
     "desk_global": "0x523cf28",
     "desk_frame_root": "0x38",
@@ -204,7 +204,9 @@
     }
   },
   "layout_version": 3,
-  "latest_device_evidence": "analysis/device-0.7.9-summary.json",
+  "latest_device_evidence": "analysis/device-0.7.9-normal-summary.json",
   "device_observed": true,
-  "device_verification_scope": "Custom-room display and four moving hidden enemies supported; full five-enemy hidden acceptance incomplete due to missing coverage, with zero observed failures."
+  "device_verification_scope": "User-confirmed display in custom-room and ordinary matches; four moving hidden enemies supported by custom-room trace. New ordinary export is not usable for live-marker acceptance. Full five-live-enemy hidden trace coverage pending.",
+  "ordinary_match_display_user_confirmed": true,
+  "prior_custom_room_device_evidence": "analysis/device-0.7.9-summary.json"
 }
