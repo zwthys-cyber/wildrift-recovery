@@ -3,7 +3,7 @@
   "engine_sha256": "69ed33e4b969139bda80946404528584a879f63ae4032c65fcb7412c3db4431e",
   "unity_uuid": "085E1DDF-4A8D-34E2-9D73-A0A28BCC0B83",
   "native_engine_collection_version": "0.7.5",
-  "scope": "0.7.9 corrects the 0.7.8 logger/root mistake using the actual game actor-lookup caller, its global Battle pointer, and the original FrameRoot initialization that sets that global. The original native instruction chain is checked in bounded synthetic memory. Live fog rendering still requires device evidence.",
+  "scope": "0.7.9 uses the actual game actor-lookup global Battle and verifies FrameRoot +10. Original native instruction checks passed. The custom-room device trace contains 32 successful samples, 320 logic positions and 73 living hidden-enemy observations across four enemies. User reports normal display. The fifth enemy stayed visible; complete five-enemy hidden coverage and ordinary matches remain untested.",
   "root": {
     "desk_global": "0x523cf28",
     "desk_frame_root": "0x38",
@@ -204,5 +204,7 @@
     }
   },
   "layout_version": 3,
-  "latest_device_evidence": "analysis/device-0.7.8-summary.json"
+  "latest_device_evidence": "analysis/device-0.7.9-summary.json",
+  "device_observed": true,
+  "device_verification_scope": "Custom-room display and four moving hidden enemies supported; full five-enemy hidden acceptance incomplete due to missing coverage, with zero observed failures."
 }

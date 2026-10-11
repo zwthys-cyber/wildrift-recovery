@@ -1,0 +1,161 @@
+{
+  "recovery_app_version": "0.7.9",
+  "reviewed_at": "2026-10-11T01:24:42.964432+00:00",
+  "input_sha256": "1bf6ccbe6371376a2663429d322f7341aab0d296c4641c4689630aab065b0362",
+  "input_bytes": 818954,
+  "snapshot_sampled_at": "2026-10-11T01:10:22Z",
+  "user_observation": {
+    "mode": "custom room with computer-controlled opponents",
+    "display_normal": true,
+    "normal_match_tested": false,
+    "red_ring_color_explicitly_confirmed": false
+  },
+  "trace": {
+    "first_sample_at": "2026-10-11T01:14:44Z",
+    "last_sample_at": "2026-10-11T01:15:17Z",
+    "sample_count": 32,
+    "layout_version": 3,
+    "logic_reader_reason_counts": {
+      "ready": 32
+    },
+    "all_runtime_battle_roots_match": true,
+    "logic_position_total": 320,
+    "valid_native_hp_pairs": 320,
+    "enemy_marker_histogram": {
+      "2": 6,
+      "4": 8,
+      "5": 18
+    },
+    "enemies": [
+      {
+        "object_id": 6,
+        "resource_id": 10122,
+        "samples": 32,
+        "alive_samples": 26,
+        "hidden_alive_samples": 26,
+        "markers": 26,
+        "living_marker_missing": 0,
+        "dead_marker_present": 0,
+        "logic_position_ok": 32,
+        "native_hp_ok": 32,
+        "hidden_positions": 10,
+        "positions": 11
+      },
+      {
+        "object_id": 7,
+        "resource_id": 10121,
+        "samples": 32,
+        "alive_samples": 32,
+        "hidden_alive_samples": 0,
+        "markers": 32,
+        "living_marker_missing": 0,
+        "dead_marker_present": 0,
+        "logic_position_ok": 32,
+        "native_hp_ok": 32,
+        "hidden_positions": 0,
+        "positions": 15
+      },
+      {
+        "object_id": 8,
+        "resource_id": 10098,
+        "samples": 32,
+        "alive_samples": 26,
+        "hidden_alive_samples": 26,
+        "markers": 26,
+        "living_marker_missing": 0,
+        "dead_marker_present": 0,
+        "logic_position_ok": 32,
+        "native_hp_ok": 32,
+        "hidden_positions": 9,
+        "positions": 10
+      },
+      {
+        "object_id": 9,
+        "resource_id": 10034,
+        "samples": 32,
+        "alive_samples": 32,
+        "hidden_alive_samples": 3,
+        "markers": 32,
+        "living_marker_missing": 0,
+        "dead_marker_present": 0,
+        "logic_position_ok": 32,
+        "native_hp_ok": 32,
+        "hidden_positions": 3,
+        "positions": 15
+      },
+      {
+        "object_id": 10,
+        "resource_id": 10064,
+        "samples": 32,
+        "alive_samples": 18,
+        "hidden_alive_samples": 18,
+        "markers": 18,
+        "living_marker_missing": 0,
+        "dead_marker_present": 0,
+        "logic_position_ok": 32,
+        "native_hp_ok": 32,
+        "hidden_positions": 2,
+        "positions": 3
+      }
+    ]
+  },
+  "acceptance": {
+    "result": "incomplete",
+    "app_version": "0.7.9",
+    "samples_checked": 32,
+    "enemy_identities_observed": 5,
+    "hidden_enemy_observations": 73,
+    "enemies_with_repeated_hidden_position_updates": 4,
+    "failures": {},
+    "screen_rendering_verified": false,
+    "scope": "Observed client-memory data and prepared marker checks only. Five enemy identities each need at least three hidden samples and two distinct valid positions. Reports must belong to one match. Screen visibility/alignment require user confirmation; this does not prove all future games.",
+    "input_sha256": [
+      "1bf6ccbe6371376a2663429d322f7341aab0d296c4641c4689630aab065b0362"
+    ]
+  },
+  "collection": {
+    "archive_sha256": "84421a454d1cdeaf0007ec7fa55735dd77982f2434ba9994a0115fd3fde05697",
+    "archive_bytes": 437449454,
+    "archive_entries": 8,
+    "crc_verified": true,
+    "bundle_version": "7.3.3",
+    "bundle_build": "2818",
+    "profiles_match_device": true,
+    "previous_engine_bytes_match": true,
+    "images": [
+      {
+        "archive_member": "Bundle/lolm",
+        "uuid": "34D7B1EF-409C-3BF1-BEC4-122FFAB05100",
+        "encrypted": true,
+        "uuid_matches_device": true,
+        "sha256": null
+      },
+      {
+        "archive_member": "Bundle/Frameworks/UnityFramework.framework/UnityFramework",
+        "uuid": "085E1DDF-4A8D-34E2-9D73-A0A28BCC0B83",
+        "encrypted": false,
+        "uuid_matches_device": true,
+        "sha256": "effa95dbbc2bf16f9474c7c99700b80b3e0b7c793537e2da7089bd01b6a5e394"
+      },
+      {
+        "archive_member": "Bundle/Frameworks/FEProj.framework/FEProj",
+        "uuid": "D5B32037-47A3-3EFF-B0E5-04B071EFBEE3",
+        "encrypted": false,
+        "uuid_matches_device": true,
+        "sha256": "69ed33e4b969139bda80946404528584a879f63ae4032c65fcb7412c3db4431e"
+      }
+    ]
+  },
+  "assessment": {
+    "prior_root_failure_reproduced": false,
+    "observed_living_marker_loss": false,
+    "moving_hidden_enemies_observed": 4,
+    "live_hidden_samples_with_logic_marker": 73,
+    "fifth_enemy_hidden_observed": false,
+    "coverage_gap_is_observed_failure": false,
+    "candidate_custom_room_display_user_confirmed": true,
+    "full_five_enemy_fog_acceptance_complete": false,
+    "scope": "All observed live enemies have prepared markers; four have repeated current logic updates while hidden. One remained visible throughout. Marker reductions match death. User confirms custom-room display; ordinary-match behavior and the fifth enemy while hidden remain untested."
+  },
+  "privacy_scope": "Whitelisted counts, game object/resource IDs, archive-relative members and static hashes only. Device addresses, process IDs, sessions, player identifiers, device paths and raw reports excluded."
+}
