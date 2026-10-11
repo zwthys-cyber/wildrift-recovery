@@ -11,7 +11,7 @@ import struct
 import unittest
 from pathlib import Path
 from unicorn import Uc, UC_ARCH_ARM64, UC_MODE_ARM, UC_HOOK_CODE
-from unicorn.arm64_const import UC_ARM64_REG_X0, UC_ARM64_REG_X1, UC_ARM64_REG_X2, UC_ARM64_REG_X8, UC_ARM64_REG_SP, UC_ARM64_REG_LR
+from unicorn.arm64_const import UC_ARM64_REG_X0, UC_ARM64_REG_X1, UC_ARM64_REG_X2, UC_ARM64_REG_X8, UC_ARM64_REG_X19, UC_ARM64_REG_SP, UC_ARM64_REG_LR
 
 ROOT=Path(__file__).resolve().parents[1]
 ENGINE=Path(os.environ.get('LVLOLM_IOS_ENGINE',str(ROOT/'inputs/ios-engine-0.7.5/Bundle/Frameworks/FEProj.framework/FEProj')))
@@ -51,24 +51,50 @@ class OriginalEngineGetters(unittest.TestCase):
         if hashlib.sha256(cls.data).hexdigest()!=ENGINE_SHA: raise ValueError('Wrong native engine profile')
 
     def test_original_logic_battle_root(self):
-        # FEDesk.dataroot +10, then its live logical Battle +18.
-        # Deliberately different from FEDesk.frameroot +38 (sync view).
+        # Original runtime helper: FEDesk.frameroot +38, battle +28.
+        # The 0.7.7 +10/+18 path instead reaches resource data. Both
+        # paths exist in this fixture so swapping them cannot pass.
         for delta in (0,0x100,0x800):
-            u=machine(self.data,((0xd03ddc,0xd03e60),))
-            q(u,0x523cf28,HEAP);q(u,HEAP+0x10,HEAP+0x1000)
-            q(u,HEAP+0x1018,HEAP+0x2000+delta);q(u,HEAP+0x38,HEAP+0x3000)
-            u.emu_start(0xd03ddc,HALT,count=100)
+            u=machine(self.data,((0xd03bc0,0xd03c44),))
+            q(u,0x523cf28,HEAP);q(u,HEAP+0x38,HEAP+0x1000)
+            q(u,HEAP+0x1028,HEAP+0x2000+delta)
+            q(u,HEAP+0x10,HEAP+0x3000);q(u,HEAP+0x3018,HEAP+0x4000)
+            u.emu_start(0xd03bc0,HALT,count=100)
             self.assertEqual(u.reg_read(UC_ARM64_REG_X0),HEAP+0x2000+delta)
 
-    def test_original_battle_actor_manager_dispatch(self):
-        # Stop at the virtual call. No game virtual function is executed.
+    def test_original_runtime_actor_manager_constructor_and_vtable(self):
+        # Recover the embedded manager from the ACTUAL battle constructor,
+        # then the ACTUAL ActorMgr vptr store and original static vtable.
+        # The 0.7.7 test seeded the expected virtual method in fake RAM and
+        # never proved that the selected manager really dispatches it.
         for offset in (0,0x1000):
-            u=machine(self.data,((0x279f30,0x279fcc),));u.mem_map(0x6caa000,4096)
-            battle=HEAP+offset;q(u,battle+0xd10,HEAP+0x4000);q(u,HEAP+0x4078,0x32f2318)
-            u.reg_write(UC_ARM64_REG_X0,battle);u.reg_write(UC_ARM64_REG_X1,5)
-            u.emu_start(0x279f30,0x279fcc,count=100)
-            self.assertEqual(u.reg_read(UC_ARM64_REG_X0),battle+0xd10)
-            self.assertEqual(u.reg_read(UC_ARM64_REG_X8),0x32f2318)
+            u=machine(self.data,((0x4b9acc,0x4b9ad4),(0x748618,0x74862c)))
+            battle=HEAP+offset;u.reg_write(UC_ARM64_REG_X19,battle)
+            u.emu_start(0x4b9acc,0x4b9ad0,count=10)
+            manager=u.reg_read(UC_ARM64_REG_X0)
+            self.assertEqual(manager,battle+0x1e0)
+            call,=struct.unpack_from('<I',self.data,0x4b9ad0)
+            self.assertEqual(0x4b9ad0+((call&0x3ffffff)<<2),0x74858c)
+            u.reg_write(UC_ARM64_REG_X19,manager)
+            u.emu_start(0x748618,0x74862c,count=10)
+            vptr,=struct.unpack('<Q',bytes(u.mem_read(manager,8)))
+            self.assertEqual(vptr,0x4b22650)
+            # These are original DATA_CONST bytes, not a fixture target.
+            lookup,=struct.unpack_from('<Q',self.data,vptr+0xb0)
+            self.assertEqual(lookup,0x32f2318)
+            self.assertNotEqual(struct.unpack_from('<Q',self.data,vptr+0x78)[0],lookup)
+
+    def test_original_resource_manager_is_a_distinct_layout(self):
+        # The old +d10/+78 path is a resource lookup keyed by signed IDs
+        # with an embedded +a8 tree. It cannot look up live actor objIds
+        # using the generic manager's +20 tree pointer.
+        u=machine(self.data,((0x376f78,0x37706c),))
+        u.reg_write(UC_ARM64_REG_X0,HEAP)
+        u.emu_start(0x376f78,HALT,count=200)
+        vptr,=struct.unpack('<Q',bytes(u.mem_read(HEAP,8)))
+        self.assertEqual(vptr,0x4ac9df8)
+        self.assertEqual(struct.unpack_from('<Q',self.data,vptr+0x78)[0],0x37c868)
+        self.assertEqual(struct.unpack('<Q',bytes(u.mem_read(HEAP+0x20,8)))[0],HEAP+0x18)
 
     def test_original_logic_object_tree_lookup(self):
         # Original signed/object layout is checked against an independently

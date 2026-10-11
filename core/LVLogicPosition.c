@@ -68,10 +68,10 @@ static LVLogicPositionStatus find(Reader *r,uint64_t tree,uint32_t id,uint64_t *
     *object=candidate; return LV_LOGIC_READY;
 }
 static int roots(Reader *r,uint64_t base,const LVLogicPositionReport *v,uint64_t key) {
-    uint64_t desk,data,battle,tree,same_key;
+    uint64_t desk,frame,battle,tree,same_key;
     return pointer(r,base+0x523cf28,&desk) && desk==v->desk &&
-        pointer(r,desk+0x10,&data) && data==v->data_root &&
-        pointer(r,data+0x18,&battle) && battle==v->battle &&
+        pointer(r,desk+0x38,&frame) && frame==v->frame_root &&
+        pointer(r,frame+0x28,&battle) && battle==v->battle &&
         pointer(r,v->manager+0x20,&tree) && tree==v->tree &&
         load(r,base+0x523cf38,&same_key,8) && same_key==key;
 }
@@ -84,21 +84,30 @@ void lv_target_logic_position_read(LVTargetRead read,void *context,uint64_t base
         base> (UINT64_C(1)<<48)-0x523cf40) { v.reason="logic_profile_mismatch"; goto done; }
     v.profile_matches=1;
     if(s->result!=LV_TARGET_READY && s->result!=LV_TARGET_PARTIAL) goto done;
-    Reader r={read,context}; uint64_t key,vtable,lookup;
-    /* GetBattleFromDataRoot 0xd03ddc: global FEDesk -> dataroot +10
-       -> battle +18. FEDesk.frameroot +38 is the separate sync view. */
+    Reader r={read,context}; uint64_t key;
+    /* Original runtime battle accessor 0xd03bc0: FEDesk.frameroot +38,
+       frame.battle +28. The data-root +10/+18 path used in 0.7.7
+       points to resource/configuration data, not live battle actors. */
     if(!pointer(&r,base+0x523cf28,&v.desk) || !v.desk ||
-        !pointer(&r,v.desk+0x10,&v.data_root) || !v.data_root ||
-        !pointer(&r,v.data_root+0x18,&v.battle) || !v.battle ||
+        !pointer(&r,v.desk+0x38,&v.frame_root) || !v.frame_root ||
+        !pointer(&r,v.frame_root+0x28,&v.battle) || !v.battle ||
         !load(&r,base+0x523cf38,&key,8)) { v.reason="logic_root_unreadable"; goto done; }
-    if(!address_valid(v.battle+0xd10,0x30)) { v.reason="logic_manager_invalid"; goto done; }
-    /* Battle actor lookup 0x279fbc dispatches the embedded manager +d10
-       through vtable +78. Accept only the recovered original tree lookup. */
-    v.manager=v.battle+0xd10;
-    if(!pointer(&r,v.manager,&vtable) || !vtable || !load(&r,vtable+0x78,&lookup,8)) {
+    if(!address_valid(v.battle+0x1e0,0x30)) { v.reason="logic_manager_invalid"; goto done; }
+    /* Runtime battle constructors 0x4b89cc/0x4b9acc embed ActorMgr at
+       +1e0 and call its constructor 0x74858c. That constructor writes
+       vtable 0x4b22650; its +b0 slot contains FindObject 0x32f2318.
+       This is independently checked against original constructor bytes
+       and the original on-disk vtable, rather than an assumed dispatch. */
+    v.manager=v.battle+0x1e0;
+    if(!pointer(&r,v.manager,&v.manager_vtable) || !v.manager_vtable ||
+        !load(&r,v.manager_vtable+0xb0,&v.lookup_method,8)) {
         v.reason="logic_manager_unreadable"; goto done;
     }
-    if(lookup!=base+0x32f2318 && lookup!=base+0x1011910) { v.reason="logic_lookup_layout_mismatch"; goto done; }
+    if(v.manager_vtable>=base) v.manager_vtable_offset=v.manager_vtable-base;
+    if(v.lookup_method>=base) v.lookup_method_offset=v.lookup_method-base;
+    if(v.manager_vtable!=base+0x4b22650 || v.lookup_method!=base+0x32f2318) {
+        v.reason="logic_lookup_layout_mismatch"; goto done;
+    }
     if(!pointer(&r,v.manager+0x20,&v.tree) || !v.tree) { v.reason="logic_tree_unreadable"; goto done; }
     for(size_t i=0;i<s->count;++i) {
         LVTargetActor *a=&s->actors[i];
@@ -133,8 +142,8 @@ void lv_target_logic_position_read(LVTargetRead read,void *context,uint64_t base
         }
     }
     uint64_t after_vtable=0,after_lookup=0;
-    if(!roots(&r,base,&v,key) || !pointer(&r,v.manager,&after_vtable) || after_vtable!=vtable ||
-        !load(&r,vtable+0x78,&after_lookup,8) || after_lookup!=lookup) {
+    if(!roots(&r,base,&v,key) || !pointer(&r,v.manager,&after_vtable) || after_vtable!=v.manager_vtable ||
+        !load(&r,v.manager_vtable+0xb0,&after_lookup,8) || after_lookup!=v.lookup_method) {
         for(size_t i=0;i<s->count;++i) if(s->actors[i].logic_position_ok) {
             clear(&s->actors[i],LV_LOGIC_CHANGED); ++v.changed;
         }

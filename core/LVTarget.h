@@ -97,7 +97,8 @@ typedef struct {
 typedef struct {
     const char *reason;
     unsigned profile_matches;
-    uint64_t desk, data_root, battle, manager, tree;
+    uint64_t desk, frame_root, battle, manager, tree, manager_vtable, lookup_method;
+    uint64_t manager_vtable_offset, lookup_method_offset;
     size_t eligible, valid, not_found, unreadable, invalid, changed;
 } LVLogicPositionReport;
 

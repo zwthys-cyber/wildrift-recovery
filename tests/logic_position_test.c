@@ -8,7 +8,7 @@
 #define BASE UINT64_C(0x100000000)
 #define HEAP UINT64_C(0x350000000)
 static unsigned char heap[0x20000];
-static uint64_t desk,key,failure,mutation;
+static uint64_t desk,key,lookup,failure,mutation;
 static unsigned mutation_reads,mutate_at,mutation_byte,checks;
 static LVTargetSnapshot snapshot;
 static LVLogicPositionReport report;
@@ -31,6 +31,7 @@ static int reader(void *ctx,uint64_t a,void *p,size_t n) {
     if(a==failure) { memset(p,255,n); return 0; }
     if(a==BASE+0x523cf28 && n==8) memcpy(p,&desk,8);
     else if(a==BASE+0x523cf38 && n==8) memcpy(p,&key,8);
+    else if(a==BASE+0x4b22700 && n==8) memcpy(p,&lookup,8);
     else if(a>=HEAP && a-HEAP+n<=sizeof(heap)) memcpy(p,heap+a-HEAP,n);
     else return 0;
     if(a==mutation && ++mutation_reads==mutate_at) { assert(mutation_byte<n); ((unsigned char *)p)[mutation_byte]^=8; }
@@ -39,9 +40,13 @@ static int reader(void *ctx,uint64_t a,void *p,size_t n) {
 static void fixture(void) {
     memset(heap,0,sizeof(heap)); memset(&snapshot,0,sizeof(snapshot));
     desk=HEAP; key=UINT64_C(0x8123456789abcdef); failure=mutation=mutation_reads=mutation_byte=0; mutate_at=2;
-    q(desk+0x10,HEAP+0x100); q(HEAP+0x118,HEAP+0x800);
-    q(HEAP+0x1510,HEAP+0x1800); q(HEAP+0x1878,BASE+0x32f2318);
-    q(HEAP+0x1530,HEAP+0x2000); q(HEAP+0x2000,node(4));
+    /* Distinct resource and runtime roots. The 0.7.7 data-root path
+       reaches resource tables whose actual +78 lookup is 0x37c868. */
+    q(desk+0x10,HEAP+0x200); q(HEAP+0x218,HEAP+0x2200);
+    q(HEAP+0x2f10,BASE+0x4ac9df8);
+    q(desk+0x38,HEAP+0x100); q(HEAP+0x128,HEAP+0x800);
+    q(HEAP+0x9e0,BASE+0x4b22650); lookup=BASE+0x32f2318;
+    q(HEAP+0xa00,HEAP+0x2000); q(HEAP+0x2000,node(4));
     q(node(4)+8,node(2)); q(node(4)+0x10,node(5));
     q(node(2)+8,node(1)); q(node(2)+0x10,node(3)); q(node(5)+0x10,node(6));
     snapshot.result=LV_TARGET_READY; snapshot.count=6;
@@ -76,7 +81,9 @@ static void first_failed(LVLogicPositionStatus s) {
 }
 int main(void) {
     fixture();sample();check(report.profile_matches && report.eligible==6 && report.valid==6 && !strcmp(report.reason,"ready"));
-    check(report.desk==HEAP && report.data_root==HEAP+0x100 && report.battle==HEAP+0x800 && report.manager==HEAP+0x1510);
+    check(report.desk==HEAP && report.frame_root==HEAP+0x100 && report.battle==HEAP+0x800 && report.manager==HEAP+0x9e0);
+    check(report.manager_vtable_offset==0x4b22650 && report.lookup_method_offset==0x32f2318);
+    fixture();failure=desk+0x10;sample();check(report.valid==6);
     for(size_t i=0;i<6;++i) check(snapshot.actors[i].logic_native==logic(i) &&
         snapshot.actors[i].logic_position_fixed[0]==((int64_t)i-3)*16384 &&
         snapshot.actors[i].logic_position_fixed[2]==((int64_t)i-1)*16384 &&
@@ -107,8 +114,10 @@ int main(void) {
     fixture();failure=node(1);sample();check(report.valid==4 && report.unreadable==2 &&
         snapshot.actors[0].logic_position_status==LV_LOGIC_UNREADABLE && snapshot.actors[2].logic_position_ok);
     /* Reject a manager with a sync lookup or unknown virtual implementation. */
-    fixture();q(HEAP+0x1878,BASE+0x1011a30);sample();check(!report.valid && !strcmp(report.reason,"logic_lookup_layout_mismatch"));
-    fixture();q(HEAP+0x1878,BASE+0x1011910);sample();check(report.valid==6);
+    fixture();lookup=BASE+0x1011a30;sample();check(!report.valid && !strcmp(report.reason,"logic_lookup_layout_mismatch"));
+    fixture();lookup=BASE+0x1011910;sample();check(!report.valid && !strcmp(report.reason,"logic_lookup_layout_mismatch"));
+    fixture();q(HEAP+0x9e0,BASE+0x4ac9df8);sample();check(!report.valid && !strcmp(report.reason,"logic_manager_unreadable"));
+    fixture();failure=BASE+0x4b22700;sample();check(!report.valid && !strcmp(report.reason,"logic_manager_unreadable"));
     for(size_t i=0;i<2;++i) {
         uint32_t id=i ? UINT32_MAX : UINT32_C(0x80000000);
         fixture();snapshot.actors[5].object_id=id;u(snapshot.actors[5].native+0x18,id);
@@ -118,7 +127,7 @@ int main(void) {
     for(size_t i=0;i<65;++i) { uint64_t p=HEAP+0x18000+i*0x60;u(p+0x20,77);q(p+8,i<64?p+0x60:0); }
     sample();check(!report.valid && report.invalid==6);
     for(size_t i=0;i<6;++i) {
-        const uint64_t a[]={0x523cf28,0x523cf38,0x10,0x118,0x1530,0x10020};
+        const uint64_t a[]={0x523cf28,0x523cf38,0x38,0x128,0xa00,0x10020};
         fixture();mutation=i<2 ? BASE+a[i] : HEAP+a[i];sample();
         check(!snapshot.actors[0].logic_position_ok && report.changed>0);
         if(i<5) check(!report.valid && !strcmp(report.reason,"logic_root_changed"));
@@ -128,11 +137,12 @@ int main(void) {
     fixture();mutation=logic(0)+0x198;first_failed(LV_LOGIC_CHANGED);
     fixture();mutation=node(1);mutation_byte=0x20;first_failed(LV_LOGIC_CHANGED);
     fixture();desk=0;sample();check(!report.valid && !strcmp(report.reason,"logic_root_unreadable"));
-    fixture();q(HEAP+0x118,0);sample();check(!report.valid);
-    fixture();q(HEAP+0x1530,0);sample();check(!report.valid);
+    fixture();q(HEAP+0x128,0);sample();check(!report.valid);
+    fixture();q(HEAP+0xa00,0);sample();check(!report.valid);
     fixture();q(HEAP+0x2000,0);sample();check(!report.valid && report.not_found==6);
     fixture();failure=BASE+0x523cf38;sample();check(!report.valid);
-    fixture();mutation=HEAP+0x1878;sample();check(!report.valid && !strcmp(report.reason,"logic_root_changed"));
+    fixture();mutation=BASE+0x4b22700;sample();check(!report.valid && !strcmp(report.reason,"logic_root_changed"));
+    fixture();mutation=HEAP+0x9e0;sample();check(!report.valid && !strcmp(report.reason,"logic_root_changed"));
     fixture();snapshot.actors[1].object_id=1;sample();check(report.eligible==4 && report.valid==4);
     fixture();snapshot.actors[0].is_hero=0;first_failed(LV_LOGIC_INELIGIBLE);
     fixture();sample();snapshot.result=LV_TARGET_CHANGED;sample();check(!report.valid && !snapshot.actors[0].logic_position_ok);

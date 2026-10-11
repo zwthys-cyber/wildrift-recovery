@@ -1,0 +1,35 @@
+; Original FEProj UUID D5B32037-47A3-3EFF-B0E5-04B071EFBEE3
+; Relative image addresses, offline disassembly only.
+
+00376f78: adrp x8, #0x4ac9000
+00376f7c: add x8, x8, #0xdf8
+00376f80: str x8, [x0]
+00376f84: strb wzr, [x0, #8]
+
+0037c8f0: ldr x8, [x20, #0xa8]!
+0037c8f4: cbz x8, #0x37c930
+0037c8f8: mov w10, #8
+0037c8fc: mov w11, #0x10
+0037c900: mov x9, x20
+0037c904: ldr w12, [x8, #0x20]
+0037c908: cmp w12, w19
+0037c90c: csel x9, x9, x8, lt
+0037c910: csel x12, x11, x10, lt
+0037c914: ldr x8, [x8, x12]
+0037c918: cbnz x8, #0x37c904
+0037c91c: cmp x9, x20
+0037c920: b.eq #0x37c930
+0037c924: ldr w8, [x9, #0x20]
+0037c928: cmp w8, w19
+0037c92c: b.le #0x37c940
+0037c930: mov x0, #0
+0037c934: ldp x29, x30, [sp, #0x10]
+0037c938: ldp x20, x19, [sp], #0x20
+0037c93c: ret
+0037c940: ldr x0, [x9, #0x28]
+0037c944: ldp x29, x30, [sp, #0x10]
+0037c948: ldp x20, x19, [sp], #0x20
+0037c94c: ret
+
+; Original DATA_CONST resource manager slot
+04ac9e70: .quad 0x0037c868 ; resource vptr 0x4ac9df8 +0x78

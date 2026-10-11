@@ -1,0 +1,138 @@
+{
+  "recovery_app_version": "0.7.7",
+  "input_sha256": "76a451c2ea9a5d647ae809801f042d91d1ae3f57d3ee1c43b622432afeb43d12",
+  "input_bytes": 891727,
+  "snapshot_sampled_at": "2026-10-11T00:03:29Z",
+  "hud_checked_at": "2026-10-11T00:03:45Z",
+  "probe": {
+    "result": "ready",
+    "actor_count": 198,
+    "hero_count": 10,
+    "confirmed_enemies": 5,
+    "dead_enemies": 1,
+    "outside_map_enemies": 3,
+    "markers": 1,
+    "enemy_heroes": [
+      {
+        "object_id": 6,
+        "resource_id": 10029,
+        "camp": 2,
+        "health": 1154.7811279296875,
+        "position": [
+          500,
+          0,
+          500
+        ],
+        "logic_position_status": "unavailable",
+        "logic_position_read_ok": 0,
+        "fog_cut_disappear": 1
+      },
+      {
+        "object_id": 7,
+        "resource_id": 10065,
+        "camp": 2,
+        "health": 1291.982421875,
+        "position": [
+          500,
+          0,
+          500
+        ],
+        "logic_position_status": "unavailable",
+        "logic_position_read_ok": 0,
+        "fog_cut_disappear": 1
+      },
+      {
+        "object_id": 8,
+        "resource_id": 10087,
+        "camp": 2,
+        "health": 1384.775390625,
+        "position": [
+          500,
+          0,
+          500
+        ],
+        "logic_position_status": "unavailable",
+        "logic_position_read_ok": 0,
+        "fog_cut_disappear": 1
+      },
+      {
+        "object_id": 9,
+        "resource_id": 10079,
+        "camp": 2,
+        "health": 866.5592651367188,
+        "position": [
+          36.94207763671875,
+          0,
+          -31.9139404296875
+        ],
+        "logic_position_status": "unavailable",
+        "logic_position_read_ok": 0,
+        "fog_cut_disappear": 0
+      },
+      {
+        "object_id": 10,
+        "resource_id": 10126,
+        "camp": 2,
+        "health": 0,
+        "position": [
+          46.4815673828125,
+          0,
+          -24.0343017578125
+        ],
+        "logic_position_status": "unavailable",
+        "logic_position_read_ok": 0,
+        "fog_cut_disappear": 0
+      }
+    ],
+    "logic_positions": {
+      "reason": "logic_lookup_layout_mismatch",
+      "source": "native_logic_transform",
+      "not_found_count": 0,
+      "profile_matches": 1,
+      "changed_count": 0,
+      "valid_position_count": 0,
+      "eligible_hero_count": 0,
+      "unreadable_count": 0,
+      "invalid_count": 0
+    },
+    "native_health": {
+      "max_health_inferred": false,
+      "fog_cut_enabled": 0,
+      "profile_matches": 1,
+      "unreadable_count": 0,
+      "logic_thread_enabled": 1,
+      "invalid_count": 0,
+      "changed_count": 0,
+      "source": "native_attributes",
+      "use_logic_network": 0,
+      "sync_values": 1,
+      "fog_config_read_ok": 1,
+      "valid_fraction_count": 10,
+      "reason": "ready",
+      "eligible_hero_count": 10
+    }
+  },
+  "trace": {
+    "sample_count": 32,
+    "first_sample_at": "2026-10-11T00:03:12Z",
+    "last_sample_at": "2026-10-11T00:03:45Z",
+    "lookup_failure_counts": {
+      "logic_lookup_layout_mismatch": 32
+    },
+    "logic_valid_position_total": 0,
+    "enemy_marker_histogram": {
+      "1": 22,
+      "2": 10
+    },
+    "fog_hidden_live_enemy_observations": 96,
+    "valid_native_hp_pair_count": 320
+  },
+  "diagnosis": {
+    "runtime_logic_actors_read": false,
+    "root_path_failed": "0.7.7 used FEDesk.data_root +10 -> resource battle +18 -> embedded resource manager +d10, then incorrectly required generic live-object FindObject at virtual slot +78.",
+    "actual_lookup_not_recorded_by_0_7_7": true,
+    "correction_source": "Original runtime helper 0xd03bc0, battle constructors 0x4b894c/0x4b9a54, ActorMgr constructor 0x74858c and original DATA_CONST vtable 0x4b22650.",
+    "new_version_runtime_verified": false
+  },
+  "scope": "Whitelisted numbers and failure summaries only; runtime addresses, PIDs, device container paths, sessions and player identifiers excluded. Raw input retained locally under ignored inputs. No 0.7.8 device claim."
+}

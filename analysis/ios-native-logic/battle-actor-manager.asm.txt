@@ -1,12 +1,23 @@
-Original FEProj range 0x279fbc..0x279fd0; no device calls executed.
-00279fbc: ldr x8, [x19, #0xd10]
-00279fc0: ldr x8, [x8, #0x78]
-00279fc4: add x0, x19, #0xd10
-00279fc8: mov w2, #1
-00279fcc: blr x8
-Original FEProj range 0x32f2318..0x32f232c; no device calls executed.
+; Original FEProj UUID D5B32037-47A3-3EFF-B0E5-04B071EFBEE3
+; Relative image addresses, offline disassembly only.
+
+004b89cc: add x0, x19, #0x1e0
+004b89d0: bl #0x74858c
+
+004b9acc: add x0, x19, #0x1e0
+004b9ad0: bl #0x74858c
+
+00748618: adrp x9, #0x4b22000
+0074861c: add x9, x9, #0x650
+00748620: str x9, [x19]
+00748624: add x9, x9, #0x120
+00748628: str x9, [x19, #0x300]
+
 032f2318: stp x29, x30, [sp, #-0x10]!
 032f231c: mov x29, sp
 032f2320: bl #0x1011910
 032f2324: ldp x29, x30, [sp], #0x10
-032f2328: ret 
+032f2328: ret
+
+; Original DATA_CONST vtable slot
+04b22700: .quad 0x032f2318 ; ActorMgr vptr 0x4b22650 +0xb0
