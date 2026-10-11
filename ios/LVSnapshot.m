@@ -102,21 +102,23 @@ static NSDictionary *positionCandidates(const LVTargetActor *a) {
     return r;
 }
 static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTargetSnapshot *snapshot,
-                                      const LVMinimapSettings *settings, const LVMinimapHealthReport *health,
+                                      const LVMinimapSettings *settings, const LVConfig *config, const LVMinimapHealthReport *health,
                                       const LVNativeHealthReport *nativeHealth, const LVLogicPositionReport *logic) {
     LVMinimapGeometry geometry; lv_minimap_read(readTarget, (__bridge void *)reader, base, &geometry);
     if (!geometry.ready && [@(geometry.reason) isEqual:@"geometry_changed"])
         lv_minimap_read(readTarget, (__bridge void *)reader, base, &geometry);
-    LVMinimapFrame frame; lv_minimap_frame(snapshot, &geometry, settings, &frame);
+    BOOL drawWards=config && config->values[lv_config_index("drawWards")][0]!=0;
+    LVMinimapFrame frame; lv_minimap_frame_with_wards(snapshot, &geometry, settings, drawWards, &frame);
     size_t rawCount=0;
-    for(size_t i=0;i<frame.count;++i) rawCount+=!frame.markers[i].is_local;
+    for(size_t i=0;i<frame.count;++i) rawCount+=!frame.markers[i].is_local && !frame.markers[i].is_ward;
     size_t rawUnplaced=frame.missing_enemies+frame.outside_enemies;
     unsigned rawReady=frame.ready;
     NSMutableArray *markers = [NSMutableArray new];
     for (size_t i = 0; i < frame.count; ++i) {
         LVMinimapMarker *m = &frame.markers[i];
         [markers addObject:@{ @"object_id": @(m->object_id), @"resource_id": @(m->resource_id),
-            @"ordinal": @(m->ordinal), @"is_local": @(m->is_local != 0), @"u": @(m->u), @"v": @(m->v),
+            @"ordinal": @(m->ordinal), @"is_local": @(m->is_local != 0), @"is_ward": @(m->is_ward != 0),
+            @"u": @(m->u), @"v": @(m->v),
             @"health_fraction_read_ok": @(m->health_fraction_ok != 0), @"health_fraction": @(m->health_fraction),
             @"health_source": m->health_source==1 ? @"native_attributes" :
                 (m->health_source==2 ? @"game_minimap_cached_percent" : @"unavailable"),
@@ -131,6 +133,10 @@ static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTarg
         @"current_projection_ready": @(rawReady != 0), @"current_enemy_marker_count": @(rawCount),
         @"current_unplaced_enemy_count": @(rawUnplaced),
         @"edge_clamped_enemy_count": @(frame.edge_clamped_enemies),
+        @"wards": @{ @"enabled":@(drawWards), @"confirmed_enemy_count":@(frame.confirmed_wards),
+            @"current_marker_count":@(frame.ward_markers), @"dead_count":@(frame.dead_wards),
+            @"unavailable_count":@(frame.unavailable_wards), @"outside_map_count":@(frame.outside_wards),
+            @"classification_source":@"BattleActor.isSummonedWards", @"device_verified":@NO },
         @"health_cache": @{ @"reason": @(health->reason), @"matched_hero_count": @(health->matched),
             @"enabled_hero_count": @(health->enabled), @"valid_fraction_count": @(health->valid),
             @"source": @"game_minimap_cached_percent", @"max_health_inferred": @NO },
@@ -148,7 +154,9 @@ static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTarg
             @"runtime_battle_matches_frame": @(logic->battle!=0 && logic->battle==logic->frame_battle),
             @"manager_vtable_offset": hexAddress(logic->manager_vtable_offset),
             @"lookup_method_offset": hexAddress(logic->lookup_method_offset),
-            @"eligible_hero_count": @(logic->eligible), @"valid_position_count": @(logic->valid),
+            @"eligible_hero_count": @(logic->eligible-logic->eligible_wards),
+            @"eligible_ward_count": @(logic->eligible_wards), @"valid_ward_position_count": @(logic->valid_wards),
+            @"valid_hero_position_count": @(logic->valid-logic->valid_wards), @"valid_position_count": @(logic->valid),
             @"not_found_count": @(logic->not_found), @"unreadable_count": @(logic->unreadable),
             @"invalid_count": @(logic->invalid), @"changed_count": @(logic->changed),
             @"source": @"native_logic_transform" },
@@ -214,8 +222,11 @@ NSDictionary *LVReadTargetSnapshot(LVMachReader *reader, NSDictionary *metadata,
             @"object_id_read_ok": @(a->object_id_ok != 0), @"position_read_ok": @(a->position_ok != 0),
             @"transform_address": hexAddress(a->transform) } mutableCopy];
         record[@"classification_read_ok"] = @(a->classification_ok != 0);
-        if(a->classification_ok && a->is_hero) record[@"coordinate_candidates"]=positionCandidates(a);
-        if(a->classification_ok && a->is_hero) {
+        record[@"ward_classification_read_ok"]=@(a->ward_classification_ok!=0);
+        if(a->ward_classification_ok) record[@"is_ward"]=@(a->is_ward!=0);
+        if(a->classification_ok && (a->is_hero || (a->ward_classification_ok && a->is_ward)))
+            record[@"coordinate_candidates"]=positionCandidates(a);
+        if(a->classification_ok && (a->is_hero || (a->ward_classification_ok && a->is_ward))) {
             record[@"logic_position_read_ok"]=@(a->logic_position_ok!=0);
             record[@"logic_position_status"]=@(lv_logic_position_status_name(a->logic_position_status));
             if(a->logic_position_ok) {
@@ -256,7 +267,7 @@ NSDictionary *LVReadTargetSnapshot(LVMachReader *reader, NSDictionary *metadata,
         @"local_native_address": hexAddress(snapshot.local_native), @"actors": actors,
         @"smite_preview": smitePreview(&snapshot, config),
         @"snapshot_read_attempts": @(attempts),
-        @"minimap": minimapSnapshot(reader, base, &snapshot, mapSettings, &health, &nativeHealth, &logic),
+        @"minimap": minimapSnapshot(reader, base, &snapshot, mapSettings, config, &health, &nativeHealth, &logic),
         @"logic_trace": @{ @"desk":hexAddress(logic.desk), @"frame_root":hexAddress(logic.frame_root),
             @"frame_battle":hexAddress(logic.frame_battle),
             @"battle":hexAddress(logic.battle), @"actor_manager":hexAddress(logic.manager), @"tree":hexAddress(logic.tree),

@@ -61,6 +61,16 @@ class OriginalGetters(unittest.TestCase):
                 uc.emu_start(start, HALT, count=100)
                 self.assertEqual(uc.reg_read(UC_ARM64_REG_X0), value)
 
+    def test_original_cached_ward_classification(self):
+        # Named original IsSummonedWards and interface accessor, after the
+        # initialization call. Execute only their byte-load instruction.
+        for start in (0x4eeebac,0x4eec87c):
+            for value in (0,1,255):
+                uc=machine(self.fw,start,start+4)
+                uc.mem_write(HEAP+0x158,bytes([value]));uc.mem_write(HEAP+0x157,bytes([1-value if value<2 else 0]))
+                uc.reg_write(UC_ARM64_REG_X19,HEAP);uc.emu_start(start,start+4,count=10)
+                self.assertEqual(uc.reg_read(UC_ARM64_REG_X0),value)
+
     def test_fix_position(self):
         for values in ((-16384, 0, 8192), (12345678, -987654, 1638400), (-(1 << 63), (1 << 63)-1, -1)):
             uc = machine(self.fw, 0x4f82550, 0x4f82568)

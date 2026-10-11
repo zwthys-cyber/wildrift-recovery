@@ -234,5 +234,17 @@ int main(void) {
     lv_target_snapshot(read_fixture,&f,BASE,&s);assert(!s.actors[0].fog_cut_state_ok);
     f.change_address=HEAP+0x4018;f.replacement=27;f.change_reads=0;
     lv_target_snapshot(read_fixture,&f,BASE,&s);assert(!s.actors[0].fow_force_position_ok && !s.actors[0].fog_cut_state_ok);
-    free(f.cache); puts("target reader: 51 scenarios passed"); return 0;
+    /* Ward flag is a separately validated cached classification byte. */
+    extended(&f); unsigned char ward=1;put(&f,HEAP+0x3358,&ward,1);
+    lv_target_snapshot(read_fixture,&f,BASE,&s);
+    assert(s.actors[1].ward_classification_ok && s.actors[1].is_ward && s.actors[0].is_hero);
+    f.fail=HEAP+0x3358;lv_target_snapshot(read_fixture,&f,BASE,&s);
+    assert(!s.actors[1].ward_classification_ok && !s.actors[1].is_ward);f.fail=0;
+    ward=0;put(&f,HEAP+0x3358,&ward,1);lv_target_snapshot(read_fixture,&f,BASE,&s);
+    assert(s.actors[1].ward_classification_ok && !s.actors[1].is_ward);
+    ward=2;put(&f,HEAP+0x3158,&ward,1);lv_target_snapshot(read_fixture,&f,BASE,&s);
+    assert(!s.actors[0].ward_classification_ok && !s.actors[0].is_ward && s.actors[0].classification_ok && s.actors[0].is_hero);
+    f.fail=HEAP+0x3138;lv_target_snapshot(read_fixture,&f,BASE,&s);
+    assert(!s.actors[0].ward_classification_ok && !s.actors[0].is_ward);
+    free(f.cache); puts("target reader: 56 scenarios passed"); return 0;
 }

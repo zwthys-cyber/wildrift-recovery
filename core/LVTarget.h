@@ -31,6 +31,7 @@ typedef struct {
     unsigned values_ok, health_ok, is_local;
     unsigned object_id_ok, position_ok;
     unsigned classification_ok, is_hero, is_monster, is_soldier, is_building, is_red_blue_buff;
+    unsigned ward_classification_ok, is_ward;
     /* Original minimap UI cache, independently validated; not a max-HP guess. */
     int64_t minimap_health_fraction_fixed;
     unsigned minimap_health_fraction_ok;
@@ -100,6 +101,7 @@ typedef struct {
     uint64_t desk, frame_root, frame_battle, battle, manager, tree, manager_vtable, lookup_method;
     uint64_t manager_vtable_offset, lookup_method_offset;
     size_t eligible, valid, not_found, unreadable, invalid, changed;
+    size_t eligible_wards, valid_wards;
 } LVLogicPositionReport;
 
 /* Caller has verified the Unity UUID. FEProj UUID is independently checked.

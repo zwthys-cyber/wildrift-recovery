@@ -1,5 +1,5 @@
 {
-  "recorded_at": "2026-10-11T01:06:02.584281+00:00",
+  "recorded_at": "2026-10-11T02:26:59.506580+00:00",
   "original_sha256": "e385f312ecbb5e575d2709a15a3b0157aa6fb37b52299075d9665f14df6fd111",
   "target": {
     "device": "iPhone 15 Pro Max",
@@ -37,10 +37,10 @@
       "passed": true,
       "tests": 8,
       "runtime_installation_tested": false,
-      "version": "0.7.9",
+      "version": "0.7.10",
       "signature_tests": 5,
       "asset_tests": 3,
-      "tested_version": "0.7.9"
+      "tested_version": "0.7.10"
     },
     "zip_export": {
       "passed": true,
@@ -51,14 +51,14 @@
       ],
       "independent_reader": "Python zipfile",
       "input_rejection_cases": 7,
-      "tested_version": "0.7.9"
+      "tested_version": "0.7.10"
     },
     "collection_inspector": {
       "passed": true,
       "tests": 6,
       "framework_uuid_match_and_mismatch_tested": true,
       "encryption_reporting_tested": true,
-      "tested_version": "0.7.9",
+      "tested_version": "0.7.10",
       "engine_only_without_unity_tested": true,
       "engine_uuid_match_and_mismatch_tested": true,
       "missing_engine_and_mixed_file_rejection_tested": true
@@ -74,7 +74,7 @@
     },
     "target_reader": {
       "passed": true,
-      "scenarios": 51,
+      "scenarios": 56,
       "sanitizers": [
         "AddressSanitizer",
         "UndefinedBehaviorSanitizer"
@@ -84,12 +84,13 @@
       "new_extended_fields_device_verified": false,
       "prior_extended_fields_device_evidence_version": "0.5.0",
       "new_coordinate_candidates_device_verified": false,
-      "tested_version": "0.7.9"
+      "tested_version": "0.7.10",
+      "ward_classification_device_verified": false
     },
     "ios_getters": {
       "passed": true,
-      "tests": 9,
-      "original_instruction_cases": 156,
+      "tests": 10,
+      "original_instruction_cases": 162,
       "object_and_skill_cases": 12,
       "position_cases": 3,
       "cooldown_cases": 15,
@@ -102,7 +103,8 @@
       "last_position_cases": 3,
       "hp_fraction_cases": 20,
       "dictionary_stride_cases": 4,
-      "tested_version": "0.7.7"
+      "tested_version": "0.7.10",
+      "ward_cached_getter_cases": 6
     },
     "smite_preview": {
       "passed": true,
@@ -112,7 +114,7 @@
         "UndefinedBehaviorSanitizer"
       ],
       "scope": "Recompiled against extended LVTarget structs; 34 ASan/UBSan preview scenarios passed. No touches.",
-      "tested_version": "0.7.7"
+      "tested_version": "0.7.10"
     },
     "device_preview_replay": {
       "passed": true,
@@ -192,7 +194,7 @@
       "stock_signed_bits_checked": true,
       "scope": "Current ASan/UBSan: independently specified protocol-3 record, ring/clamp bounds, result aliases, owner/sequence/freshness rejection. Phone lifecycle remains unverified.",
       "protocol_version": 3,
-      "tested_version": "0.7.9"
+      "tested_version": "0.7.10"
     },
     "minimap": {
       "passed": true,
@@ -206,7 +208,7 @@
       "legacy_default_migration_tested": true,
       "customized_rect_edges_preserved": true,
       "non_rectangle_preferences_preserved": true,
-      "tested_version": "0.7.9"
+      "tested_version": "0.7.10"
     },
     "ios_minimap_projection": {
       "passed": true,
@@ -219,18 +221,18 @@
     },
     "minimap_motion": {
       "passed": true,
-      "checks": 49,
+      "checks": 58,
       "sanitizers": [
         "AddressSanitizer",
         "UndefinedBehaviorSanitizer"
       ],
-      "scope": "Current ASan/UBSan: all prior interpolation/removal cases, HP fraction preservation and invalid HP rejection. No history marker or extrapolation.",
-      "tested_version": "0.7.9"
+      "scope": "58 ASan/UBSan checks, including current ward interpolation/removal, actor-role identity changes, HP preservation and invalid records. No history marker or extrapolation.",
+      "tested_version": "0.7.10"
     },
     "minimap_health": {
       "passed": true,
       "checks": 25,
-      "tested_version": "0.7.9",
+      "tested_version": "0.7.10",
       "sanitizers": [
         "AddressSanitizer",
         "UndefinedBehaviorSanitizer"
@@ -240,18 +242,18 @@
     "native_health": {
       "passed": true,
       "checks": 50,
-      "tested_version": "0.7.9",
+      "tested_version": "0.7.10",
       "sanitizers": [
         "AddressSanitizer",
         "UndefinedBehaviorSanitizer"
       ],
-      "scope": "50 synthetic ASan/UBSan checks passed. Earlier circular rendering is user-confirmed; 320 native HP pairs remain valid in the latest 0.7.8 trace. Uniform red styling is compiled in 0.7.9 but has not yet been observed on the phone."
+      "scope": "50 synthetic ASan/UBSan checks. Earlier circular rendering is user-confirmed and 0.7.9 hero display is user-confirmed in custom and ordinary matches; latest stopped-HUD ordinary export is not live marker acceptance evidence."
     },
     "native_engine_getters": {
       "passed": true,
       "tests": 11,
       "original_instruction_cases": 120,
-      "tested_version": "0.7.9",
+      "tested_version": "0.7.10",
       "private_engine_sha256": "69ed33e4b969139bda80946404528584a879f63ae4032c65fcb7412c3db4431e",
       "unknown_calls_and_syscalls_rejected": true,
       "scope": "Original FEProj FrameRoot +10 store to global Battle, actual game ActorMgr dispatch up to BLR, constructor vptr and original static vtable, separate +28 logger, unsigned object tree, identity, Q14 decode and native HP in bounded synthetic RAM. The complete pure-read chain runs for 18 actor samples; unknown calls/syscalls rejected. Does not prove device fog success.",
@@ -259,30 +261,41 @@
     },
     "logic_position": {
       "passed": true,
-      "checks": 177,
-      "tested_version": "0.7.9",
+      "checks": 180,
+      "tested_version": "0.7.10",
       "sanitizers": [
         "AddressSanitizer",
         "UndefinedBehaviorSanitizer"
       ],
-      "scope": "177 ASan/UBSan checks: actual global Battle and FrameRoot +10 consistency, rejection of resource and logger roots, original ActorMgr layout, 96 continuous five-hidden-enemy synthetic movement samples across both team orientations and vision transitions, identity/tree/key/root races, unavailable reads and no historical fallback.",
+      "scope": "180 ASan/UBSan checks: dual Battle root consistency, pure actor lookup, 96 continuous five-hidden-enemy synthetic movement samples, ward eligibility/current-position lookup, identity/tree/key/root races, unavailable reads and no historical fallback.",
       "continuous_five_enemy_samples": 96
     },
     "coordinate_trace_budget": {
       "passed": true,
-      "tested_version": "0.7.9",
-      "source": "0.7.8 actual trace expanded to 16 heroes with valid logic vectors, current layout and prepared-marker fields",
-      "serialized_bytes_before_trim": 569909,
-      "serialized_bytes_after_trim": 516139,
-      "retained_samples": 29,
+      "tested_version": "0.7.10",
+      "source": "Actual 0.7.9 custom trace expanded synthetically to 16 heroes and 16 wards, with valid logic and per-object marker fields",
+      "serialized_bytes_before_trim": 1113017,
+      "serialized_bytes_after_trim": 521677,
+      "retained_samples": 15,
       "limit_bytes": 524288,
-      "scope": "Synthetic Python JSON budget check of the existing trim rule; does not establish live fog behavior. Objective-C trace path compiled with warnings as errors."
+      "scope": "Offline JSON budget check of existing trim rule. No device ward evidence."
     },
     "device_minimap_checker": {
       "passed": true,
       "tests": 9,
-      "tested_version": "0.7.9",
+      "tested_version": "0.7.10",
       "scope": "Independent acceptance cases for five moving hidden enemies, prior-version/layout rejection, missing markers, wrong sources/coordinates, death, one-enemy coverage, stale/profile/trace failure, mixed matches and duplicate exports. A pass verifies observed client data and prepared markers, not screen rendering."
+    },
+    "ward_minimap": {
+      "passed": true,
+      "checks": 44,
+      "tested_version": "0.7.10",
+      "sanitizers": [
+        "AddressSanitizer",
+        "UndefinedBehaviorSanitizer"
+      ],
+      "scope": "Independent fixtures verify enemy camp selection, confirmed ward classification, known living state, current logic/sync coordinate rules, disabled switch, friendly/dead/unknown/duplicate/invalid removals, and separate hero metrics. Live placement/destruction and fog rendering pending.",
+      "device_verified": false
     }
   },
   "ipa_images": {
@@ -314,10 +327,10 @@
   "recovered_config_fields": 57,
   "game_integration_complete": false,
   "source_digests": {
-    ".github/release-notes.md": "08578ff9d9323a5818848347aab489c80fa2f26bd207f715ef22c6a926c1f6c9",
-    ".github/workflows/ios-build.yml": "5b7f11bc741091624525c372c7eba3167383a750d04a2090fe148f26a8713dc5",
+    ".github/release-notes.md": "4c5641348dc777ebfe66c6b3948727a2ce5c1da42bdfe6062ad258df9677cd8e",
+    ".github/workflows/ios-build.yml": "463714a410930e42cb9622b0f8b4820beeabe3f1c0648d26bdfaa80c793eea97",
     ".gitignore": "74756e9c4f0f361e32f76976411745577cdcc938965acd09181de0b1b009bcb7",
-    "README.md": "f56862e7c0139632ba2f838031fef204a14e8ea592190512519915835170045f",
+    "README.md": "106d5bac08dc20dc49754efa685a73c85f93ef41e72e3754125982fd0ea83799",
     "analysis/DEVICE.md": "0ef193f3367456cff24b7b51ba26f52d58e544da6085782d7e1a7fbebfa4907d",
     "analysis/IOS.md": "1477c0a49d51132bff6695de7e11ec17a5ee451d8ca2063bd7d972d10ee950c8",
     "analysis/RECOVERY.md": "6677d420ac5269f0cf3d832641574f271a801a317a9cd9b914a7f71d89a3e541",
@@ -443,6 +456,7 @@
     "analysis/ios-assembly/04eea6a8.asm": "6934f66beceb01f68115774512a637f0f739db200829f89c740393a02a81ad1d",
     "analysis/ios-assembly/04eec4b8.asm": "f7a68e09ee68a335373cd282b13dd7bb674dbcdf73f4956a2d2437f93de17834",
     "analysis/ios-assembly/04eee6e8.asm": "e30b0953740e32acc325451537dabc7e89c94ae8e94de67ff47e985eea96b3ed",
+    "analysis/ios-assembly/04eeebac-ward-classification.asm": "e6569f621ef926a342d04b800315580a5233a199576a2a86324f8877e3802f73",
     "analysis/ios-assembly/04ef9844.asm": "6b5fe1ca3457ba0f69ce35df35c0b814aa5e18894165e060b9ad90abb35fa0cc",
     "analysis/ios-assembly/04ef995c.asm": "308ecd9aa58cf23af9e439b83f84a1bbecbcfd2845402406d39d82892734b51e",
     "analysis/ios-assembly/04f81308.asm": "0c0cdce6957f6059ed5983bc47bd5421cd5041932379f9132d9ae0c639e308cf",
@@ -499,6 +513,7 @@
     "analysis/ios-skill-layout.json": "63a7e66c07117d1f41308b46ffbfa8c374d72a6a664bb66ab8135cc9e1a88517",
     "analysis/ios-state-layout.json": "98b3c8e6a35c9f3d4cbfb403dcc11f64b30046b17f84d67c843e9cc27cdc877d",
     "analysis/ios-symbols.json": "bb9ef5df2bdefbc3c8fe3c186e0a3338bae600a09f6e4894aaf3e7b5600e7c55",
+    "analysis/ios-ward-layout.json": "ea6414991c4b35fd2090cca0c269374ba2cc6730f97880bafc182cde5906e512",
     "analysis/metadata.json": "ae13505d43fce3f71a7d7e2130d244fd8aac3a554c7036ab2fb513ccca75c6d2",
     "analysis/official-hero-list.json": "b5308d5c562f79dad778115a03c2615fc9d70ba41e3b8c1f67a9058ce18d7c6b",
     "analysis/plt.json": "426f20afd41692cd06943f69186f85056537d638c3055835c8eeea9ae0313e0b",
@@ -513,15 +528,15 @@
     "core/LVFields.inc": "202dcd55d30d267e6e5225577a380569d818921e0ca3b0020d1e1c3efaf8765b",
     "core/LVHUDTelemetry.c": "5d718c37bae32ed326adbbd736bb2b1dd8a382820f9cbf7d052151420b04a4ae",
     "core/LVHUDTelemetry.h": "fb554dd75855d511ea43ee78ad310e83d3e11ad60606167f3efc68540eb3b57e",
-    "core/LVLogicPosition.c": "acc291e8ce680fdca51191b7e408d401f8c9f2df5bc5ff7c8b7378f486793e63",
-    "core/LVMinimap.c": "5fbe4c33483c25b0b41e798c90dbcc5258e5bb4e005be97967a772b168ff435a",
-    "core/LVMinimap.h": "663a211d13855352982bccbbad8dbda80887b5376cfcd9bc948c10ab7f4f1869",
-    "core/LVMinimapMotion.c": "d1ba1a80963884716c2494eaa92c906218b020498a4840d58149ebbf392d5591",
+    "core/LVLogicPosition.c": "a0d98072fcc554523dac3962c517a4dd003390426afa730287c8313ffbb6d222",
+    "core/LVMinimap.c": "0b548f6dca7e0cd356a7c1354dfc7e5b9dfee9fcb3ded26c6514ef5988e1077e",
+    "core/LVMinimap.h": "c61d88b900fa2f9e8425babc9f66026fb47b2f85ee2f9920fe2fa61daf12602e",
+    "core/LVMinimapMotion.c": "01d37b01c109c17086e0efaf5793dd6fc7506f60f670ab23c3b310a09c0d2073",
     "core/LVMinimapMotion.h": "2ec71ea94127b58de909faec6f380de528702496b7b9c37be99b5f99184f4123",
     "core/LVSmitePreview.c": "b64038a6a7bb2d5fcd238aa8e50b1c9e1d533ce2e89dc2520e37fcf5c0cb6001",
     "core/LVSmitePreview.h": "a6eca440c2d5e59cc1da6d5573516441d409d077c29e693fcdcdd4724ee15ad9",
-    "core/LVTarget.c": "7497377242138274f00552a0ee6067b1b3132a80ede8ddd164a3182e0b13c1d5",
-    "core/LVTarget.h": "68e6c571ea9d31a73fea3eb43eff72cd89960ce99ef730a91e30b441774a8b7c",
+    "core/LVTarget.c": "8aa547fbe65a22cf18a182c1009364e18de417d57140ecd45ed7acda36408745",
+    "core/LVTarget.h": "fea313e20a00ccefba6c82e09c70566c97378e865326dc8b3abb619e514c15d6",
     "core/LVZip.c": "4897c5326b5f20099f55b7dcc18290010baab861134549e9a93b94559ee07b41",
     "core/LVZip.h": "0f85cace7a443af9b0addbafe7ebcec862d905e702d6ac493a91b706a505fb17",
     "ios/App.entitlements.plist": "138f6ee79fcc36428c166f62ea0c095ae9b43e43fc2419d18c629f848bd226db",
@@ -685,10 +700,10 @@
     "ios/Assets/Heroes/manifest.json": "7453b65ea6d876e95be1f82e5443adf03b9af5ccf12e45e7835e97fcfdda5347",
     "ios/Assets/README.md": "3662e0e42d136ac718c196653698fc716df6c3d338c000e8c8fd115e21747fa8",
     "ios/HUD.entitlements.plist": "5138509be47c9c826012bf47becde036af67cc094ebf0a8ee98ce7e5191e8938",
-    "ios/Info.plist": "ad26c8c4a214caf277c96de745151c95dcda234b9e93f1bf648528fb35df304b",
+    "ios/Info.plist": "84d99ff0853d3104d3f651ad4e3f79bd63b4a085ca56e79d263e5d270d77950c",
     "ios/LVCollect.h": "61e645970536dac99745ade202d386ec8fa959d3dcc00602ac3a2beb87e1b6a8",
     "ios/LVCollect.m": "d619c3c91f2148d6d6cc2cd85f072f9fb06fdb665539d578a4fbadadfa7c7fd7",
-    "ios/LVHUD.m": "c73bf249f416f8de3f5799dea953fcad893dde65e93d8ffe5b25ce72a67885d2",
+    "ios/LVHUD.m": "d0f640b62fb119907e4ec1ced5e967360e54b8ff9424ff561e427d530f223d27",
     "ios/LVHUDControl.h": "5dff57d1d4fff6ab6f155262a896473e0353f21c099f5a800b5bf185fb0f3975",
     "ios/LVHUDControl.m": "28008277b140d95d662b640a5339df3171c4da416e2f59534d8f4830fda0b43f",
     "ios/LVHUDTrace.h": "248f2412cf8efe157ab7ac99f99d89ad6638654bc83de42b9b40dddce5ae8ed3",
@@ -703,33 +718,33 @@
     "ios/LVMinimapSettings.m": "02c4b6d14f828a51a02828f5d94a72acdccaa57f844c5520cddc96ab13d6d476",
     "ios/LVProbe.m": "1bcc81d3c56cd1a4cf467e79d57da0b21ab9df3aa4e8d1cfa54808ba53b12fd9",
     "ios/LVSnapshot.h": "13963bb97f5a54c4172c1c03e661bb908997f430eb24b2b3c3a8f6446ae1b670",
-    "ios/LVSnapshot.m": "6b0b2295375d888355bede44453244c6376e28ca10ae6053129f160b91fece71",
+    "ios/LVSnapshot.m": "69d4fec1e6b9430c5d4a8febfaca6bf43a514cd8ba453262644bab0b0d20fcb0",
     "ios/LVSnapshotController.h": "52188829a89e5acf62139a2710c295d49c8a8a12436d6225b178b281f2f4493c",
     "ios/LVSnapshotController.m": "6a5e3451b353a41fcf4e6502ed049344928072cc790562442dfffb27b7449194",
     "ios/Probe.entitlements.plist": "df2f6f045bbcb0d39ed063634a1e4931184cd809ad1d3ae2db52b06fed44f8d4",
     "ios/TrollSpeed-LICENSE.txt": "cc81c2a899100c1f4877876bbf969d5f8d9c8f491283db36027bd8cabfdc0a12",
     "ios/main.m": "767c7ac9879a31101e39ccc9991735780db8045805dc77d7785eadec2a80eb25",
     "ios/recovered_config.json": "8c2b3d6196ce02534f3c3f573a3345b04a7d7d1436cf8908be5f94dbb6799323",
-    "scripts/build_ios.py": "b2bc5810c5aef1663ac20f4489247f778857f557bd3397afb6008bd6fc9d23de",
+    "scripts/build_ios.py": "f8427d4f173dfc5cf68cb8f9ba141027945f0ee35a338e75518150e3d1259f1c",
     "scripts/fetch_toolchain.py": "107cc2f4cfe0ad099704f8e6626567ce322b6f7b4b807801b9e769f4e0d24961",
     "scripts/package_source.py": "30bfe0fd1f1820ad6874c77e1c50bfe83005942f9643bd15812755e868b4926a",
-    "scripts/record_ci_validation.py": "2a690d157980cf18200dacda3ca9826edef39ea63a3748bec0c1275d8d20bb9f",
+    "scripts/record_ci_validation.py": "01e12e5624fa9b977856d2e20b6b02b2920259f62648af314bbcebc7f2d30d56",
     "scripts/toolchain-manifest.json": "1b4aed57e731c093bef85768e522173d581ed921c59925478fa6068f45cf3de8",
     "tests/config_test.c": "0ea5e4cdc0477b83ecb774d63cbf1aea8c98a04327587f6f98b5f7486a0b9b40",
     "tests/fixtures/device-0.5.0-preview.json": "f480a4448f3a54824871357690869f976b329d6b65d06e84816fd4dbc9c37b70",
     "tests/hud_telemetry_test.c": "1f232f6403ae81f59ca1fd3cad6d41f977e8f12de1c81c6d524479062d53245e",
-    "tests/logic_position_test.c": "5d8ada33c1350fa52c17d9b7af1ce2bff1f649a024feeeb260e06c85dcef8ee7",
+    "tests/logic_position_test.c": "9742fb5a5a67618fbf6f8448c73ba24d13ab9925864a94277ff01c70557f749e",
     "tests/minimap_health_test.c": "5c3b1861f25f12b310ea68c089894df94ff4351884446c7c5b9bae8ba0e5697f",
-    "tests/minimap_motion_test.c": "d0bbc7f2c5e264b6ec084b99f63b69bbcfd6d64910bdf8d98b95ee3966e5625a",
+    "tests/minimap_motion_test.c": "f2bca76323b2bd9da696ecd38a8a1690dc0cd50bcb4d3cfb46ab8538e3f1e9c0",
     "tests/minimap_projection_fixture.c": "1a4bf72e7c16b1a5df05f261b061e96f48f8568dd23c67fc8c1d39ef12c81882",
     "tests/minimap_test.c": "69eb7e9b6e92aaff43892d2892bb34664f14ded83c8e43dc61e188f80c0d39ed",
     "tests/native_health_test.c": "4ed5f43e1e68e58ec8a3fe487604959e3b5065ca540c0c8f0c2356692ef7880a",
     "tests/smite_preview_test.c": "1ddb395249b2bea56f07bb198cb1897b2a0c89049ad44da8f722d8a157747eb8",
-    "tests/target_test.c": "9f0fc9d397cb5a82ccc944f1aa64210416aecf9723d64407d93c3d18f46a59c9",
+    "tests/target_test.c": "378102bd7b53540d40b9952d2c886246cc3de2a773f3b3688577d98d608f9956",
     "tests/test_collection_inspector.py": "4da5f339c1b1a9823143a6b3bf136e570cbcbf4713ba109386b881d9a12265f7",
     "tests/test_device_minimap_check.py": "9ae733682d934a72bf6c6be225ae966560ec650775fcb93ab9873434523e3e47",
     "tests/test_device_preview_replay.py": "ff1c883337f7bd8a929f4950aecaddf4eb50424bcd2cb55a1e86ef519e3b43bc",
-    "tests/test_ios_getters_equivalence.py": "46c5f115aeea05b2d1bb6fbeab9a8dde79003936cf7614cd44a34c7e7fb18af4",
+    "tests/test_ios_getters_equivalence.py": "d53a36fac4836afbe369c1c9275b20b4b36ace2b41b74b716d12df4a0a781ef5",
     "tests/test_ios_metadata_equivalence.py": "b55cd7749143a1bbf0546ad5d1032a342825bdb733bbafa9dbb2053acd204da0",
     "tests/test_ios_minimap_projection.py": "907cf54265becc0721ba36797260bbdc4f41270802e1dfd9f9a3555ef829d0cf",
     "tests/test_ipa.py": "bb1d95071dc8b0474cf71b74e2e3ee2bdc0b0e9c786035dc2eb9dccfd3def703",
@@ -737,9 +752,10 @@
     "tests/test_native_engine_getters.py": "287b22a272e86313ead1eb843e1932e3ef20ec3eed9d2bdf4795ce9cd50f2d1d",
     "tests/test_smite_equivalence.py": "66b539e8869aa5cfbea5e06996ffc52e8e93e7dad758e0963c28ed0f4f253529",
     "tests/test_zip.py": "b731bafa482d84b34b208e9ddf282bb0bb8afa740adbf7c4423ee3a5f0193d46",
+    "tests/ward_minimap_test.c": "979eeb10a152badedbe5b6ac965fa53cca472703e3322f163037decbd278eb19",
     "tests/zip_fixture.c": "f67ed06adec04dd4445f9238b33abcd064d25265ce0181bed4a888d0c9eee859",
     "tools/analyze_binary.py": "217a3e2532dc1c7351ef38443adfa26f1306dda2ed6b5d015b1c88be9011760a",
-    "tools/check_device_minimap.py": "9225236e3776e9f3cda03fb62194fa3b4519ec9b5a8cab67469a9d888ebf30dc",
+    "tools/check_device_minimap.py": "66c6d123356b59d5c3ae124b9e432d4075afee56f056ae637266b92da76f7c2c",
     "tools/generate_fields.py": "426aba8154dc8fdb354c2ea5f1a89cf31cc0009908cebda8962c674785607021",
     "tools/inspect_ios_target.py": "b0067523d5d9da26bbb8db4c7f8eefc1f44cac350fa966b7063859ec6bf1831d",
     "tools/recover_config.py": "0536ccc8a854c427dfe3b4ddfdbad29abc7b8cb15e6ff92cece04860980b0d71",
@@ -748,7 +764,7 @@
     "tools/recover_ios_minimap_layout.py": "e975f0d5f4bf8e365ecf5d2d723ca4c1a391d25a6d8c0eedf13db6b480b5b803",
     "tools/write_report.py": "2a92b45a72014983bbf8a8ee734bd8d97989cdb178f6c82d8d8cda36625756ef"
   },
-  "artifact_version": "0.7.9",
+  "artifact_version": "0.7.10",
   "user_device_evidence": {
     "collector_version": "0.1.0",
     "task_result": 0,
@@ -785,14 +801,14 @@
   },
   "read_only_game_reader_implemented": true,
   "read_only_game_reader_device_verified": false,
-  "ipa_sha256": "69cb51a23a955458eabe9f7dd574213750c6d6bc87bfc7f3426cca7e4f9209f2",
+  "ipa_sha256": "33a8f5d3895cbabd1ad734f56a0805e6b33083e5a7d126164cb49884e97c14ee",
   "baseline_actor_reader_device_verified": true,
   "positions_and_local_skills_device_verified": true,
   "positions_and_local_skills_device_evidence_version": "0.4.0",
   "classification_stock_slot_cast_device_verified": false,
   "read_only_smite_preview_implemented": true,
   "smite_preview_device_verified": false,
-  "verification_record_scope": "Local 0.7.9 build, core and IPA checks. Original FrameRoot Battle store and actual game actor-lookup dispatch establish the corrected dual root. Original-instruction full-pipeline checks, five-hidden-enemy synthetic movement and the device acceptance checker passed. The latest 0.7.8 device trace confirms the old failure, not new-version success. GitHub provenance is separate.",
+  "verification_record_scope": "Local 0.7.10 build, original cached ward getter instructions, core and IPA checks. Enemy wards use confirmed cached classification, enemy camp, known positive current HP and current coordinates; no live ward evidence yet. Prior 0.7.9 hero display is user-confirmed in custom and ordinary matches, while complete five-enemy hidden trace acceptance remains incomplete. GitHub provenance is separate.",
   "device_evidence": {
     "version": "0.5.0",
     "summary": "analysis/device-0.5.0-summary.json",
@@ -870,10 +886,10 @@
   "minimap_hero_portrait_count": 142,
   "minimap_hero_portraits_device_verified": false,
   "previous_local_artifact_record": {
-    "version": "0.7.8",
-    "ipa_sha256": "e0dd97ff4bb78839d1950cb1f98cb8e6230c4c40f94f3a54d6f1e006e0a549a5",
-    "recorded_at": "2026-10-11T00:23:06.149163+00:00",
-    "scope": "Local 0.7.8 build, core and IPA checks. Original accessor/constructor/vtable evidence corrects the wrong 0.7.7 resource root. Latest device log verifies the failure and native HP reads, not the new fog path. GitHub provenance recorded separately."
+    "artifact_version": "0.7.9",
+    "ipa_sha256": "69cb51a23a955458eabe9f7dd574213750c6d6bc87bfc7f3426cca7e4f9209f2",
+    "recorded_at": "2026-10-11T01:06:02.584281+00:00",
+    "verification_record_scope": "Local 0.7.9 build, core and IPA checks. Original FrameRoot Battle store and actual game actor-lookup dispatch establish the corrected dual root. Original-instruction full-pipeline checks, five-hidden-enemy synthetic movement and the device acceptance checker passed. The latest 0.7.8 device trace confirms the old failure, not new-version success. GitHub provenance is separate."
   },
   "minimap_health_ring_implemented": true,
   "minimap_health_ring_device_verified": true,
@@ -900,5 +916,10 @@
   "minimap_enemy_health_ring_color_device_verified": false,
   "device_review_recorded_at": "2026-10-11T02:15:05.208010+00:00",
   "minimap_logic_position_device_observed": true,
-  "minimap_logic_position_device_observation_scope": "Custom-room trace supports four moving hidden enemies with no living-marker loss. User confirms normal display in both custom-room and ordinary matches. Ordinary export has 32 successful logic-read samples but zero live enemies and unavailable geometry after HUD stop; full five-enemy hidden trace acceptance remains incomplete."
+  "minimap_logic_position_device_observation_scope": "Custom-room trace supports four moving hidden enemies with no living-marker loss. User confirms normal display in both custom-room and ordinary matches. Ordinary export has 32 successful logic-read samples but zero live enemies and unavailable geometry after HUD stop; full five-enemy hidden trace acceptance remains incomplete.",
+  "minimap_enemy_wards_implemented": true,
+  "minimap_enemy_wards_device_verified": false,
+  "minimap_enemy_wards_layout_evidence": "analysis/ios-ward-layout.json",
+  "minimap_enemy_wards_switch": "drawWards",
+  "minimap_enemy_wards_color_setting": "wardColor"
 }

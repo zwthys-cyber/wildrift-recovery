@@ -116,9 +116,11 @@ void lv_target_logic_position_read(LVTargetRead read,void *context,uint64_t base
     if(!pointer(&r,v.manager+0x20,&v.tree) || !v.tree) { v.reason="logic_tree_unreadable"; goto done; }
     for(size_t i=0;i<s->count;++i) {
         LVTargetActor *a=&s->actors[i];
-        if(!a->values_ok || !a->classification_ok || !a->is_hero || !a->object_id_ok ||
+        if(!a->values_ok || !a->classification_ok ||
+            !(a->is_hero || (a->ward_classification_ok && a->is_ward)) || !a->object_id_ok ||
             !a->object_id || duplicate(s,i)) { clear(a,LV_LOGIC_INELIGIBLE); continue; }
         ++v.eligible;
+        if(!a->is_hero && a->is_ward) ++v.eligible_wards;
         uint64_t native=0,transform=0,after_transform=0,same=0,encrypted[3];
         LVLogicPositionStatus status=find(&r,v.tree,a->object_id,&native);
         if(status==LV_LOGIC_READY && (!sync_identity(&r,a) ||
@@ -145,6 +147,7 @@ void lv_target_logic_position_read(LVTargetRead read,void *context,uint64_t base
             case LV_LOGIC_INVALID: ++v.invalid; break;
             default: ++v.changed; break;
         }
+        if(a->logic_position_ok && !a->is_hero && a->is_ward) ++v.valid_wards;
     }
     uint64_t after_vtable=0,after_lookup=0;
     if(!roots(&r,base,&v,key) || !pointer(&r,v.manager,&after_vtable) || after_vtable!=v.manager_vtable ||
@@ -152,7 +155,7 @@ void lv_target_logic_position_read(LVTargetRead read,void *context,uint64_t base
         for(size_t i=0;i<s->count;++i) if(s->actors[i].logic_position_ok) {
             clear(&s->actors[i],LV_LOGIC_CHANGED); ++v.changed;
         }
-        v.valid=0; v.reason="logic_root_changed";
+        v.valid=v.valid_wards=0; v.reason="logic_root_changed";
     } else v.reason=v.valid ? "ready" : "no_valid_logic_position";
 done:
     if(report) *report=v;

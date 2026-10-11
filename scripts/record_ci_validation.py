@@ -32,6 +32,7 @@ record = {
     'compiler': metadata['clang_version'], 'sdk': metadata['sdk'],
     'minimap_checks': checks('minimap-checks.txt'),
     'minimap_motion_checks': checks('minimap-motion-checks.txt'),
+    'ward_minimap_checks': checks('ward-minimap-checks.txt'),
     'target_reader_scenarios': checks('target-reader-checks.txt'),
     'minimap_health_checks': checks('minimap-health-checks.txt'),
     'native_health_checks': checks('native-health-checks.txt'),
@@ -45,11 +46,12 @@ record = {
     'native_engine_collection_device_verified': metadata['native_engine_collection_device_verified'],
     'native_health_device_verified': False,
     'logic_position_device_verified': False,
+    'enemy_ward_minimap_device_verified': False,
     'prior_native_health_device_evidence_version': '0.7.6',
     'prior_native_health_ring_user_confirmed': True,
     'bundled_hero_portraits': metadata['minimap_hero_portrait_count'],
     'desktop_icon_payload_verified': True,
-    'scope': 'GitHub CI checks and build provenance. Local original FEProj getter emulation is separately recorded; private engine bytes are absent from CI. The 0.7.6 native HP ring was confirmed by the user. The 0.7.9 global Battle correction is checked against the original FrameRoot store and actual actor dispatch, with an 18-actor native-instruction pipeline locally. Device acceptance checks are separately tested. 0.7.8 failed its lookup gate in all 32 samples. Live 0.7.9 fog display still requires device evidence.'
+    'scope': 'GitHub CI checks and build provenance. Original Unity/FEProj instruction emulation is recorded locally; private engine bytes are absent from CI. 0.7.9 display is user-confirmed in custom-room and ordinary matches, with four hidden moving enemies independently supported by the custom-room trace. 0.7.10 adds classified enemy wards, current coordinates, life-state filtering and distinct eye markers. Ward and hero count separation is checked with synthetic fixtures. Actual ward placement, destruction, types and fog visibility still require device evidence.'
 }
 text = json.dumps(record, ensure_ascii=False, indent=2) + '\n'
 (ROOT / 'analysis/ci-validation.json').write_text(text)

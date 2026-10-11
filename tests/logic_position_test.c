@@ -159,6 +159,11 @@ int main(void) {
     fixture();mutation=HEAP+0x9e0;sample();check(!report.valid && !strcmp(report.reason,"logic_root_changed"));
     fixture();snapshot.actors[1].object_id=1;sample();check(report.eligible==4 && report.valid==4);
     fixture();snapshot.actors[0].is_hero=0;first_failed(LV_LOGIC_INELIGIBLE);
+    fixture();snapshot.actors[1].is_hero=0;snapshot.actors[1].is_ward=1;snapshot.actors[1].ward_classification_ok=1;
+    sample();check(report.valid==6 && report.eligible_wards==1 && report.valid_wards==1 && snapshot.actors[1].logic_position_ok);
+    snapshot.actors[1].ward_classification_ok=0;sample();check(report.valid==5 && !snapshot.actors[1].logic_position_ok);
+    snapshot.actors[1].ward_classification_ok=1;mutation=BASE+0x523cf38;mutation_reads=0;
+    sample();check(!report.valid && !report.valid_wards && !snapshot.actors[1].logic_position_ok);
     fixture();sample();snapshot.result=LV_TARGET_CHANGED;sample();check(!report.valid && !snapshot.actors[0].logic_position_ok);
     fixture();lv_target_logic_position_read(reader,NULL,BASE,"wrong",&snapshot,&report);check(!report.profile_matches && !report.valid);
     fixture();lv_target_logic_position_read(reader,NULL,BASE,NULL,&snapshot,&report);check(!report.valid);

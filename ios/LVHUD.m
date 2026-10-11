@@ -80,6 +80,21 @@ static void recordCoordinateTrace(NSDictionary *snapshot) {
         [heroes addObject:entry];
     }
     if(!heroes.count) return;
+    NSMutableArray *wards=[NSMutableArray new]; BOOL wardsTruncated=NO;
+    for(NSDictionary *actor in snapshot[@"actors"]) {
+        if(![actor[@"classification_read_ok"] boolValue] || ![actor[@"ward_classification_read_ok"] boolValue] ||
+            ![actor[@"is_ward"] boolValue] || [actor[@"is_hero"] boolValue]) continue;
+        if(wards.count==16) { wardsTruncated=YES; break; }
+        NSMutableDictionary *entry=[NSMutableDictionary new];
+        for(NSString *key in keys) if(actor[key]) entry[key]=actor[key];
+        entry[@"minimap_marker_prepared"]=@NO; entry[@"minimap_position_source"]=@"unavailable";
+        for(NSDictionary *marker in map[@"markers"]) if([marker[@"is_ward"] boolValue] &&
+            [marker[@"object_id"] isEqual:actor[@"object_id"]] && [marker[@"resource_id"] isEqual:actor[@"resource_id"]]) {
+            entry[@"minimap_marker_prepared"]=@YES;
+            entry[@"minimap_position_source"]=marker[@"position_source"] ?: @"unavailable"; break;
+        }
+        [wards addObject:entry];
+    }
     [coordinateSamples addObject:@{ @"sampled_at":[NSISO8601DateFormatter.new stringFromDate:NSDate.date],
         @"uptime_seconds":@(now), @"result":result, @"read_attempts":snapshot[@"snapshot_read_attempts"] ?: @0,
         @"local_camp":map[@"local_camp"] ?: @0, @"map_reason":map[@"reason"] ?: @"missing",
@@ -87,12 +102,13 @@ static void recordCoordinateTrace(NSDictionary *snapshot) {
         @"outside_map_enemies":map[@"outside_map_enemy_count"] ?: @0,
         @"health_cache":map[@"health_cache"] ?: @{}, @"native_health":map[@"native_health"] ?: @{},
         @"logic_positions":map[@"logic_positions"] ?: @{},
-        @"hero_list_truncated":@(truncated), @"heroes":heroes }];
+        @"hero_list_truncated":@(truncated), @"heroes":heroes, @"wards":wards,
+        @"ward_list_truncated":@(wardsTruncated), @"ward_settings":map[@"wards"] ?: @{} }];
     if(coordinateSamples.count>32) [coordinateSamples removeObjectAtIndex:0];
     NSMutableDictionary *trace=[@{ @"format_version":@1, @"session":hudSession.lowercaseString,
         @"battle_instance":coordinateBattle ?: @"",
         @"producer_pid":@(getpid()), @"profile_uuid":@LV_TARGET_UUID, @"sample_interval_seconds":@1,
-        @"sample_limit":@32, @"hero_limit":@16, @"samples":coordinateSamples,
+        @"sample_limit":@32, @"hero_limit":@16, @"ward_limit":@16, @"samples":coordinateSamples,
         @"scope":@"Bounded numeric observations through vision changes. Identity-matched native logic coordinates may be used for drawing; candidate and last-position fields are diagnostic only. No full-memory dump, history marker or predicted coordinate." } mutableCopy];
     while(coordinateSamples.count>1 &&
         [NSJSONSerialization dataWithJSONObject:trace options:0 error:NULL].length>512*1024) {
@@ -163,7 +179,7 @@ static void publishMetrics(NSDictionary *snapshot, uint64_t frames, unsigned ori
     metrics.minimap_enabled = hudConfig.values[lv_config_index("drawMinimap")][0] != 0;
     NSDictionary *map = snapshot[@"minimap"];
     metrics.edge_clamped_markers=[map[@"edge_clamped_enemy_count"] unsignedShortValue];
-    for (NSDictionary *marker in map[@"markers"]) if (![marker[@"is_local"] boolValue]) {
+    for (NSDictionary *marker in map[@"markers"]) if (![marker[@"is_local"] boolValue] && ![marker[@"is_ward"] boolValue]) {
         ++metrics.displayed_markers;
         if([marker[@"health_fraction_read_ok"] boolValue]) ++metrics.health_ring_markers;
     }
@@ -216,6 +232,7 @@ static NSString *blockLabel(NSString *code) {
 @property(nonatomic) CGFloat markerSize;
 @property(nonatomic, strong) LVHeroPortraits *portraitStore;
 @property(nonatomic, copy) NSDictionary<NSNumber *, UIImage *> *portraitImages;
+@property(nonatomic, strong) UIColor *wardColor;
 @end
 @implementation LVMinimapView
 - (void)stopAnimation { [_displayLink invalidate]; _displayLink = nil; _motion.active = 0; }
@@ -240,10 +257,11 @@ static NSString *blockLabel(NSString *code) {
             NSDictionary *m = _markers[i];
             targets[i] = (LVMinimapMarker){ .object_id=[m[@"object_id"] unsignedIntValue],
                 .resource_id=[m[@"resource_id"] intValue], .ordinal=[m[@"ordinal"] unsignedIntValue],
-                .is_local=[m[@"is_local"] boolValue], .u=[m[@"u"] doubleValue], .v=[m[@"v"] doubleValue],
+                .is_local=[m[@"is_local"] boolValue], .is_ward=[m[@"is_ward"] boolValue],
+                .u=[m[@"u"] doubleValue], .v=[m[@"v"] doubleValue],
                 .health_fraction_ok=[m[@"health_fraction_read_ok"] boolValue],
                 .health_fraction=[m[@"health_fraction"] doubleValue], .edge_clamped=[m[@"edge_clamped"] boolValue] };
-            if (!targets[i].is_local) {
+            if (!targets[i].is_local && !targets[i].is_ward) {
                 UIImage *image = [self.portraitStore imageForResourceID:targets[i].resource_id];
                 if (image) images[@(targets[i].resource_id)] = image;
             }
@@ -275,6 +293,17 @@ static NSString *blockLabel(NSString *code) {
             CGContextSetStrokeColorWithColor(context, UIColor.cyanColor.CGColor); CGContextSetLineWidth(context, 2);
             CGContextMoveToPoint(context, x-5, y); CGContextAddLineToPoint(context, x+5, y);
             CGContextMoveToPoint(context, x, y-5); CGContextAddLineToPoint(context, x, y+5); CGContextStrokePath(context);
+        } else if(marker->is_ward) {
+            CGFloat radius=MAX(4,MIN(6,self.markerSize*.42));
+            x=MAX(radius+1,MIN(self.bounds.size.width-radius-1,x));
+            y=MAX(radius+1,MIN(self.bounds.size.height-radius-1,y));
+            UIColor *color=self.wardColor ?: UIColor.greenColor;
+            CGContextSetFillColorWithColor(context,[UIColor colorWithWhite:0 alpha:.85].CGColor);
+            CGContextFillEllipseInRect(context,CGRectMake(x-radius-1,y-radius-1,2*radius+2,2*radius+2));
+            CGContextSetStrokeColorWithColor(context,color.CGColor); CGContextSetLineWidth(context,1.5);
+            CGContextStrokeEllipseInRect(context,CGRectMake(x-radius,y-radius*.65,2*radius,1.3*radius));
+            CGContextSetFillColorWithColor(context,color.CGColor);
+            CGContextFillEllipseInRect(context,CGRectMake(x-radius*.3,y-radius*.3,radius*.6,radius*.6));
         } else {
             CGFloat radius = self.markerSize / 2;
             x=MAX(radius+1,MIN(self.bounds.size.width-radius-1,x));
@@ -432,9 +461,12 @@ static NSString *blockLabel(NSString *code) {
         snapshot[@"trace"][@"drive_instance"] ?: @""];
     if (![self.minimapBasis isEqual:basis]) self.minimap.markers = @[];
     self.minimapBasis = basis;
+    const float *wardColor=hudConfig.values[lv_config_index("wardColor")];
+    self.minimap.wardColor=[UIColor colorWithRed:MAX(0,MIN(1,wardColor[0])) green:MAX(0,MIN(1,wardColor[1]))
+        blue:MAX(0,MIN(1,wardColor[2])) alpha:MAX(0,MIN(1,wardColor[3]))];
     self.minimap.markers = [map[@"projection_ready"] boolValue] ? map[@"markers"] : @[];
     NSUInteger enemyMarkers = 0;
-    for (NSDictionary *marker in self.minimap.markers) if (![marker[@"is_local"] boolValue]) ++enemyMarkers;
+    for (NSDictionary *marker in self.minimap.markers) if (![marker[@"is_local"] boolValue] && ![marker[@"is_ward"] boolValue]) ++enemyMarkers;
     if ([map[@"projection_ready"] boolValue]) {
         self.mapStatus.text = [NSString stringWithFormat:@"敌方已读 %@ · 标记 %lu\n%@ · 死亡 %@ · 未定位 %lu",
             map[@"confirmed_enemy_hero_count"], (unsigned long)enemyMarkers,

@@ -29,7 +29,8 @@ static int class_matches(Reader *r, uint64_t cls, const char *name) {
            equals(r, np, name) && equals(r, sp, "FrameEngine.Visual");
 }
 static void position_candidates(Reader *r,LVTargetActor *a) {
-    if(!a->values_ok || !a->classification_ok || !a->is_hero) return;
+    if(!a->values_ok || !a->classification_ok ||
+       !(a->is_hero || (a->ward_classification_ok && a->is_ward))) return;
     /* ActorComponentAttribute.get_lastPosition 0x4ea11d8 copies +90..a0.
        A last-position field is diagnostic evidence, never a live fallback. */
     if(a->attribute) a->attribute_last_position_ok=load(r,a->attribute+0x90,a->attribute_last_position,24);
@@ -262,8 +263,17 @@ LVTargetResult lv_target_snapshot(LVTargetRead read, void *context, uint64_t bas
             flags[0] <= 1 && flags[7] <= 1 && flags[9] <= 1 && flags[11] <= 1 && flags[35] <= 1) {
             a.classification_ok = 1; a.is_building = flags[0]; a.is_hero = flags[7];
             a.is_soldier = flags[9]; a.is_monster = flags[11]; a.is_red_blue_buff = flags[35];
+            /* Metadata isSummonedWards +158 and original getter 4eeebac.
+               Keep its validity separate so an unknown ward flag cannot
+               suppress previously verified hero classification. */
+            if(flags[32]<=1) { a.ward_classification_ok=1; a.is_ward=flags[32]; }
         }
         position_candidates(&r,&a);
+        if(a.ward_classification_ok && a.is_ward) {
+            uint8_t same_ward;
+            if(!load(&r,a.managed+0x158,&same_ward,1) || same_ward!=1)
+                a.ward_classification_ok=a.is_ward=0;
+        }
         uint64_t visual_after = 0, managed_after = 0, native_after = 0; uint32_t id_after = 0;
         if (!pointer(&r, o->items + 0x20 + (uint64_t)i * 8, &visual_after) || visual_after != a.visual ||
             !pointer(&r, a.visual + 0xa0, &managed_after) || managed_after != a.managed ||
@@ -275,6 +285,7 @@ LVTargetResult lv_target_snapshot(LVTargetRead read, void *context, uint64_t bas
             a.resource_id = a.tid = a.camp = 0; a.object_id = 0; a.health_fixed = 0;
             memset(a.position_fixed, 0, sizeof(a.position_fixed));
             a.is_hero = a.is_monster = a.is_soldier = a.is_building = a.is_red_blue_buff = 0;
+            a.ward_classification_ok=a.is_ward=0;
         }
         o->actors[o->count++] = a;
     }

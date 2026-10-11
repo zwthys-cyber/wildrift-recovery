@@ -31,6 +31,7 @@ jobs:
         run: |
           gcc -std=c11 -D_POSIX_C_SOURCE=200809L -Wall -Wextra -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -no-pie -g -Icore core/LVMinimap.c tests/minimap_test.c -lm -o build/minimap_test
           gcc -std=c11 -Wall -Wextra -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -no-pie -g -Icore core/LVMinimapMotion.c tests/minimap_motion_test.c -lm -o build/minimap_motion_test
+          gcc -std=c11 -D_POSIX_C_SOURCE=200809L -Wall -Wextra -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -no-pie -g -Icore core/LVMinimap.c tests/ward_minimap_test.c -lm -o build/ward_minimap_test
           gcc -std=c11 -Wall -Wextra -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -no-pie -g -Icore core/LVTarget.c tests/target_test.c -lm -o build/target_test
           gcc -std=c11 -Wall -Wextra -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -no-pie -g -Icore core/LVTarget.c tests/native_health_test.c -lm -o build/native_health_test
           gcc -std=c11 -D_POSIX_C_SOURCE=200809L -Wall -Wextra -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -no-pie -g -Icore core/LVLogicPosition.c core/LVMinimap.c tests/logic_position_test.c -lm -o build/logic_position_test
@@ -38,6 +39,7 @@ jobs:
           gcc -std=c11 -Wall -Wextra -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -no-pie -g -Icore core/LVHUDTelemetry.c tests/hud_telemetry_test.c -o build/hud_telemetry_test
           build/minimap_test | tee build/minimap-checks.txt
           build/minimap_motion_test | tee build/minimap-motion-checks.txt
+          build/ward_minimap_test | tee build/ward-minimap-checks.txt
           build/target_test | tee build/target-reader-checks.txt
           build/native_health_test | tee build/native-health-checks.txt
           build/logic_position_test | tee build/logic-position-checks.txt

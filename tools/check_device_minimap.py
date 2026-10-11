@@ -11,7 +11,7 @@ import json
 import math
 from pathlib import Path
 
-VERSION = '0.7.9'
+VERSION = '0.7.10'
 UNITY_UUID = '085E1DDF-4A8D-34E2-9D73-A0A28BCC0B83'
 ENGINE_UUID = 'D5B32037-47A3-3EFF-B0E5-04B071EFBEE3'
 
@@ -121,9 +121,10 @@ def check_reports(reports, version=VERSION):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('reports', type=Path, nargs='+')
+    parser.add_argument('--version', default=VERSION, help='Expected recovery app version; override for earlier captures')
     args = parser.parse_args()
     raw = [p.read_bytes() for p in args.reports]
-    result = check_reports([json.loads(data) for data in raw])
+    result = check_reports([json.loads(data) for data in raw], version=args.version)
     result['input_sha256'] = [hashlib.sha256(data).hexdigest() for data in raw]
     print(json.dumps(result, ensure_ascii=False, indent=2))
     raise SystemExit(0 if result['result'] == 'passed_observed_data' else 1)

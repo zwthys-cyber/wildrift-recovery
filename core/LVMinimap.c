@@ -266,17 +266,22 @@ static int add_marker(LVMinimapFrame *out, const LVTargetActor *a, unsigned ordi
     u = fmax(0,fmin(1,u)); v = fmax(0,fmin(1,v));
     if (out->count >= LV_TARGET_MAX_ACTORS) return 0;
     out->markers[out->count++] = (LVMinimapMarker){ .object_id = a->object_id, .resource_id = a->resource_id,
-        .ordinal = ordinal, .is_local = a->is_local, .u = u, .v = v, .edge_clamped = clamped,
+        .ordinal = ordinal, .is_local = a->is_local, .is_ward = !a->is_hero && a->is_ward,
+        .u = u, .v = v, .edge_clamped = clamped,
         .position_source = a->logic_position_ok ? 2 : 1,
         .health_fraction_ok = a->native_health_fraction_ok || a->minimap_health_fraction_ok,
         .health_source = a->native_health_fraction_ok ? 1 : (a->minimap_health_fraction_ok ? 2 : 0),
         .health_fraction = (double)(a->native_health_fraction_ok ? a->native_health_fraction_fixed :
                                    a->minimap_health_fraction_fixed) / 16384.0 };
-    if (clamped && !a->is_local) ++out->edge_clamped_enemies;
+    if (clamped && !a->is_local && a->is_hero) ++out->edge_clamped_enemies;
     return 1;
 }
 void lv_minimap_frame(const LVTargetSnapshot *s, const LVMinimapGeometry *g,
                       const LVMinimapSettings *settings, LVMinimapFrame *out) {
+    lv_minimap_frame_with_wards(s,g,settings,0,out);
+}
+void lv_minimap_frame_with_wards(const LVTargetSnapshot *s, const LVMinimapGeometry *g,
+                                const LVMinimapSettings *settings, unsigned draw_wards, LVMinimapFrame *out) {
     if (!out) return;
     memset(out, 0, sizeof(*out)); out->reason = "snapshot_unavailable";
     if (!s || s->count > LV_TARGET_MAX_ACTORS || (s->result != LV_TARGET_READY && s->result != LV_TARGET_PARTIAL)) return;
@@ -321,5 +326,20 @@ void lv_minimap_frame(const LVTargetSnapshot *s, const LVMinimapGeometry *g,
         int result = add_marker(out, a, (unsigned)i + 1, g, settings);
         if (!result) ++out->missing_enemies;
         else if (result < 0) ++out->outside_enemies;
+    }
+    if(draw_wards) for(size_t i=0;i<s->count;++i) {
+        const LVTargetActor *a=&s->actors[i];
+        if(!a->values_ok || !a->classification_ok || !a->ward_classification_ok || !a->is_ward ||
+            a->is_hero || a->is_local || a->camp!=(out->local_camp^3) || !a->object_id_ok ||
+            !a->object_id || duplicate_id(s,i)) continue;
+        ++out->confirmed_wards;
+        /* A ward with unknown life state is not an established active ward.
+           Destroyed/unreadable/out-of-map wards never keep an old marker. */
+        if(!a->health_ok) { ++out->unavailable_wards; continue; }
+        if(a->health_fixed<=0) { ++out->dead_wards; continue; }
+        int result=add_marker(out,a,0,g,settings);
+        if(result>0) ++out->ward_markers;
+        else if(result<0) ++out->outside_wards;
+        else ++out->unavailable_wards;
     }
 }

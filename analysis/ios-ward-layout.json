@@ -1,0 +1,43 @@
+{
+  "version": "0.7.10",
+  "framework_uuid": "085E1DDF-4A8D-34E2-9D73-A0A28BCC0B83",
+  "framework_sha256": "effa95dbbc2bf16f9474c7c99700b80b3e0b7c793537e2da7089bd01b6a5e394",
+  "classification": {
+    "managed_type": "BattleActor",
+    "field_name": "isSummonedWards",
+    "field_offset": "0x158",
+    "metadata_field_index": 307036,
+    "kind": "Boolean",
+    "getter_loads": [
+      "0x4eeebac",
+      "0x4eec87c"
+    ],
+    "read_rule": "Only a valid 0/1 cached byte with existing actor classification and rechecked positive ward flag is accepted. Invalid ward bytes do not disable hero classification. Resource IDs are not used to guess wards."
+  },
+  "position": "Current sync coordinate or identity-matched pure native ActorMgr lookup and Q14 logic transform through the existing layout-3 Battle root.",
+  "drawing": {
+    "filter": "Enemy camp, non-hero confirmed ward, positive known current HP, valid object ID and current map coordinate. Friendly, neutral, duplicate, dead, unknown life state and invalid coordinates excluded.",
+    "switch": "drawWards",
+    "color": "wardColor",
+    "icon": "Small eye shape drawn with CoreGraphics. Hero health arcs remain red.",
+    "hero_metrics": "Ward markers and edge clamps are excluded from hero roster, marker and HP-ring counts.",
+    "history_fallback": false
+  },
+  "diagnostics": {
+    "snapshot": "is_ward and ward_classification_read_ok; minimap.wards counters and valid_ward_position_count",
+    "trace": "Separate wards list, at most 16 per sample; existing 512 KiB total budget and 32-sample cap."
+  },
+  "evidence": {
+    "assembly": "analysis/ios-assembly/04eeebac-ward-classification.asm",
+    "assembly_sha256": "e6569f621ef926a342d04b800315580a5233a199576a2a86324f8877e3802f73",
+    "metadata_layout": "analysis/ios-layout.json"
+  },
+  "validation": {
+    "ward_minimap_sanitized_checks": 44,
+    "pure_original_getter_cases": 6,
+    "logic_reader_checks": 180,
+    "motion_checks": 58
+  },
+  "device_verified": false,
+  "scope": "Implementation and offline evidence only. The previous 0.7.9 reports did not collect the ward flag. Only wards represented in the currently enumerated client objects can be displayed; unseen, destroyed or server-only objects are not invented. Real ward types, placement/destruction and fog behavior need device samples."
+}
