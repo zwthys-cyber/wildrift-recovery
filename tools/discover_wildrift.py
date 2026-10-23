@@ -32,7 +32,8 @@ def locate(name, lines):
         mnemonic=instruction.split()[0]
         relative=mnemonic in ('adr','adrp','bl','b','cbz','cbnz','tbz','tbnz') or mnemonic.startswith('b.')
         address_pair=previous=='adrp' and mnemonic in ('ldr','str','add')
-        parts.append(b'.{4}' if relative or address_pair else re.escape(bytes(ks.asm(instruction)[0])))
+        large_memory=mnemonic in ('ldr','str') and any(int(x,16)>=0x300 for x in re.findall(r'#0x([0-9a-f]+)',instruction))
+        parts.append(b'.{4}' if relative or address_pair or large_memory else re.escape(bytes(ks.asm(instruction)[0])))
         previous=mnemonic
     pattern=b''.join(parts)
     matches=[m.start() for m in re.finditer(pattern,fw,re.DOTALL) if m.start()%4==0]
