@@ -112,6 +112,14 @@ static void native_setup(void) {
         q(node+0x20,(j?5:9)*16384);q(node+0x28,(j?1:3)*16384);
         q(b+0xc020+j*0x100,0);
     }
+    /* Native summoner manager at logic hero +360 with its +60/+68 list;
+       the single entry carries its resource word at +74. */
+    uint64_t sn=b+0x5000,snode=b+0xde00;
+    q(logic+0x360,b+0xe200);q(b+0xe260,b+0xdc40);q(b+0xe268,b+0xdc48);
+    q(b+0xdc40,sn);q(sn+0x580,sn);q(sn+0x590,snode);
+    d(sn+0x74,10101003);
+    q(snode+0x18,4*16384);byte(snode+0x10,0);
+    q(snode+0x20,12*16384);q(snode+0x28,8*16384);
 }
 static void native_sample(void) {
     reads=0;lv_skill_panel_native_cooldowns(reader,NULL,ENGINE,LV_NATIVE_ENGINE_UUID,&snapshot,&panel);
@@ -125,7 +133,9 @@ static void native_checks(void) {
         && enemy()->skills[0].logic_start_raw==3*16384);
     check(enemy()->skills[1].logic_node_values_ok && enemy()->skills[1].logic_total_raw==5*16384
         && enemy()->skills[1].logic_start_raw==1*16384);
-    check(!enemy()->skills[2].logic_cooldown_ok); /* No speculative summoner mapping. */
+    check(enemy()->skills[2].logic_cooldown_ok && enemy()->skills[2].cooldown_fixed==4*16384);
+    check(enemy()->skills[2].logic_node_values_ok && enemy()->skills[2].logic_total_raw==12*16384
+        && enemy()->skills[2].logic_start_raw==8*16384);
     setup();native_setup();q(b+0xd818,0);sample();native_sample();
     check(enemy()->skills[0].logic_cooldown_ok && !enemy()->skills[0].cooldown_fixed);
     setup();native_setup();q(b+0xd818,(uint64_t)-12345);sample();native_sample();
@@ -140,6 +150,16 @@ static void native_checks(void) {
     setup();native_setup();sample();failure=b+0xd818;native_sample();check(!enemy()->skills[0].logic_cooldown_ok);
     setup();native_setup();sample();mutation=b+0x4590;replacement=b+0xd880;native_sample();
     check(!enemy()->skills[0].logic_cooldown_ok && !strcmp(enemy()->skills[0].logic_cooldown_reason,"identity_or_list_changed"));
+    setup();native_setup();q(b+0xf360,0);sample();native_sample();
+    check(!enemy()->skills[2].logic_cooldown_ok && !strcmp(enemy()->skills[2].logic_cooldown_reason,"logic_manager_unavailable"));
+    setup();native_setup();d(b+0x5074,10101001);sample();native_sample();
+    check(!enemy()->skills[2].logic_cooldown_ok && !strcmp(enemy()->skills[2].logic_cooldown_reason,"skill_not_found"));
+    setup();native_setup();q(b+0xe268,b+0xdc50);q(b+0xdc48,b+0x5800);d(b+0x5874,10101003);sample();native_sample();
+    check(!enemy()->skills[2].logic_cooldown_ok && !strcmp(enemy()->skills[2].logic_cooldown_reason,"skill_ambiguous"));
+    setup();native_setup();q(b+0x5590,0);sample();native_sample();
+    check(!enemy()->skills[2].logic_cooldown_ok && !strcmp(enemy()->skills[2].logic_cooldown_reason,"node_unavailable"));
+    setup();native_setup();sample();mutation=b+0x5590;replacement=b+0xde80;native_sample();
+    check(!enemy()->skills[2].logic_cooldown_ok && !strcmp(enemy()->skills[2].logic_cooldown_reason,"identity_or_list_changed"));
     setup();native_setup();sample();reads=0;
     lv_skill_panel_native_cooldowns(reader,NULL,ENGINE,"wrong-profile",&snapshot,&panel);
     check(!reads && !enemy()->skills[0].logic_cooldown_ok);

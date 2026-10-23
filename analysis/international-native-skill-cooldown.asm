@@ -197,3 +197,163 @@
 01024c14: ldr      x21, [x8]
 01024c18: add      x20, x21, #8
 01024c1c: mov      x8, #-0x2222222222222223
+; selected native summoner manager evidence (international-analysis run)
+; native summoner GetSkill +60/+68 list +74 resource 0x1001d60
+01001d60: stp      x22, x21, [sp, #-0x30]!
+01001d64: stp      x20, x19, [sp, #0x10]
+01001d68: stp      x29, x30, [sp, #0x20]
+01001d6c: add      x29, sp, #0x20
+01001d70: mov      x19, x1
+01001d74: mov      x20, x0
+01001d78: adrp     x8, #0x51aa000
+01001d7c: ldr      x8, [x8, #0xc18]
+01001d80: cbz      x8, #0x1001dec
+01001d84: sub      sp, sp, #0xa0
+01001d88: stp      x0, x1, [sp]
+01001d8c: stp      x2, x3, [sp, #0x10]
+01001d90: stp      x4, x5, [sp, #0x20]
+01001d94: stp      x6, x7, [sp, #0x30]
+01001d98: stp      x8, x19, [sp, #0x40]
+01001d9c: stp      x20, x21, [sp, #0x50]
+01001da0: stp      x22, x23, [sp, #0x60]
+01001da4: stp      x24, x25, [sp, #0x70]
+01001da8: stp      x26, x27, [sp, #0x80]
+01001dac: str      x28, [sp, #0x90]
+01001db0: mov      x0, sp
+01001db4: mov      x1, x29
+01001db8: mov      w2, #0xa0
+01001dbc: bl       #0x41fdc1c
+01001dc0: ldp      x0, x1, [sp]
+01001dc4: ldp      x8, x2, [sp, #0x10]
+01001dc8: ldp      x19, x20, [sp, #0x20]
+01001dcc: ldp      x21, x22, [sp, #0x30]
+01001dd0: ldp      x23, x24, [sp, #0x40]
+01001dd4: ldp      x25, x26, [sp, #0x50]
+01001dd8: ldp      x27, x28, [sp, #0x60]
+01001ddc: ldp      x29, x30, [sp, #0x70]
+01001de0: add      sp, sp, x2
+01001de4: ret      
+01001de8: bl       #0x41fd89c
+01001dec: ldp      x9, x8, [x20, #0x60]
+01001df0: sub      x10, x8, x9
+01001df4: lsr      x11, x10, #3
+01001df8: cmp      w11, #1
+01001dfc: b.lt     #0x1001e44
+01001e00: mov      x22, #0
+01001e04: b        #0x1001e1c
+01001e08: add      x22, x22, #1
+01001e0c: sub      x10, x8, x9
+01001e10: lsr      x11, x10, #3
+01001e14: cmp      x22, w11, sxtw
+01001e18: b.ge     #0x1001e44
+01001e1c: cmp      x22, x10, asr #3
+01001e20: b.hs     #0x1001e5c
+01001e24: ldr      x21, [x9, x22, lsl #3]
+01001e28: cbz      x21, #0x1001e08
+01001e2c: mov      x0, x21
+01001e30: bl       #0xfefc48
+01001e34: cmp      w0, w19
+01001e38: b.eq     #0x1001e48
+01001e3c: ldp      x9, x8, [x20, #0x60]
+01001e40: b        #0x1001e08
+01001e44: mov      x21, #0
+01001e48: mov      x0, x21
+01001e4c: ldp      x29, x30, [sp, #0x20]
+01001e50: ldp      x20, x19, [sp, #0x10]
+01001e54: ldp      x22, x21, [sp], #0x30
+01001e58: ret      
+01001e5c: bl       #0x1002d28
+; sync summoner GetSkill +48/+50 list +44 resource 0x1001e60
+01001e60: stp      x22, x21, [sp, #-0x30]!
+01001e64: stp      x20, x19, [sp, #0x10]
+01001e68: stp      x29, x30, [sp, #0x20]
+01001e6c: add      x29, sp, #0x20
+01001e70: mov      x19, x1
+01001e74: mov      x20, x0
+01001e78: adrp     x8, #0x51aa000
+01001e7c: ldr      x8, [x8, #0xc20]
+01001e80: cbz      x8, #0x1001eec
+01001e84: sub      sp, sp, #0xa0
+01001e88: stp      x0, x1, [sp]
+01001e8c: stp      x2, x3, [sp, #0x10]
+01001e90: stp      x4, x5, [sp, #0x20]
+01001e94: stp      x6, x7, [sp, #0x30]
+01001e98: stp      x8, x19, [sp, #0x40]
+01001e9c: stp      x20, x21, [sp, #0x50]
+01001ea0: stp      x22, x23, [sp, #0x60]
+01001ea4: stp      x24, x25, [sp, #0x70]
+01001ea8: stp      x26, x27, [sp, #0x80]
+01001eac: str      x28, [sp, #0x90]
+01001eb0: mov      x0, sp
+01001eb4: mov      x1, x29
+01001eb8: mov      w2, #0xa0
+01001ebc: bl       #0x41fdc1c
+01001ec0: ldp      x0, x1, [sp]
+01001ec4: ldp      x8, x2, [sp, #0x10]
+01001ec8: ldp      x19, x20, [sp, #0x20]
+01001ecc: ldp      x21, x22, [sp, #0x30]
+01001ed0: ldp      x23, x24, [sp, #0x40]
+01001ed4: ldp      x25, x26, [sp, #0x50]
+01001ed8: ldp      x27, x28, [sp, #0x60]
+01001edc: ldp      x29, x30, [sp, #0x70]
+01001ee0: add      sp, sp, x2
+01001ee4: ret      
+01001ee8: bl       #0x41fd89c
+01001eec: ldp      x9, x8, [x20, #0x48]
+01001ef0: sub      x10, x8, x9
+01001ef4: lsr      x11, x10, #3
+01001ef8: cmp      w11, #1
+01001efc: b.lt     #0x1001f44
+01001f00: mov      x22, #0
+01001f04: b        #0x1001f1c
+01001f08: add      x22, x22, #1
+01001f0c: sub      x10, x8, x9
+01001f10: lsr      x11, x10, #3
+01001f14: cmp      x22, w11, sxtw
+01001f18: b.ge     #0x1001f44
+01001f1c: cmp      x22, x10, asr #3
+01001f20: b.hs     #0x1001f5c
+01001f24: ldr      x21, [x9, x22, lsl #3]
+01001f28: cbz      x21, #0x1001f08
+01001f2c: mov      x0, x21
+01001f30: bl       #0xfefc50
+01001f34: cmp      w0, w19
+01001f38: b.eq     #0x1001f48
+01001f3c: ldp      x9, x8, [x20, #0x48]
+01001f40: b        #0x1001f08
+01001f44: mov      x21, #0
+01001f48: mov      x0, x21
+01001f4c: ldp      x29, x30, [sp, #0x20]
+01001f50: ldp      x20, x19, [sp, #0x10]
+01001f54: ldp      x22, x21, [sp], #0x30
+01001f58: ret      
+01001f5c: bl       #0x1002d2c
+; summoner resource getters +74/+44 0xfefc48
+00fefc48: ldr      w0, [x0, #0x74]
+00fefc4c: ret      
+00fefc50: ldr      w0, [x0, #0x44]
+00fefc54: ret      
+; native summoner manager consumer hero +360 0xff8b28
+00ff8b28: mov      x0, x23
+00ff8b2c: bl       #0x1fafccc
+00ff8b30: mov      x21, x0
+00ff8b34: cbz      x0, #0xff8b4c
+00ff8b38: ldr      x0, [x21, #0x360]
+00ff8b3c: cbz      x0, #0xff8b4c
+00ff8b40: mov      x1, x20
+00ff8b44: bl       #0x1001d60
+00ff8b48: cbnz     x0, #0xff8e88
+00ff8b4c: ldr      x8, [x19, #0x2e0]
+00ff8b50: ldr      x9, [x19, #0x2d8]
+00ff8b54: sub      x8, x8, x9
+00ff8b58: lsr      x9, x8, #3
+00ff8b5c: cmp      w9, #1
+; sync summoner manager consumer hero +198 0xff9030
+00ff9030: bl       #0xffeb18
+00ff9034: mov      x21, x0
+00ff9038: cbz      x0, #0xff9050
+00ff903c: ldr      x0, [x21, #0x198]
+00ff9040: cbz      x0, #0xff9050
+00ff9044: mov      x1, x20
+00ff9048: bl       #0x1001e60
+00ff904c: cbnz     x0, #0xff9384
