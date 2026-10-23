@@ -106,3 +106,7 @@ for pc in range(0,min(len(engine)-12,0x4200000),4):
     extra.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(engine[max(0,pc-48):pc+64],max(0,pc-48)))
 (out/'skill-cooldown-consumers.asm').write_text('\n'.join(extra)+'\n')
 print('Named skill-manager strings:',[hex(v) for v in positions])
+for start in (0x395dc7c,0x35f9dd8,0x3619494):
+ extra.append(f'; named skillMgr property getter {start:#x}')
+ extra.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(engine[start:start+16],start))
+(out/'skill-cooldown-consumers.asm').write_text('\n'.join(extra)+'\n')
