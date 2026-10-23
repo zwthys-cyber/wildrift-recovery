@@ -367,9 +367,12 @@ void lv_skill_panel_native_cooldowns(LVTargetRead read,void *context,uint64_t ba
             if(matches!=1){if(matches>1)k->logic_cooldown_reason="skill_ambiguous";continue;}
             uint64_t node=0,same=0;uint32_t res;uint8_t locked=0;int64_t remain=0;
             k->logic_native=found;k->logic_cooldown_reason="node_unavailable";
+            /* Original GetState treats any nonzero node byte at +0x10 as the
+               locked state (ldrb; cbz). Mirror that instead of rejecting values
+               above 1; the sync path uses the same nonzero rule. */
             if(!pointer(&r,found+0x580,&owner) || owner!=found ||
                 !pointer(&r,found+0x590,&node) || !node ||
-                !load(&r,node+0x10,&locked,1) || locked>1 ||
+                !load(&r,node+0x10,&locked,1) ||
                 !load(&r,node+0x18,&remain,8))continue;
             k->logic_cd_node=node;k->logic_remain_raw=remain;
             Vector again;
@@ -385,7 +388,7 @@ void lv_skill_panel_native_cooldowns(LVTargetRead read,void *context,uint64_t ba
                 k->logic_cooldown_reason="identity_or_list_changed";continue;
             }
             k->logic_cooldown_ok=1;k->logic_cooldown_reason="ready";
-            k->cooldown_fixed=remain<0?0:remain;k->locked=locked;k->cooldown_ok=1;
+            k->cooldown_fixed=remain<0?0:remain;k->locked=locked!=0;k->cooldown_ok=1;
         }
     }
 }

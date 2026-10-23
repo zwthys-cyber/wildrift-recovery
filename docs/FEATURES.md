@@ -35,4 +35,4 @@
 
 0.8.4 增加独立逻辑冷却源。原始命名 Lua 属性 BattleActor.skillMgr (0x395dc7c) 读取逻辑英雄 +0x200；原生 GetSkill 通过管理器 +0x2d8/+0x2e0 列表和技能配置资源 ID 查找。资源 ID 必须在当前逻辑列表中唯一，管理器拥有者、逻辑英雄身份、触发器拥有者、当前同步槽和列表在读取后重新核对。原生调用方通过技能 +0x590 取得节点，GetState/GetRemainCD 使用节点 +0x10/+0x18；这些与同步结构的 +0x440、+0x18/+0x20 不同。尚无匹配的技能继续显示同步诊断，不能宣称所有普通/召唤师技能都已覆盖。
 
-新增 logic_skill_address、logic_cd_node_address、logic_cooldown_read_ok、logic_cooldown_reason 和 logic_remain_raw；cooldown_source 明确最终显示值来自原生逻辑还是同步缓存，cooldown_node_address 指向对应来源。零值继续“待核”，不代表可释放。不使用 start+total−游戏时间补值，不记录/自行递减历史冷却。0.8.3 报告开头的 not_in_battle 是早于实际 HUD 追踪的探测；空快照的 classification_reason 改为 snapshot_unavailable，避免误报分类 ready。
+新增 logic_skill_address、logic_cd_node_address、logic_cooldown_read_ok、logic_cooldown_reason 和 logic_remain_raw；cooldown_source 明确最终显示值来自原生逻辑还是同步缓存，cooldown_node_address 指向对应来源。零值继续“待核”，不代表可释放。不使用 start+total−游戏时间补值，不记录/自行递减历史冷却。原生节点锁定字节按原 GetState 指令语义处理：+0x10 字节任意非零即锁定（ldrb/cbz），与同步路径的非零规则一致，不再拒绝大于 1 的字节值。0.8.3 报告开头的 not_in_battle 是早于实际 HUD 追踪的探测；空快照的 classification_reason 改为 snapshot_unavailable，避免误报分类 ready。

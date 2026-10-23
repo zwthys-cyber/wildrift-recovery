@@ -125,8 +125,9 @@ static void native_checks(void) {
     check(enemy()->skills[0].logic_cooldown_ok && !enemy()->skills[0].cooldown_fixed);
     setup();native_setup();q(b+0xd818,(uint64_t)-12345);sample();native_sample();
     check(enemy()->skills[0].logic_remain_raw==-12345 && !enemy()->skills[0].cooldown_fixed);
-    setup();native_setup();byte(b+0xd810,1);sample();native_sample();check(enemy()->skills[0].locked);
-    setup();native_setup();byte(b+0xd810,255);sample();native_sample();check(!enemy()->skills[0].logic_cooldown_ok);
+    setup();native_setup();byte(b+0xd810,1);sample();native_sample();check(enemy()->skills[0].logic_cooldown_ok && enemy()->skills[0].locked);
+    setup();native_setup();byte(b+0xd810,255);sample();native_sample();
+    check(enemy()->skills[0].logic_cooldown_ok && enemy()->skills[0].locked); /* Original GetState treats any nonzero byte as locked. */
     setup();native_setup();q(b+0x4580,0);sample();native_sample();check(!enemy()->skills[0].logic_cooldown_ok);
     setup();native_setup();q(b+0xe428,HEAP+0x400);sample();native_sample();check(!enemy()->skills[0].logic_cooldown_ok);
     setup();native_setup();d(b+0xdb2c,10101001);sample();native_sample();
