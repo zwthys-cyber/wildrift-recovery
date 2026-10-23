@@ -23,7 +23,7 @@ jobs:
       - name: Recover international layout
         run: python3 tools/discover_wildrift.py
       - name: Inspect selected skill-slot getters
-        run: python3 tools/inspect_skill_panel.py
+        run: python3 tools/inspect_skill_cooldown.py
       - name: Validate original international native engine getters
         env:
           LVLOLM_IOS_ENGINE: inputs/FEProj
@@ -38,6 +38,7 @@ jobs:
             build/skill-panel-getters.asm
             build/skill-panel-methods.json
             build/skill-panel-classification.asm
+            build/skill-cooldown-accessors.asm
       - name: Remove private inputs
         if: always()
         run: rm -rf inputs
