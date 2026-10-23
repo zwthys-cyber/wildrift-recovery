@@ -85,6 +85,9 @@ def candidates(count):
             pos=match.start()
             if pos%8==0:yield va+pos
 
+print('Recovered loader addresses',*[hex(x) for x in (stream,loader,names,klass,constants,key,string_key,cache)])
+print('Metadata tables',md.tables)
+print('Registration candidates',[(hex(a),[hex(q(a+d)) for d in (-0x20,-0x18,0,8)]) for a in candidates(md.tables['types']['count'])])
 regs=[]
 for addr in candidates(md.tables['types']['count']):
     reg=addr-0x50
