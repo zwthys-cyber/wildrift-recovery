@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
                 @"task_result": @(reader.connectionResult),
                 @"task_message": [NSString stringWithUTF8String:mach_error_string(reader.connectionResult)] ?: @"unknown",
                 @"self_test": [LVMachReader selfTest],
-                @"game_app_version": @"7.3.0.2813", @"game_resource_version": @"7.3.19.51",
+                @"game_app_version": @"7.3.0.2813", @"game_resource_version": @"not provided",
                 @"game_version_source": @"user_reported" } mutableCopy];
             r[@"preview_config_source"] = argc == 4 ? @"app_settings_at_probe_start" : @"recovered_defaults";
             if (reader.connectionResult == KERN_SUCCESS) {

@@ -12,12 +12,13 @@ import hashlib
 import json
 import re
 import struct
+from macho_rebases import local_rebases
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-FRAMEWORK_SHA256 = 'effa95dbbc2bf16f9474c7c99700b80b3e0b7c793537e2da7089bd01b6a5e394'
-FRAMEWORK_UUID = '085E1DDF-4A8D-34E2-9D73-A0A28BCC0B83'
-METADATA_SHA256 = '0ea4de1fdba5924e75f09a10911692c833ae996ec3df773aba4d9b32c39f90e3'
+FRAMEWORK_SHA256 = 'b82b1ece4d3017df66ccc68f4306d69d4df1fb69305fe8a287648008821f310c'
+FRAMEWORK_UUID = 'B59675EA-20A7-306E-97FF-5EA41A2B36C6'
+METADATA_SHA256 = '33ff8fc0b20f782af0b1cee13653b5c3b0073857704e5c41d667258a0e77a7f6'
 MASK = 0xffffffff
 
 
@@ -56,15 +57,15 @@ class Metadata:
             raise ValueError('Metadata does not match the recovered profile')
         if len(self.data) < 256 or self.data[:8] != b'FMN!\x1f\0\0\0':
             raise ValueError('Expected the recovered FMN! v31 metadata header')
-        if len(framework) < 0x102396d4:
+        if len(framework) < 0xe990634:
             raise ValueError('Framework is too short for loader constants')
-        state = (list(struct.unpack_from('<4I', framework, 0xeda2890)) +
-                 list(struct.unpack_from('<8I', framework, 0x102396b4)) + [0, 0] +
-                 list(struct.unpack_from('<2I', framework, 0x102396b4)))
+        state = (list(struct.unpack_from('<4I', framework, 0xd8c66a0)) +
+                 list(struct.unpack_from('<8I', framework, 0xe990614)) + [0, 0] +
+                 list(struct.unpack_from('<2I', framework, 0xe990614)))
         header = bytearray(self.data[:256])
         header[8:40] = bytes(a ^ b for a, b in zip(header[8:40], stream_block(state)))
         self.header = bytes(header)
-        self.keys = bytes(framework[0x10239480:0x10239580])
+        self.keys = bytes(framework[0xe9903e0:0xe9904e0])
         self.string_offset, self.string_size = struct.unpack_from('<II', self.header, 0x1c)
         self._range(self.string_offset, self.string_size)
         self.tables = {}
@@ -152,9 +153,10 @@ class Metadata:
 class NativeTables:
     """Registration tables verified in the same framework, before rebasing."""
     def __init__(self, framework, metadata):
+        framework, self.rebase_count = local_rebases(framework)
         self.data, self.metadata = framework, metadata
-        # 0xd8f6724 -> il2cpp_codegen_register, x0/x1 registration arguments.
-        self.code_registration, self.metadata_registration = 0xfc1e1f8, 0xfe40a58
+        # Exact international code and metadata registrations recovered in CI.
+        self.code_registration, self.metadata_registration = 0xe53a640, 0xe765068
         self.type_count, self.types = self.read(self.metadata_registration + 0x30, '<QQ')
         self.offset_count, self.offsets = self.read(self.metadata_registration + 0x50, '<QQ')
         if self.offset_count != metadata.tables['types']['count'] or not 0 < self.type_count < 1000000:
@@ -175,7 +177,7 @@ class NativeTables:
         # In this exact profile TEXT, DATA_CONST and file-backed DATA have
         # vmaddr == fileoff. Reject pointers into zerofill/LINKEDIT explicitly.
         size = struct.calcsize(fmt)
-        if address < 0 or address + size > 278413312 or address + size > len(self.data):
+        if address < 0 or address + size > 252641280 or address + size > len(self.data):
             raise ValueError('Native registration read exceeds file-backed segments')
         return struct.unpack_from(fmt, self.data, address)
 
@@ -212,9 +214,9 @@ class NativeTables:
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--framework', type=Path, default=ROOT / 'inputs/ios-0.2.0/Bundle/Frameworks/UnityFramework.framework/UnityFramework')
-    p.add_argument('--metadata', type=Path, default=ROOT / 'inputs/ios-0.2.0/Bundle/Data/Managed/Metadata/global-metadata.dat')
-    p.add_argument('--output', type=Path, default=ROOT / 'build/ios-metadata.json')
+    p.add_argument('--framework', type=Path, default=ROOT / 'inputs/UnityFramework')
+    p.add_argument('--metadata', type=Path, default=ROOT / 'inputs/global-metadata.dat')
+    p.add_argument('--output', type=Path, default=ROOT / 'build/international-metadata.json')
     p.add_argument('--match', default=r'actor|hero|monster|smite|mercury|skill|cooldown|battle|buff|gameworld|gamemanager|player')
     args = p.parse_args()
     fw, raw = args.framework.read_bytes(), args.metadata.read_bytes()
