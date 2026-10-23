@@ -39,6 +39,7 @@ jobs:
             build/skill-panel-methods.json
             build/skill-panel-classification.asm
             build/skill-cooldown-accessors.asm
+            build/skill-cooldown-consumers.asm
       - name: Remove private inputs
         if: always()
         run: rm -rf inputs

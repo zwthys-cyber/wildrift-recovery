@@ -39,3 +39,25 @@ for start,end in ((0x1015164,0x1015184),(0xff8a2c,0xff8bd0),(0xff8f30,0xff90e0))
  lines.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(engine[start:end],start))
 (out/'skill-cooldown-accessors.asm').write_text('\n'.join(lines)+'\n')
 print('Selected cooldown imports:',targets)
+# Search only named skill cooldown consumers; export selected names and code,
+# never the complete metadata or private binaries.
+consumers=[]
+for index in range(md.tables['types']['count']):
+ t=md.type(index)
+ if not any(term in t['name'].lower() for term in ('skill','cooldown')):continue
+ for m in native.methods(t):
+  name=m['name'].lower()
+  if any(term in name for term in ('cdleft','remaincd','cooldown','cdremain','leftcd')):
+   consumers.append((t['namespace'],t['name'],m['name'],m['native_address']))
+extra=[]
+for namespace,kind,name,start in consumers:
+ extra.append(f'; {namespace}.{kind}.{name} {start:#x}')
+ if start and len(consumers)<150:
+  extra.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(fw[start:start+512],start))
+# Constructor/field preparation and the complete nearby native node routines.
+for label,data,start,end in (('managed SkillCDNode ctor',fw,0x3ba8058,0x3ba8214),
+ ('native CD node state and time updates',engine,0x1014c00,0x1015980)):
+ extra.append(f'; {label} {start:#x}')
+ extra.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(data[start:end],start))
+(out/'skill-cooldown-consumers.asm').write_text('\n'.join(extra)+'\n')
+print('Selected cooldown consumers:',len(consumers))
