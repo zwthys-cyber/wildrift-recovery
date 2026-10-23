@@ -22,6 +22,8 @@ jobs:
           tar -xf inputs/inputs.tar -C inputs
       - name: Recover international layout
         run: python3 tools/discover_wildrift.py
+      - name: Inspect selected skill-slot getters
+        run: python3 tools/inspect_skill_panel.py
       - name: Validate original international native engine getters
         env:
           LVLOLM_IOS_ENGINE: inputs/FEProj
@@ -33,6 +35,8 @@ jobs:
           path: |
             build/international-layout.json
             build/international-selected.asm
+            build/skill-panel-getters.asm
+            build/skill-panel-methods.json
       - name: Remove private inputs
         if: always()
         run: rm -rf inputs
