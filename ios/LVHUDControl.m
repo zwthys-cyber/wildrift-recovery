@@ -1,3 +1,4 @@
+#import "LVGameIdentity.h"
 #import "LVHUDControl.h"
 #import "LVHUDTrace.h"
 #include <mach-o/dyld.h>
@@ -19,7 +20,7 @@ BOOL LVHUDSessionValid(NSString *session) {
         [[NSUUID alloc] initWithUUIDString:session] != nil;
 }
 NSString *LVHUDNotification(NSString *session, BOOL stopping) {
-    return [NSString stringWithFormat:@"local.lvlolm.recovery.hud.%@.%@", session.lowercaseString,
+    return [NSString stringWithFormat:@"local.wildrift.recovery.hud.%@.%@", session.lowercaseString,
         stopping ? @"stop" : @"state"];
 }
 NSString *LVHUDMetricNotification(NSString *session, size_t index) {
@@ -27,7 +28,7 @@ NSString *LVHUDMetricNotification(NSString *session, size_t index) {
         "owner", "sequence", "frames", "time", "data", "cooldown", "stock", "reserved", "mapdetail"
     };
     if (!LVHUDSessionValid(session) || index >= LV_HUD_METRIC_WORDS) return nil;
-    return [NSString stringWithFormat:@"local.lvlolm.recovery.hud.%@.metrics.%s", session.lowercaseString, names[index]];
+    return [NSString stringWithFormat:@"local.wildrift.recovery.hud.%@.metrics.%s", session.lowercaseString, names[index]];
 }
 static NSDictionary *samplingStatus(NSString *session, pid_t pid) {
     int tokens[LV_HUD_METRIC_WORDS];
@@ -128,8 +129,8 @@ NSDictionary *LVHUDStart(pid_t target, NSString *session, NSString *config) {
     if ([existing[@"running"] boolValue]) return existing;
     char targetPath[PATH_MAX] = {0};
     if (proc_pidpath(target, targetPath, sizeof(targetPath)) <= 0 ||
-        ![[NSString stringWithUTF8String:targetPath] hasSuffix:@"/lolm.app/lolm"])
-        return @{ @"error": @"HUD target must be the selected lolm process" };
+        !LVGameMatchesExecutablePath([NSString stringWithUTF8String:targetPath]))
+        return @{ @"error": @"HUD target must be the selected international Wild Rift process" };
     NSString *path = LVHUDExecutablePath();
     if (!path) return @{ @"error": @"HUD executable path unavailable" };
     int fds[2];

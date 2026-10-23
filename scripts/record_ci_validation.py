@@ -47,11 +47,9 @@ record = {
     'native_health_device_verified': False,
     'logic_position_device_verified': False,
     'enemy_ward_minimap_device_verified': False,
-    'prior_native_health_device_evidence_version': '0.7.6',
-    'prior_native_health_ring_user_confirmed': True,
     'bundled_hero_portraits': metadata['minimap_hero_portrait_count'],
     'desktop_icon_payload_verified': True,
-    'scope': 'GitHub CI checks and build provenance. Original Unity/FEProj instruction emulation is recorded locally; private engine bytes are absent from CI. 0.7.9 display is user-confirmed in custom-room and ordinary matches, with four hidden moving enemies independently supported by the custom-room trace. 0.7.10 adds classified enemy wards, current coordinates, life-state filtering and distinct eye markers. Ward and hero count separation is checked with synthetic fixtures. Actual ward placement, destruction, types and fog visibility still require device evidence.'
+    'scope': 'International 7.3.0 (2813): build, signatures, synthetic reader tests and bounded original instruction comparisons run in GitHub Actions. No international phone runtime evidence. Historical CN reports are retained only as upstream context.'
 }
 text = json.dumps(record, ensure_ascii=False, indent=2) + '\n'
 (ROOT / 'analysis/ci-validation.json').write_text(text)

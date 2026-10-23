@@ -37,8 +37,8 @@ def png_info(data):
 
 class IPATests(unittest.TestCase):
     def test_real_ipa_integrity(self):
-        report = inspector.inspect_path(ROOT / ('dist/lvlolm-recovery-' + VERSION + '.ipa'))
-        self.assertEqual(report['bundle_identifier'], 'local.lvlolm.recovery')
+        report = inspector.inspect_path(ROOT / ('dist/wildrift-recovery-' + VERSION + '.ipa'))
+        self.assertEqual(report['bundle_identifier'], 'local.wildrift.recovery')
         self.assertEqual(len(report['images']), 3)
         banned = {'com.apple.private.cs.debugger', 'dynamic-codesigning', 'com.apple.private.skip-library-validation'}
         for images in report['images'].values():
@@ -75,16 +75,16 @@ class IPATests(unittest.TestCase):
         self.assertTrue(inspector.inspect_macho(data)[0]['encrypted'])
 
     def test_hud_identity_permissions_and_license(self):
-        report = inspector.inspect_path(ROOT / ('dist/lvlolm-recovery-' + VERSION + '.ipa'))
+        report = inspector.inspect_path(ROOT / ('dist/wildrift-recovery-' + VERSION + '.ipa'))
         image = report['images']['Payload/LVRecovery.app/LVHUD'][0]
         entitlements = image['signature']['entitlements']
-        self.assertEqual(entitlements['application-identifier'], 'local.lvlolm.recovery.hud')
+        self.assertEqual(entitlements['application-identifier'], 'local.wildrift.recovery.hud')
         for key in ('task_for_pid-allow', 'platform-application', 'com.apple.QuartzCore.displayable-context',
                     'com.apple.backboard.client', 'com.apple.springboard.accessibility-window-hosting'):
             self.assertTrue(entitlements[key])
         self.assertNotIn('com.apple.private.hid.client.event-dispatch', entitlements)
         self.assertNotIn('com.apple.springboard.disallowControlCenter', entitlements)
-        with zipfile.ZipFile(ROOT / ('dist/lvlolm-recovery-' + VERSION + '.ipa')) as z:
+        with zipfile.ZipFile(ROOT / ('dist/wildrift-recovery-' + VERSION + '.ipa')) as z:
             self.assertEqual(z.read('Payload/LVRecovery.app/TrollSpeed-LICENSE.txt'),
                              (ROOT / 'ios/TrollSpeed-LICENSE.txt').read_bytes())
 
@@ -94,7 +94,7 @@ class IPATests(unittest.TestCase):
                  'AppIcon40@2x':80, 'AppIcon40@3x':120, 'AppIcon60@2x':120, 'AppIcon60@3x':180,
                  'AppIcon76':76, 'AppIcon76@2x':152, 'AppIcon83.5@2x':167, 'AppIcon1024':1024}
         base = 'Payload/LVRecovery.app/'
-        with zipfile.ZipFile(ROOT / ('dist/lvlolm-recovery-' + VERSION + '.ipa')) as z:
+        with zipfile.ZipFile(ROOT / ('dist/wildrift-recovery-' + VERSION + '.ipa')) as z:
             info = plistlib.loads(z.read(base + 'Info.plist'))
             self.assertIn('AppIcon60', info['CFBundleIcons']['CFBundlePrimaryIcon']['CFBundleIconFiles'])
             self.assertIn('AppIcon83.5', info['CFBundleIcons~ipad']['CFBundlePrimaryIcon']['CFBundleIconFiles'])
@@ -106,7 +106,7 @@ class IPATests(unittest.TestCase):
     def test_hero_catalog_and_image_payloads(self):
         import hashlib
         base = 'Payload/LVRecovery.app/Assets/Heroes/'
-        with zipfile.ZipFile(ROOT / ('dist/lvlolm-recovery-' + VERSION + '.ipa')) as z:
+        with zipfile.ZipFile(ROOT / ('dist/wildrift-recovery-' + VERSION + '.ipa')) as z:
             manifest = json.loads(z.read(base + 'manifest.json'))
             source = (ROOT / 'analysis/official-hero-list.json').read_bytes()
             self.assertEqual(hashlib.sha256(source).hexdigest(), manifest['source_sha256'])

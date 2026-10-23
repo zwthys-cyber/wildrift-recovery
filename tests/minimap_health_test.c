@@ -38,13 +38,13 @@ static void cls(uint64_t a,uint64_t name,const char *text) {
 static void fixture(void) {
     memset(blocks,0,sizeof(blocks)); count=0; failure=mutation=mutation_reads=0;
     memset(&snapshot,0,sizeof(snapshot)); snapshot.result=LV_TARGET_READY; snapshot.count=2;
-    block(0x110a915f8,8); q(0x110a915f8,0x200000);
-    block(0x200000+6780*8,8); block(0x200000+6835*8,8); block(0x220000,512);
+    block((UINT64_C(0x100000000)+LV_TARGET_CLASS_CACHE_OFFSET),8); q((UINT64_C(0x100000000)+LV_TARGET_CLASS_CACHE_OFFSET),0x200000);
+    block(0x200000+LV_TYPE_MINIMAP_HERO_ICON*8,8); block(0x200000+LV_TYPE_MINIMAP_CONTROLLER*8,8); block(0x220000,512);
     cls(0x230000,0x220000,"UIMainBattleMiniMapCtrl");
     cls(0x230100,0x220030,"MiniMapEntityCtrl");
     cls(0x230200,0x220050,"UIMiniMapIconCtrl");
     cls(0x230300,0x220070,"UIMiniIconHeroCtrl");
-    q(0x200000+6835*8,0x230000); q(0x200000+6780*8,0x230300);
+    q(0x200000+LV_TYPE_MINIMAP_CONTROLLER*8,0x230000); q(0x200000+LV_TYPE_MINIMAP_HERO_ICON*8,0x230300);
     block(0x240000,32); q(0x2300b8,0x240000); q(0x240000,0x250000);
     block(0x250000,0x200); q(0x250000,0x230100); q(0x250190,0x251000);
     block(0x251000,0x100); q(0x251000,0x230200); q(0x251080,0x252000);

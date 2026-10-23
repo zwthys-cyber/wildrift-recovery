@@ -47,11 +47,11 @@ static int reader(void *ctx,uint64_t a,void *out,size_t size) {
 }
 static void geometry_fixture(void) {
     memset(blocks,0,sizeof(blocks));block_count=0;failure=change=change_reads=change_byte=0;
-    block(0x110a915f8,8);block(0x200000+6835*8,40); /* cache */
+    block((UINT64_C(0x100000000)+LV_TARGET_CLASS_CACHE_OFFSET),8);block(0x200000+LV_TYPE_MINIMAP_CONTROLLER*8,40); /* cache */
     block(0x300000,0x100);block(0x300100,0x100); /* classes */
     block(0x310003,80); /* deliberately unaligned string addresses */
     block(0x400000,32);block(0x400100,32);block(0x500000,0x90);block(0x501000,0x340);
-    q(0x110a915f8,0x200000);q(0x200000+6839*8,0x300000);q(0x200000+6835*8,0x300100);
+    q((UINT64_C(0x100000000)+LV_TARGET_CLASS_CACHE_OFFSET),0x200000);q(0x200000+LV_TYPE_MINIMAP_MAPPING*8,0x300000);q(0x200000+LV_TYPE_MINIMAP_CONTROLLER*8,0x300100);
     q(0x300010,0x310003);q(0x300018,0x31004a);put(0x310003,"UIMiniMappingMgr",17);
     q(0x300110,0x310020);q(0x300118,0x31004a);put(0x310020,"UIMainBattleMiniMapCtrl",23);
     q(0x3000b8,0x400000);q(0x3001b8,0x400100);q(0x400000,0x500000);q(0x400118,0x501000);

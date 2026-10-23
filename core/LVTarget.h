@@ -3,8 +3,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define LV_TARGET_UUID "085E1DDF-4A8D-34E2-9D73-A0A28BCC0B83"
-#define LV_NATIVE_ENGINE_UUID "D5B32037-47A3-3EFF-B0E5-04B071EFBEE3"
+#include "LVGameProfile.h"
 #define LV_TARGET_MAX_ACTORS 512
 #define LV_TARGET_MAX_SKILLS 128
 

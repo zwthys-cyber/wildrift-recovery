@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plist version="1.0"><dict>
-  <key>application-identifier</key><string>local.lvlolm.recovery.hud</string>
+  <key>application-identifier</key><string>local.wildrift.recovery.hud</string>
   <key>platform-application</key><true/>
   <key>com.apple.private.security.no-sandbox</key><true/>
   <key>task_for_pid-allow</key><true/>

@@ -1,4 +1,5 @@
 #import "LVCollect.h"
+#import "LVGameIdentity.h"
 #import "LVMachReader.h"
 #include "LVZip.h"
 #include <sys/stat.h>
@@ -24,7 +25,7 @@ static NSDictionary *collectInputs(pid_t pid, NSString *documents, BOOL engineOn
     NSUUID *containerID = [[NSUUID alloc] initWithUUIDString:container.lastPathComponent];
     NSDictionary *containerInfo = [NSDictionary dictionaryWithContentsOfFile:
         [container stringByAppendingPathComponent:@".com.apple.mobile_container_manager.metadata.plist"]];
-    if (!containerID || ![containerInfo[@"MCMMetadataIdentifier"] isEqualToString:@"local.lvlolm.recovery"])
+    if (!containerID || ![containerInfo[@"MCMMetadataIdentifier"] isEqualToString:@"local.wildrift.recovery"])
         return failure(@"destination container identity could not be verified");
     struct stat destination;
     if (stat(output.fileSystemRepresentation, &destination) || !S_ISDIR(destination.st_mode) || destination.st_uid != 501)
@@ -34,11 +35,10 @@ static NSDictionary *collectInputs(pid_t pid, NSString *documents, BOOL engineOn
     if (pid <= 0 || proc_pidpath(pid, executable, sizeof(executable)) <= 0) return failure(@"selected game process is unavailable");
     NSString *main = canonical([NSString stringWithUTF8String:executable]);
     NSString *bundle = main.stringByDeletingLastPathComponent;
-    if (![main.lastPathComponent isEqualToString:@"lolm"] || ![bundle.lastPathComponent isEqualToString:@"lolm.app"] ||
-        ![bundle hasPrefix:@"/private/var/containers/Bundle/Application/"])
-        return failure(@"selected process is not the expected lolm application");
+    if (!LVGameMatchesExecutablePath(main))
+        return failure(@"selected process is not the international Wild Rift application");
     NSDictionary *info = [NSDictionary dictionaryWithContentsOfFile:[bundle stringByAppendingPathComponent:@"Info.plist"]];
-    if (![info[@"CFBundleExecutable"] isEqualToString:@"lolm"]) return failure(@"game bundle executable identity mismatch");
+    if (![info[@"CFBundleExecutable"] isEqualToString:LV_GAME_EXECUTABLE]) return failure(@"game bundle executable identity mismatch");
 
     LVMachReader *reader = [[LVMachReader alloc] initWithPID:pid];
     if (reader.connectionResult != KERN_SUCCESS)
@@ -67,7 +67,7 @@ static NSDictionary *collectInputs(pid_t pid, NSString *documents, BOOL engineOn
     NSMutableArray *candidates = [NSMutableArray new];
     if (!engineOnly) [candidates addObjectsFromArray:@[
         @{ @"relative": @"Info.plist", @"role": @"bundle_info" },
-        @{ @"relative": @"lolm", @"role": @"main_executable" },
+        @{ @"relative": LV_GAME_EXECUTABLE, @"role": @"main_executable" },
         @{ @"relative": [unityPath substringFromIndex:prefix.length], @"role": @"unity_framework" },
         @{ @"relative": @"Frameworks/UnityFramework.framework/Info.plist", @"role": @"framework_info" }
     ]];
@@ -121,7 +121,7 @@ static NSDictionary *collectInputs(pid_t pid, NSString *documents, BOOL engineOn
     NSDictionary *manifest = @{ @"format": @"lvlolm-ios-inputs", @"format_version": @1,
         @"collector_version": @"0.7.5", @"collection_scope": engineOnly ? @"native_engine_only" : @"unity_metadata_and_engine",
         @"target_pid": @(pid), @"helper_uid": @(getuid()),
-        @"user_reported_app_version": @"7.3.0.2813", @"user_reported_resource_version": @"7.3.19.51",
+        @"user_reported_app_version": @"7.3.0.2813", @"user_reported_resource_version": @"not provided",
         @"bundle_identifier": info[@"CFBundleIdentifier"] ?: @"", @"app_version": info[@"CFBundleShortVersionString"] ?: @"",
         @"build_version": info[@"CFBundleVersion"] ?: @"", @"device_images": images ?: @[],
         @"files": files, @"missing_files": missing, @"metadata_found": @(hasMetadata),

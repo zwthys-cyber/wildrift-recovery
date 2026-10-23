@@ -53,7 +53,7 @@ class OriginalGetters(unittest.TestCase):
         if hashlib.sha256(cls.fw).hexdigest() != FRAMEWORK_SHA256: raise ValueError('Wrong framework profile')
 
     def test_object_and_skill_values(self):
-        for start, member in ((0x4f81308, 0x18), (0x4ecc0ec, 0x20), (0x4ecc1a4, 0x38), (0x4ecc1c8, 0x44)):
+        for start, member in ((0x39f9840, 0x18), (0x39451d0, 0x20), (0x3945288, 0x38), (0x39452ac, 0x44)):
             for value in (0, 81110101, 0xffffffff):
                 uc = machine(self.fw, start, start + 12)
                 q(uc, HEAP + 0x18, HEAP + 0x1000); d(uc, HEAP + 0x1000 + member, value)
@@ -64,7 +64,7 @@ class OriginalGetters(unittest.TestCase):
     def test_original_cached_ward_classification(self):
         # Named original IsSummonedWards and interface accessor, after the
         # initialization call. Execute only their byte-load instruction.
-        for start in (0x4eeebac,0x4eec87c):
+        for start in (0x397ff04,0x397dbd4):
             for value in (0,1,255):
                 uc=machine(self.fw,start,start+4)
                 uc.mem_write(HEAP+0x158,bytes([value]));uc.mem_write(HEAP+0x157,bytes([1-value if value<2 else 0]))
@@ -73,20 +73,20 @@ class OriginalGetters(unittest.TestCase):
 
     def test_fix_position(self):
         for values in ((-16384, 0, 8192), (12345678, -987654, 1638400), (-(1 << 63), (1 << 63)-1, -1)):
-            uc = machine(self.fw, 0x4f82550, 0x4f82568)
+            uc = machine(self.fw, 0x39faa88, 0x39faaa0)
             q(uc, HEAP + 0x18, HEAP + 0x1000)
             raw = struct.pack('<3q', *values); uc.mem_write(HEAP + 0x1018, raw)
             uc.reg_write(UC_ARM64_REG_X0, HEAP); uc.reg_write(UC_ARM64_REG_X8, HEAP + 0xb000)
-            uc.emu_start(0x4f82550, HALT, count=100)
+            uc.emu_start(0x39faa88, HALT, count=100)
             self.assertEqual(bytes(uc.mem_read(HEAP + 0xb000, 24)), raw)
 
     def test_cd_left_time_locked_and_signed_clamp(self):
         for locked in (0, 1, 255):
             for remaining in (-16384, 0, 8192, 30 * 16384, (1 << 63)-1):
-                uc = machine(self.fw, 0x4ed1f94, 0x4ed2268)
-                for page in (0x10b37000, 0x10604000): uc.mem_map(page, 4096)
-                uc.mem_write(0x10b37bdd, b'\x01')
-                q(uc, 0x106048c0, HEAP + 0x8000); d(uc, HEAP + 0x80e0, 1)
+                uc = machine(self.fw, 0x394b078, 0x394b34c)
+                for page in (0xf276000, 0xed5e000): uc.mem_map(page, 4096)
+                uc.mem_write(0xf276c4f, b'\x01')
+                q(uc, 0xed5e5a0, HEAP + 0x8000); d(uc, HEAP + 0x80e0, 1)
                 q(uc, HEAP + 0x80b8, HEAP + 0x9000); q(uc, HEAP + 0x9018, 0)
                 q(uc, HEAP + 0x18, HEAP + 0x1000); q(uc, HEAP + 0x60, HEAP + 0x4000)
                 q(uc, HEAP + 0x4010, HEAP + 0x1420); q(uc, HEAP + 0x4018, HEAP + 0x1420)
@@ -94,17 +94,17 @@ class OriginalGetters(unittest.TestCase):
                 q(uc, HEAP + 0x5010, HEAP + 0x6000); q(uc, HEAP + 0x5018, HEAP + 0x6000)
                 uc.mem_write(HEAP + 0x6018, bytes([locked])); q(uc, HEAP + 0x6020, remaining)
                 uc.reg_write(UC_ARM64_REG_X0, HEAP)
-                uc.emu_start(0x4ed1f94, HALT, count=1000)
+                uc.emu_start(0x394b078, HALT, count=1000)
                 self.assertEqual(uc.reg_read(UC_ARM64_REG_X0), 0 if locked else max(remaining, 0))
 
     def test_native_skill_vector_accessor(self):
         for count in (0, 1, 3):
             for index in (-1, 0, 1, 2, 3):
-                uc = machine(self.fw, 0x4ebd8a0, 0x4ebdaf8, stop_before=0x4ebda20)
-                for page in (0x10b37000, 0x10b3c000, 0x1062f000, 0x10645000, 0x10619000): uc.mem_map(page, 4096)
-                uc.mem_write(0x10b37bc2, b'\x01'); uc.mem_write(0x10b37bbd, b'\x01'); uc.mem_write(0x10b3c084, b'\x01')
-                q(uc, 0x10619ce0, HEAP + 0x8000); d(uc, HEAP + 0x80e0, 1)
-                q(uc, 0x10645128, HEAP + 0x9000); q(uc, HEAP + 0x9020, HEAP + 0xa000)
+                uc = machine(self.fw, 0x3936984, 0x3936bdc, stop_before=0x3936b04)
+                for page in (0xf276000, 0xf27b000, 0xed89000, 0xed9f000, 0xed74000): uc.mem_map(page, 4096)
+                uc.mem_write(0xf276c34, b'\x01'); uc.mem_write(0xf276c2f, b'\x01'); uc.mem_write(0xf27b0b8, b'\x01')
+                q(uc, 0xed74100, HEAP + 0x8000); d(uc, HEAP + 0x80e0, 1)
+                q(uc, 0xed9f730, HEAP + 0x9000); q(uc, HEAP + 0x9020, HEAP + 0xa000)
                 q(uc, HEAP + 0x18, HEAP + 0x1000); q(uc, HEAP + 0xf8, HEAP + 0x4000)
                 q(uc, HEAP + 0x4010, HEAP + 0x1208); q(uc, HEAP + 0x4018, HEAP + 0x1208)
                 q(uc, HEAP + 0x4020, HEAP + 0x5000); q(uc, HEAP + 0x5010, HEAP + 0x1218)
@@ -112,12 +112,12 @@ class OriginalGetters(unittest.TestCase):
                 d(uc, HEAP + 0x1230, 8)
                 for i in range(count): q(uc, HEAP + 0x6000 + i * 8, HEAP + 0xb000 + i * 0x100)
                 uc.reg_write(UC_ARM64_REG_X0, HEAP); uc.reg_write(UC_ARM64_REG_X1, index & 0xffffffff)
-                uc.emu_start(0x4ebd8a0, HALT, count=2000)
+                uc.emu_start(0x3936984, HALT, count=2000)
                 register = UC_ARM64_REG_X19 if 0 <= index < count else UC_ARM64_REG_X0
                 self.assertEqual(uc.reg_read(register), HEAP + 0xb000 + index * 0x100 if 0 <= index < count else 0)
 
     def test_stock_slot_and_cast_state_values(self):
-        for start, member in ((0x514b264, 0x1c), (0x514b270, 0x20), (0x5146a6c, 0x18), (0x514a0c4, 0x18)):
+        for start, member in ((0x3bdc5b0, 0x1c), (0x3bdc5bc, 0x20), (0x3bd7db8, 0x18), (0x3bdb410, 0x18)):
             for value in (0, 2, 0xffffffff):
                 uc = machine(self.fw, start, start + 12)
                 q(uc, HEAP + 0x18, HEAP + 0x1000); d(uc, HEAP + 0x1000 + member, value)
@@ -126,12 +126,12 @@ class OriginalGetters(unittest.TestCase):
                 self.assertEqual(uc.reg_read(UC_ARM64_REG_X0), value)
 
     def test_cast_state_predicates(self):
-        cases = ((0x514a328, 16, lambda s: bool(s & 0x40)),
-                 (0x514a338, 16, lambda s: bool(s & 0x20)),
-                 (0x514a348, 28, lambda s: (s & 0x50) == 0x40),
-                 (0x514a364, 16, lambda s: bool(s & 0x10)),
-                 (0x514a374, 16, lambda s: bool(s & 0x200)),
-                 (0x514a384, 20, lambda s: s == 0x100))
+        cases = ((0x3bdb674, 16, lambda s: bool(s & 0x40)),
+                 (0x3bdb684, 16, lambda s: bool(s & 0x20)),
+                 (0x3bdb694, 28, lambda s: (s & 0x50) == 0x40),
+                 (0x3bdb6b0, 16, lambda s: bool(s & 0x10)),
+                 (0x3bdb6c0, 16, lambda s: bool(s & 0x200)),
+                 (0x3bdb6d0, 20, lambda s: s == 0x100))
         for start, length, predicate in cases:
             for state in (0, 1, 0x10, 0x20, 0x40, 0x50, 0x60, 0x70, 0x100, 0x200, 0x300, 0xffffffff):
                 uc = machine(self.fw, start, start + length)
@@ -142,7 +142,7 @@ class OriginalGetters(unittest.TestCase):
 
     def test_attribute_last_position(self):
         for values in ((0,0,0),(-16384,0,8192),(8192000,0,8192000)):
-            start,end=0x4ea11d8,0x4ea11fc
+            start,end=0x391a2bc,0x391a2e0
             uc=machine(self.fw,start,end);q(uc,HEAP+0x18,HEAP+0x1000)
             raw=struct.pack('<3q',*values);uc.mem_write(HEAP+0x1090,raw)
             uc.reg_write(UC_ARM64_REG_X0,HEAP);uc.reg_write(UC_ARM64_REG_X8,HEAP+0xb000)
@@ -155,14 +155,14 @@ class OriginalGetters(unittest.TestCase):
         from unicorn.arm64_const import UC_ARM64_REG_X20,UC_ARM64_REG_X21
         for maximum in (1,600*16384,690*16384,123456789):
             for current in (0,maximum//4,maximum//2,maximum-1,maximum):
-                start,end=0x7378554,0x737855c
+                start,end=0x5e0ca2c,0x5e0ca34
                 uc=machine(self.fw,start,end);uc.reg_write(UC_ARM64_REG_X20,maximum);uc.reg_write(UC_ARM64_REG_X21,current)
                 uc.emu_start(start,end,count=100)
                 self.assertEqual(uc.reg_read(UC_ARM64_REG_X21),(current<<14)//maximum)
 
     def test_original_minimap_dictionary_entry_stride(self):
         for index in (0,1,7,31):
-            start,end=0x738b8d0,0x738b8dc
+            start,end=0x5e1fda8,0x5e1fdb4
             uc=machine(self.fw,start,end);value=HEAP+0x8000+index*8
             q(uc,HEAP+0x20+index*24+16,value)
             uc.reg_write(UC_ARM64_REG_X8,HEAP);uc.reg_write(UC_ARM64_REG_X0,index)

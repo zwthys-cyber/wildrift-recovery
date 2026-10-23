@@ -19,7 +19,7 @@ typedef struct {
     unsigned race_entries, entries_reads;
 } Fixture;
 static void put(Fixture *f, uint64_t address, const void *data, size_t n) {
-    if (address >= CACHE && address + n <= CACHE + 47894 * 8ULL)
+    if (address >= CACHE && address + n <= CACHE + LV_TARGET_TYPE_COUNT * 8ULL)
         memcpy(f->cache + address - CACHE, data, n);
     else { assert(address >= HEAP && address + n <= HEAP + sizeof(f->heap));
            memcpy(f->heap + address - HEAP, data, n); }
@@ -41,8 +41,8 @@ static int read_fixture(void *context, uint64_t address, void *out, size_t n) {
         if (f->consistency_fail) { memset(out, 0xff, n); return 0; }
         if (f->race) { int32_t changed = 1; assert(n == 4); memcpy(out, &changed, 4); return 1; }
     }
-    if (address == BASE + 0x10a915f8 && n == 8) { memcpy(out, &f->global, n); return 1; }
-    if (address >= CACHE && address + n <= CACHE + 47894 * 8ULL) {
+    if (address == BASE + LV_TARGET_CLASS_CACHE_OFFSET && n == 8) { memcpy(out, &f->global, n); return 1; }
+    if (address >= CACHE && address + n <= CACHE + LV_TARGET_TYPE_COUNT * 8ULL) {
         memcpy(out, f->cache + address - CACHE, n); return 1;
     }
     if (address >= HEAP && address + n <= HEAP + sizeof(f->heap)) {
@@ -51,12 +51,12 @@ static int read_fixture(void *context, uint64_t address, void *out, size_t n) {
     memset(out, 0xaa, n); return 0;
 }
 static void reset(Fixture *f) {
-    memset(f->cache, 0, 47894 * 8); memset(f->heap, 0, sizeof(f->heap));
+    memset(f->cache, 0, LV_TARGET_TYPE_COUNT * 8); memset(f->heap, 0, sizeof(f->heap));
     f->global = CACHE; f->fail = f->race = f->count_reads = f->reads = f->consistency_fail = 0;
     f->change_address = f->replacement = f->change_reads = 0;
     f->race_entries = f->entries_reads = 0;
-    q(f, CACHE + 37468 * 8ULL, HEAP);
-    q(f, CACHE + 37473 * 8ULL, HEAP + 0x200);
+    q(f, CACHE + LV_TYPE_DRIVE_ENTRY_UNITY * 8ULL, HEAP);
+    q(f, CACHE + LV_TYPE_FE_VISI * 8ULL, HEAP + 0x200);
     q(f, HEAP + 0x10, HEAP + 0x8001); q(f, HEAP + 0x18, HEAP + 0x8103);
     q(f, HEAP + 0x210, HEAP + 0x8021); q(f, HEAP + 0x218, HEAP + 0x8103);
     text(f, HEAP + 0x8001, "DriveEntryUnity"); text(f, HEAP + 0x8021, "FEVisi");
@@ -105,7 +105,7 @@ static void extended(Fixture *f) {
     put(f, HEAP + 0x3343, &one, 1); put(f, HEAP + 0x335b, &one, 1);
 }
 int main(void) {
-    Fixture f = {0}; f.cache = calloc(47894, 8); assert(f.cache);
+    Fixture f = {0}; f.cache = calloc(LV_TARGET_TYPE_COUNT, 8); assert(f.cache);
     LVTargetSnapshot s;
     reset(&f); assert(lv_target_snapshot(read_fixture, &f, BASE, &s) == LV_TARGET_READY);
     assert(s.count == 2 && s.actors[0].is_local && !s.actors[1].is_local);

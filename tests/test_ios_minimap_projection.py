@@ -27,7 +27,7 @@ class OrdinaryMapProjection(unittest.TestCase):
     def test_fifty_numeric_cases(self):
         fw=FRAMEWORK.read_bytes()
         self.assertEqual(hashlib.sha256(fw).hexdigest(),FRAMEWORK_SHA256)
-        start,end,heap=0x74019c8,0x7401a04,0x350000000
+        start,end,heap=0x5e95ea0,0x5e95edc,0x350000000
         with tempfile.TemporaryDirectory() as directory:
             library=Path(directory)/'map.so'
             subprocess.run(['gcc','-std=c11','-D_POSIX_C_SOURCE=200809L','-Wall','-Wextra','-Werror','-fPIC','-shared','-I'+str(ROOT/'core'),

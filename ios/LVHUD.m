@@ -1,3 +1,4 @@
+#import "LVGameIdentity.h"
 /* Plugin bootstrap and global-window hosting adapted from Lessica/TrollSpeed
    a609be260c8261ead36509c3bc4ded8479da9c40 (MIT). See TrollSpeed-LICENSE.txt.
    This HUD has no input-event generator or target memory write interface. */
@@ -369,7 +370,7 @@ static NSString *blockLabel(NSString *code) {
     self.label.layer.cornerRadius = 7; self.label.layer.masksToBounds = YES;
     self.label.textAlignment = NSTextAlignmentCenter; self.label.userInteractionEnabled = NO;
     self.label.hidden = hudMapSettings.values[LV_HUD_INFO_PANEL] == 0;
-    self.label.text = @"lvlolm · 只读悬浮窗\n正在采样…";
+    self.label.text = @"Wild Rift · 只读悬浮窗\n正在采样…";
     [self.canvas addSubview:self.label];
     self.minimap = [LVMinimapView new]; self.minimap.opaque = NO;
     NSString *heroDirectory = [[LVHUDExecutablePath().stringByDeletingLastPathComponent
@@ -481,11 +482,11 @@ static NSString *blockLabel(NSString *code) {
     if (self.label.hidden) return;
     NSString *result = snapshot[@"result"];
     if (![result isEqual:@"ready"] && ![result isEqual:@"partial"]) {
-        self.label.text = @"lvlolm · 只读悬浮窗\n本次数据不可用\n不会沿用上一帧数值\n返回恢复应用检查报告";
+        self.label.text = @"Wild Rift · 只读悬浮窗\n本次数据不可用\n不会沿用上一帧数值\n返回恢复应用检查报告";
         return;
     }
     NSMutableArray *lines = [NSMutableArray new];
-    [lines addObject:[NSString stringWithFormat:@"lvlolm · 只读 · 更新 %lu", (unsigned long)self.frames]];
+    [lines addObject:[NSString stringWithFormat:@"Wild Rift · 只读 · 更新 %lu", (unsigned long)self.frames]];
     NSDictionary *local = nil;
     for (NSDictionary *actor in snapshot[@"actors"]) if ([actor[@"is_local"] boolValue]) { local = actor; break; }
     [lines addObject:[local[@"health_read_ok"] boolValue] ?
@@ -584,7 +585,7 @@ int main(int argc, char **argv) {
         targetPID = (pid_t)pid;
         char path[PATH_MAX] = {0};
         if (proc_pidpath(targetPID, path, sizeof(path)) <= 0 ||
-            ![[NSString stringWithUTF8String:path] hasSuffix:@"/lolm.app/lolm"]) {
+            !LVGameMatchesExecutablePath([NSString stringWithUTF8String:path])) {
             acknowledge(@{ @"error": @"HUD target identity unavailable" }); return 2;
         }
         targetIdentity = [NSString stringWithUTF8String:path];
@@ -596,7 +597,7 @@ int main(int argc, char **argv) {
         BOOL uuidMatches = NO;
         for (NSDictionary *image in hudMetadata[@"images"])
             if ([image[@"path"] hasSuffix:@"/Frameworks/UnityFramework.framework/UnityFramework"] &&
-                [image[@"uuid"] isEqual:@"085E1DDF-4A8D-34E2-9D73-A0A28BCC0B83"]) uuidMatches = YES;
+                [image[@"uuid"] isEqual:@LV_TARGET_UUID]) uuidMatches = YES;
         if (!uuidMatches) { acknowledge(@{ @"error": @"HUD framework UUID does not match this profile" }); return 1; }
         atexit(clearState);
         void *graphics = dlopen("/System/Library/PrivateFrameworks/GraphicsServices.framework/GraphicsServices", RTLD_NOW | RTLD_LOCAL);

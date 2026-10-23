@@ -53,17 +53,25 @@ class OriginalInstructions(unittest.TestCase):
             raise ValueError('Wrong iOS framework profile')
         cls.md = Metadata(METADATA.read_bytes(), cls.fw)
         cls.native = NativeTables(cls.fw, cls.md)
+        from capstone import Cs, CS_ARCH_ARM64, CS_MODE_LITTLE_ENDIAN
+        cs=Cs(CS_ARCH_ARM64,CS_MODE_LITTLE_ENDIAN);cs.detail=True
+        def address(pc):
+            a,b=list(cs.disasm(cls.fw[pc:pc+8],pc))
+            return a.operands[1].imm+b.operands[1].mem.disp
+        cls.metadata_global=address(0x17841b8+0x18)
+        cls.bitmap_global=address(0x17841b8+0x34)
+        cls.string_keys=0xe9903e0
 
     def test_stream_block_64_states(self):
         rng = random.Random(20261010)
         states = [[0] * 16, [0xffffffff] * 16] + [[rng.getrandbits(32) for _ in range(16)] for _ in range(62)]
         for state in states:
-            uc = machine(self.fw, 0x2ca2c34, 0x2ca2ed8)
+            uc = machine(self.fw, 0x1762e58, 0x17630fc)
             uc.mem_map(STATE, 8192)
             uc.mem_write(STATE, struct.pack('<16I', *state))
             uc.reg_write(UC_ARM64_REG_X0, OUTPUT)
             uc.reg_write(UC_ARM64_REG_X1, STATE)
-            uc.emu_start(0x2ca2c34, HALT, count=20000)
+            uc.emu_start(0x1762e58, HALT, count=20000)
             self.assertEqual(uc.reg_read(UC_ARM64_REG_X0), OUTPUT)
             self.assertEqual(bytes(uc.mem_read(OUTPUT, 64)), stream_block(state))
 
@@ -80,10 +88,10 @@ class OriginalInstructions(unittest.TestCase):
         self.assertGreaterEqual(len(indices), 190)
         for index in indices:
             name = self.md.name(index).encode('utf-8')
-            uc = machine(self.fw, 0x2cc4004, 0x2cc4104)
-            for page in (0x10a91000, 0x10b35000, 0x10239000, STATE): uc.mem_map(page, 4096)
+            uc = machine(self.fw, 0x17841b8, 0x17842b8)
+            for page in {self.metadata_global&~4095,self.bitmap_global&~4095,self.string_keys&~4095,STATE}: uc.mem_map(page, 4096)
             uc.mem_write(STATE, self.md.header)
-            uc.mem_write(0x10239480, self.md.keys)
+            uc.mem_write(self.string_keys, self.md.keys)
             source = 0x60000000
             address = source + self.md.string_offset + index
             first, last = address & ~4095, (address + len(name) + 1 + 4095) & ~4095
@@ -92,30 +100,30 @@ class OriginalInstructions(unittest.TestCase):
             bitmap = 0x70000000
             word = bitmap + (index >> 5) * 4
             uc.mem_map(word & ~4095, 4096)
-            uc.mem_write(0x10a915d0, struct.pack('<QQ', source, STATE))
-            uc.mem_write(0x10b357d8, struct.pack('<Q', bitmap))
+            uc.mem_write(self.metadata_global, struct.pack('<QQ', source, STATE))
+            uc.mem_write(self.bitmap_global, struct.pack('<Q', bitmap))
             for _ in range(2):
                 uc.reg_write(UC_ARM64_REG_X0, index)
                 uc.reg_write(UC_ARM64_REG_LR, HALT)
-                uc.emu_start(0x2cc4004, HALT, count=200000)
+                uc.emu_start(0x17841b8, HALT, count=200000)
                 self.assertEqual(uc.reg_read(UC_ARM64_REG_X0), address)
                 self.assertEqual(bytes(uc.mem_read(address, len(name) + 1)), name + b'\0')
 
     def test_tables_and_concrete_fields(self):
         self.assertEqual([self.md.tables[n]['count'] for n in ('types','fields','methods','images')],
-                         [47894, 495160, 390601, 86])
-        checks = [(37468, 'DriveEntryUnity', '_cur', 0, True),
-                  (37473, 'FEVisi', '_myHero', 0x30, True),
-                  (37505, 'VisiActorMgr', 'visiActorList', 0x10, False),
-                  (37453, 'BattleActorVisi', '_actor', 0xa0, False),
-                  (34683, 'BattleActor', '_skillMgr', 0xa0, False)]
+                         [49134, 497025, 392546, 88])
+        checks = [(37277, 'DriveEntryUnity', '_cur', 0, True),
+                  (37282, 'FEVisi', '_myHero', 0x30, True),
+                  (37314, 'VisiActorMgr', 'visiActorList', 0x10, False),
+                  (37262, 'BattleActorVisi', '_actor', 0xa0, False),
+                  (34492, 'BattleActor', '_skillMgr', 0xa0, False)]
         for index, name, field_name, offset, static in checks:
             record = self.md.type(index)
             self.assertEqual(record['name'], name)
             field = next(f for f in self.native.fields(record) if f['name'] == field_name)
             self.assertEqual((field['offset'], field['static']), (offset, static))
-        method = next(m for m in self.native.methods(self.md.type(34648)) if m['name'] == 'get_resId')
-        self.assertEqual(method['native_address'], 0x4ecc1c8)
+        method = next(m for m in self.native.methods(self.md.type(34457)) if m['name'] == 'get_resId')
+        self.assertEqual(method['native_address'], 0x39452ac)
         self.assertEqual(method['declaring_module'], 'Assembly-CSharp.dll')
 
     def test_profile_and_input_rejection(self):
@@ -123,7 +131,7 @@ class OriginalInstructions(unittest.TestCase):
         bad = b'XXXX' + self.md.data[4:]
         with self.assertRaises(ValueError): Metadata(bad, self.fw)
         with self.assertRaises(ValueError): self.md.name(self.md.string_size)
-        with self.assertRaises(ValueError): self.md.record('types', 47894, '<16i8H2I')
+        with self.assertRaises(ValueError): self.md.record('types', 49134, '<16i8H2I')
         with self.assertRaises(ValueError): self.native.type(self.native.type_count)
         with self.assertRaises(ValueError): self.native.read(0x10d5c000, '<Q')
 

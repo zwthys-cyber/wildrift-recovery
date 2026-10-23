@@ -9,7 +9,7 @@
 #define LV_TRACE_LIMIT (512*1024)
 static NSString *traceDirectory(NSString *session) {
     if(!LVHUDSessionValid(session)) return nil;
-    return [@"/private/var/tmp/lvlolm-hud-" stringByAppendingString:session.lowercaseString];
+    return [@"/private/var/tmp/wildrift-hud-" stringByAppendingString:session.lowercaseString];
 }
 static int openDirectory(NSString *session,BOOL create) {
     NSString *path=traceDirectory(session);

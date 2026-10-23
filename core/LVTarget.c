@@ -203,12 +203,12 @@ LVTargetResult lv_target_snapshot(LVTargetRead read, void *context, uint64_t bas
     o->local_skills.all.result = o->local_skills.summoner.result = LV_TARGET_UNREADABLE;
     o->local_skills.all.stage = o->local_skills.summoner.stage = "not_sampled";
     Reader r = {read, context};
-    if (!read || !address_valid(base, 8) || base > (UINT64_C(1) << 48) - 0x10a91600)
+    if (!read || !address_valid(base, 8) || base > (UINT64_C(1) << 48) - (LV_TARGET_CLASS_CACHE_OFFSET+8))
         return finish(o, LV_TARGET_UNREADABLE, "image_base");
     /* GlobalMetadata::GetTypeInfoFromTypeDefinitionIndex, 0x2cc42e8. */
-    if (!pointer(&r, base + 0x10a915f8, &o->class_cache) || !o->class_cache)
+    if (!pointer(&r, base + LV_TARGET_CLASS_CACHE_OFFSET, &o->class_cache) || !o->class_cache)
         return finish(o, LV_TARGET_UNREADABLE, "class_cache");
-    if (!pointer(&r, o->class_cache + 37468 * 8ULL, &o->drive_class))
+    if (!pointer(&r, o->class_cache + LV_TYPE_DRIVE_ENTRY_UNITY * 8ULL, &o->drive_class))
         return finish(o, LV_TARGET_UNREADABLE, "drive_class");
     if (!o->drive_class) return finish(o, LV_TARGET_NOT_IN_BATTLE, "drive_class_uninitialized");
     if (!class_matches(&r, o->drive_class, "DriveEntryUnity"))
@@ -232,7 +232,7 @@ LVTargetResult lv_target_snapshot(LVTargetRead read, void *context, uint64_t bas
     if (capacity < (uint64_t)o->reported_count || capacity > 65536)
         return finish(o, LV_TARGET_LAYOUT_MISMATCH, "array_capacity");
     uint64_t fe_class = 0, statics = 0, my_visual = 0, my_actor = 0;
-    if (pointer(&r, o->class_cache + 37473 * 8ULL, &fe_class) && fe_class &&
+    if (pointer(&r, o->class_cache + LV_TYPE_FE_VISI * 8ULL, &fe_class) && fe_class &&
         class_matches(&r, fe_class, "FEVisi") && pointer(&r, fe_class + 0xb8, &statics) && statics &&
         pointer(&r, statics + 0x30, &my_visual) && my_visual &&
         pointer(&r, my_visual + 0xa0, &my_actor) && my_actor)

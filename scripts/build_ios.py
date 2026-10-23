@@ -64,7 +64,7 @@ def build(sdk, clang, linker, ldid):
         run(ldid, '-S' + str(ROOT / 'ios' / (entitlement + '.entitlements.plist')), binary)
     dist = ROOT / 'dist'
     dist.mkdir(exist_ok=True)
-    ipa = dist / ('lvlolm-recovery-' + info['CFBundleShortVersionString'] + '.ipa')
+    ipa = dist / ('wildrift-recovery-' + info['CFBundleShortVersionString'] + '.ipa')
     with zipfile.ZipFile(ipa, 'w', zipfile.ZIP_DEFLATED) as z:
         for file in sorted(app.rglob('*')):
             if file.is_file(): z.write(file, file.relative_to(build_dir))
@@ -158,6 +158,23 @@ def build(sdk, clang, linker, ldid):
                 'clang_version': subprocess.check_output([clang, '--version'], text=True).splitlines()[0],
                 'sdk': sdk.name, 'files': {str(f.relative_to(app)): hashlib.sha256(f.read_bytes()).hexdigest()
                                          for f in sorted(app.rglob('*')) if f.is_file()}}
+    # Historical CN observations are not evidence for this international build.
+    metadata = {k: v for k, v in metadata.items() if not k.startswith('prior_')}
+    for key in list(metadata):
+        if key.endswith('_device_verified') or key == 'device_runtime_verified':
+            metadata[key] = False
+    metadata.update(
+        target_region='international', target_bundle_id='com.riotgames.league.wildrift',
+        target_game_version='7.3.0', target_game_build='2813',
+        target_framework_uuid='B59675EA-20A7-306E-97FF-5EA41A2B36C6',
+        native_engine_input_sha256='e24ae2f5c2cc2a4910ff9c4e04177ca9f8a8fea0eb70ed790ed79cfbe0146eeb',
+        minimap_latest_device_evidence=None,
+        minimap_latest_device_issue='International 2813 has no phone runtime evidence yet.',
+        minimap_recommended_rect_source='Inherited CN calibration; calibrate on the international client.',
+        minimap_fog_observation_scope='No international device observation yet.',
+        private_original_inputs_bundled=False,
+        build_location='GitHub Actions',
+    )
     (dist / 'build-metadata.json').write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + '\n')
     (dist / ('build-metadata-' + info['CFBundleShortVersionString'] + '.json')).write_text(
         json.dumps(metadata, ensure_ascii=False, indent=2) + '\n')

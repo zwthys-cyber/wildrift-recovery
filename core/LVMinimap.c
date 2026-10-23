@@ -125,12 +125,12 @@ static int geometry_equal(const unsigned char *a, const unsigned char *b) {
 void lv_minimap_read(LVTargetRead read, void *ctx, uint64_t base, LVMinimapGeometry *out) {
     if (!out) return;
     memset(out, 0, sizeof(*out)); out->reason = "geometry_unavailable";
-    if (!valid_address(base, 8) || base > (UINT64_C(1) << 48) - 0x10a91600) return;
+    if (!valid_address(base, 8) || base > (UINT64_C(1) << 48) - (LV_TARGET_CLASS_CACHE_OFFSET+8)) return;
     uint64_t cache, cls, statics, instance, ui_cls, ui_statics, ui, object_cls;
-    if (!ptr(read, ctx, base + 0x10a915f8, &cache) || !ptr(read, ctx, cache + 6839 * 8ULL, &cls) ||
+    if (!ptr(read, ctx, base + LV_TARGET_CLASS_CACHE_OFFSET, &cache) || !ptr(read, ctx, cache + LV_TYPE_MINIMAP_MAPPING * 8ULL, &cls) ||
         !class_name(read, ctx, cls, "UIMiniMappingMgr") || !ptr(read, ctx, cls + 0xb8, &statics) ||
         !ptr(read, ctx, statics, &instance) || !ptr(read, ctx, instance, &object_cls) || object_cls != cls ||
-        !ptr(read, ctx, cache + 6835 * 8ULL, &ui_cls) || !class_name(read, ctx, ui_cls, "UIMainBattleMiniMapCtrl") ||
+        !ptr(read, ctx, cache + LV_TYPE_MINIMAP_CONTROLLER * 8ULL, &ui_cls) || !class_name(read, ctx, ui_cls, "UIMainBattleMiniMapCtrl") ||
         !ptr(read, ctx, ui_cls + 0xb8, &ui_statics) || !ptr(read, ctx, ui_statics + 0x18, &ui) ||
         !ptr(read, ctx, ui, &object_cls) || object_cls != ui_cls) return;
     unsigned char data[0x74], after[0x74]; uint8_t full, full_after; uint32_t zoom, zoom_after;
@@ -140,8 +140,8 @@ void lv_minimap_read(LVTargetRead read, void *ctx, uint64_t base, LVMinimapGeome
     if (data[0] > 1 || data[0x64] > 1 || full > 1 || suspended < 0) { out->reason = "geometry_invalid"; return; }
     uint64_t same_cache, same_cls, same_statics, same_instance, same_ui;
     if (!load(read, ctx, instance + 0x10, after, sizeof(after)) || !geometry_equal(data,after) ||
-        !ptr(read, ctx, base + 0x10a915f8, &same_cache) || same_cache != cache ||
-        !ptr(read, ctx, cache + 6839 * 8ULL, &same_cls) || same_cls != cls ||
+        !ptr(read, ctx, base + LV_TARGET_CLASS_CACHE_OFFSET, &same_cache) || same_cache != cache ||
+        !ptr(read, ctx, cache + LV_TYPE_MINIMAP_MAPPING * 8ULL, &same_cls) || same_cls != cls ||
         !ptr(read, ctx, cls + 0xb8, &same_statics) || same_statics != statics ||
         !ptr(read, ctx, statics, &same_instance) || same_instance != instance ||
         !ptr(read, ctx, ui_cls + 0xb8, &same_statics) || same_statics != ui_statics ||
@@ -171,16 +171,16 @@ void lv_minimap_health_read(LVTargetRead read, void *ctx, uint64_t base,
         s->actors[i].minimap_health_fraction_ok=0; s->actors[i].minimap_health_fraction_fixed=0;
     }
     if ((s->result!=LV_TARGET_READY && s->result!=LV_TARGET_PARTIAL) ||
-        !valid_address(base,8) || base > (UINT64_C(1)<<48)-0x10a91600) return;
+        !valid_address(base,8) || base > (UINT64_C(1)<<48)-(LV_TARGET_CLASS_CACHE_OFFSET+8)) return;
     uint64_t cache, cls, statics, entity, icons, dictionary, entries, hero_cls, object_cls, capacity;
-    if (!ptr(read,ctx,base+0x10a915f8,&cache) || !ptr(read,ctx,cache+6835*8ULL,&cls) ||
+    if (!ptr(read,ctx,base+LV_TARGET_CLASS_CACHE_OFFSET,&cache) || !ptr(read,ctx,cache+LV_TYPE_MINIMAP_CONTROLLER*8ULL,&cls) ||
         !class_name(read,ctx,cls,"UIMainBattleMiniMapCtrl") || !ptr(read,ctx,cls+0xb8,&statics) ||
         !ptr(read,ctx,statics,&entity) || !ptr(read,ctx,entity,&object_cls) ||
         !class_name(read,ctx,object_cls,"MiniMapEntityCtrl") || !ptr(read,ctx,entity+0x190,&icons) ||
         !ptr(read,ctx,icons,&object_cls) || !class_name(read,ctx,object_cls,"UIMiniMapIconCtrl") ||
         !ptr(read,ctx,icons+0x80,&dictionary) || !ptr(read,ctx,dictionary+0x18,&entries) ||
         !load(read,ctx,entries+0x18,&capacity,8) || capacity>4096 ||
-        !ptr(read,ctx,cache+6780*8ULL,&hero_cls) || !class_name(read,ctx,hero_cls,"UIMiniIconHeroCtrl")) return;
+        !ptr(read,ctx,cache+LV_TYPE_MINIMAP_HERO_ICON*8ULL,&hero_cls) || !class_name(read,ctx,hero_cls,"UIMiniIconHeroCtrl")) return;
     unsigned seen[LV_TARGET_MAX_ACTORS]={0};
     /* GetIconByBattleActor 0x738b8bc..8d8 verifies +18 entries, array +20,
        24-byte Entry<UInt32,UIMiniIconBaseCtrl> and value +10. Read bounded
@@ -222,7 +222,7 @@ void lv_minimap_health_read(LVTargetRead read, void *ctx, uint64_t base,
         }
     }
     uint64_t same;
-    if(!ptr(read,ctx,base+0x10a915f8,&same) || same!=cache ||
+    if(!ptr(read,ctx,base+LV_TARGET_CLASS_CACHE_OFFSET,&same) || same!=cache ||
         !ptr(read,ctx,cls+0xb8,&same) || same!=statics || !ptr(read,ctx,statics,&same) || same!=entity ||
         !ptr(read,ctx,entity+0x190,&same) || same!=icons || !ptr(read,ctx,icons+0x80,&same) || same!=dictionary ||
         !ptr(read,ctx,dictionary+0x18,&same) || same!=entries ||

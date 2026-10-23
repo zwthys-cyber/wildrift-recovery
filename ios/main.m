@@ -77,7 +77,7 @@ static NSInteger LVGroup(const LVField *field) {
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"lvlolm 恢复";
+    self.title = @"Wild Rift 国际服";
     lv_config_defaults(&_config);
     NSData *saved = [NSData dataWithContentsOfURL:self.configURL];
     if (saved.length && saved.length <= LV_CONFIG_MAX_INPUT) {
@@ -146,7 +146,7 @@ static NSInteger LVGroup(const LVField *field) {
     }
     if (!path.section) {
         cell.textLabel.text = @[@"57 项配置已恢复", @"适配文件版本", @"运行读取自检", @"检测游戏并读取对局", @"导入安卓配置", @"导出配置", @"导出诊断报告", @"导出适配文件", @"查看对局与技能快照", @"启动／更新只读悬浮窗", @"检查悬浮窗状态", @"停止悬浮窗", @"补充导出原生引擎"][path.row];
-        cell.detailTextLabel.text = @[@"默认值与数值范围已从安卓程序提取", @"本次导出：7.3.3 (2818)", @"检查自身内存读取接口", self.probeStatus ?: @"尚未检测", @"选择 dynamic_draw_lolm.ini", @"保存或分享 INI 文件", @"分享检测结果、快照及悬浮窗状态", @"先检测游戏，再收集框架、元数据及原生引擎；文件可能较大", @"显示最近一次采样；重新检测可更新", @"先检测 lolm；原小地图标记平滑移动，每 0.15 秒采样", self.hudStatus ?: @"尚未检查", @"结束本应用启动的只读悬浮窗", @"只补充 FEProj 适配文件；游戏停在大厅即可，无需再打一局"][path.row];
+        cell.detailTextLabel.text = @[@"默认值与数值范围已从安卓程序提取", @"国际服：7.3.0 (2813)", @"检查自身内存读取接口", self.probeStatus ?: @"尚未检测", @"选择 dynamic_draw_lolm.ini", @"保存或分享 INI 文件", @"分享检测结果、快照及悬浮窗状态", @"先检测游戏，再收集框架、元数据及原生引擎；文件可能较大", @"显示最近一次采样；重新检测可更新", @"先检测 wildrift；原小地图标记平滑移动，每 0.15 秒采样", self.hudStatus ?: @"尚未检查", @"结束本应用启动的只读悬浮窗", @"只补充 FEProj 适配文件；游戏停在大厅即可，无需再打一局"][path.row];
         if (path.row < 2) cell.selectionStyle = UITableViewCellSelectionStyleNone;
         else cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         return cell;
@@ -328,7 +328,7 @@ static NSInteger LVGroup(const LVField *field) {
     if (starting && (![pid isKindOfClass:NSNumber.class] ||
         ![self.diagnostics[@"target_probe"][@"task_result"] isKindOfClass:NSNumber.class] ||
         [self.diagnostics[@"target_probe"][@"task_result"] intValue] != 0)) {
-        [self alert:@"先检测游戏" message:@"进入训练模式，检测并选择 lolm 后再启动悬浮窗。"];
+        [self alert:@"先检测游戏" message:@"进入训练模式，检测并选择 wildrift 后再启动悬浮窗。"];
         return;
     }
     if (!LVHUDSessionValid(session)) {
