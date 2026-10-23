@@ -1,0 +1,35 @@
+{
+  "app_version": "0.8.4",
+  "target_game": "international Wild Rift 7.3.0 (2813)",
+  "target_ios": "17.0",
+  "source": "User-exported lvlolm-diagnostics.json reviewed in repository",
+  "input_sha256": "05b031e482c42c67f31528ebfc7cd7e4c499b6be4928fb62ca8ab8a55684e02f",
+  "snapshot_sampled_at": "2026-10-23T20:46:57Z",
+  "hud_checked_at": "2026-10-23T20:48:23Z",
+  "reviewed_at": "2026-10-23T21:00:00+00:00",
+  "observation": {
+    "mode": "training with computer-controlled opponent",
+    "enemy_skill_panel_enabled": true,
+    "trace_samples": 32,
+    "trace_span_seconds": 32.55,
+    "enemy_hero_count": 1,
+    "enemy_hero_resource_id": 10068
+  },
+  "verified": {
+    "enemy_regular_skill_native_cooldown_countdown": true,
+    "native_logic_remain_read_ok": true,
+    "native_logic_total_start_update_on_cast": true,
+    "sync_mirror_remain_stays_zero_for_enemy": true,
+    "enemy_summoner_native_coverage": false,
+    "enemy_summoner_logic_reason": "skill_not_found",
+    "regular_skill_ability_names": false
+  },
+  "evidence": {
+    "regular_skill_remain_decrements_with_game_tick": true,
+    "regular_skill_total_fixed_q14_155648_about_9.5s": true,
+    "regular_skill_start_advances_per_cast": true,
+    "summoner_skills_absent_from_native_manager_list_2d8": true,
+    "native_summoner_manager_at_hero_0x360_with_list_0x60": true
+  },
+  "privacy_scope": "Whitelisted counts, game object/resource IDs, Q14 numeric values and static evidence only. Device addresses, process IDs, sessions, player identifiers, device paths and raw reports excluded."
+}

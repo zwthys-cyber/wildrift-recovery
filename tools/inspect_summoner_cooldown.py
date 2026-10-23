@@ -4,10 +4,11 @@ from inspect_skill_panel import ROOT,engine,fw,cs,md,native,follow,exports
 lines=[]
 for start,end,label in ((0x1fafccc,0x1fafd04,'native hero type check'),
  (0x1001d60,0x1001e60,'native summoner GetSkill'),
+ (0x1001e60,0x1001f80,'sync summoner GetSkill'),
  (0xfefc48,0xfefc58,'native/sync resource getter'),
  (0x1001000,0x10011c0,'summoner manager construction context'),
- (0xff8b28,0xff8b50,'native summoner manager consumer'),
- (0xff9030,0xff9050,'sync summoner manager consumer')):
+ (0xff8b28,0xff8f80,'native summoner manager consumer'),
+ (0xff9030,0xff9480,'sync summoner manager consumer')):
  lines.append(f'; {label} {start:#x}')
  lines.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(engine[start:end],start))
 for index in (36047,):
