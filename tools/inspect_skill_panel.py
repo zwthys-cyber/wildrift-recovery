@@ -83,3 +83,21 @@ while pending and len(seen)<10:
   if ins.mnemonic=='b':break
 (out/'skill-panel-getters.asm').write_text('\n'.join(lines)+'\n')
 print('GetRSkillSync native symbol:',name,hex(entry))
+# Complete selected classification bodies, including conditional return paths.
+classification=[]
+for start,end,label in ((0xff9f88,0xffa450,'native ultimate accessors'),):
+ classification.append('\n; '+label)
+ classification.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(engine[start:end],start))
+for t in profile['selected_types']:
+ if t['namespace']=='FrameEngine.Logic' and t['name']=='ActorSkill':
+  for m in native.methods(md.type(t['index'])):
+   if m['name'] not in ('GetFunctionTypeSync','IsSummonerSkillSync','get_createType'):continue
+   start=m['native_address'];classification.append('\n; '+m['name']+' '+hex(start))
+   classification.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(fw[start:start+200],start))
+# Enumerate only candidate type names; no full metadata dump.
+for index in range(md.tables['types']['count']):
+ t=md.type(index)
+ if any(x in t['name'].lower() for x in ('skillfunction','skilltype','skillcfg','skillconfig','skillbase','herobase','skillindex')):
+  classification.append('\n; TYPE '+str(index)+' '+t['namespace']+'.'+t['name'])
+  classification.append('; FIELDS '+repr([(f['name'],f['offset'],f['literal'],f['index']) for f in native.fields(t)]))
+(out/'skill-panel-classification.asm').write_text('\n'.join(classification)+'\n')

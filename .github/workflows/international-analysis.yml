@@ -37,6 +37,7 @@ jobs:
             build/international-selected.asm
             build/skill-panel-getters.asm
             build/skill-panel-methods.json
+            build/skill-panel-classification.asm
       - name: Remove private inputs
         if: always()
         run: rm -rf inputs
