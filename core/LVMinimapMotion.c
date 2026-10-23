@@ -26,7 +26,9 @@ int lv_minimap_motion_update(LVMinimapMotion *m, const LVMinimapMarker *markers,
     LVMinimapMotion next = {.count=count, .started_at=now, .duration=duration};
     for (size_t i = 0; i < count; ++i) {
         const LVMinimapMarker *a = &markers[i];
-        if (!a->object_id || a->is_local > 1 || a->is_ward > 1 || (a->is_local && a->is_ward) ||
+        if (!a->object_id || a->is_local > 1 || a->is_ward > 1 || a->is_monster > 1 ||
+            (a->is_local + a->is_ward + a->is_monster > 1) ||
+            a->health_read_ok > 1 || (a->is_monster && (!a->health_read_ok || a->health_fixed<=0)) ||
             a->ordinal > LV_TARGET_MAX_ACTORS ||
             a->health_fraction_ok>1 || a->edge_clamped>1 ||
             (a->health_fraction_ok && (!isfinite(a->health_fraction) || a->health_fraction<0 || a->health_fraction>1)) ||
@@ -41,7 +43,8 @@ int lv_minimap_motion_update(LVMinimapMotion *m, const LVMinimapMarker *markers,
         for (size_t j = 0; j < m->count; ++j) {
             const LVMinimapMarker *previous = &m->items[j].target;
             if (previous->object_id != a->object_id || previous->resource_id != a->resource_id ||
-                previous->is_local != a->is_local || previous->is_ward != a->is_ward) continue;
+                previous->is_local != a->is_local || previous->is_ward != a->is_ward ||
+                previous->is_monster != a->is_monster) continue;
             double u, v; lv_minimap_motion_position(m, j, now, &u, &v);
             /* Large jumps snap to the new sample, avoiding a sweep across
                the map after teleportation or identity reuse. */

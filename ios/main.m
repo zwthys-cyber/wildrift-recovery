@@ -50,6 +50,22 @@ static NSString *LVLabel(const char *key) {
     return labels[name] ?: name;
 }
 
+static NSString *LVImplementationNote(const char *rawKey) {
+    NSString *key=@(rawKey);
+    if ([key isEqualToString:@"drawMinimap"]) return @"敌人头像已获当前场景实机确认";
+    if ([key isEqualToString:@"drawWards"]) return @"已实现；眼位出现和销毁仍需实机确认";
+    if ([key isEqualToString:@"drawMonsters"]) return @"显示当前可读且存活的野怪；新版待实机确认";
+    if ([key isEqualToString:@"hideMonsterHealth"]) return @"仅隐藏野怪血量文字，保留标记";
+    if ([key isEqualToString:@"autoSmite"]) return @"仅判断预览，不会释放技能";
+    if ([key isEqualToString:@"autoMercury"]) return @"仅恢复规则，尚未接入实际操作";
+    if ([key hasPrefix:@"godView"]) return @"仅保存配置；只读版本不修改游戏视角";
+    if ([key hasPrefix:@"entity"] || [key hasPrefix:@"skillPanel"] ||
+        [@[@"drawBox",@"drawRay",@"drawSkillPanel",@"hideSmallSkills",@"hideEntityAvatar",
+           @"showMonsterRespawn",@"wardVisionRangeBrightness",@"showMercuryMarker",@"showSmiteRange",@"showSmiteMarker"] containsObject:key])
+        return @"尚未实现，当前仅保存配置";
+    return nil;
+}
+
 static NSInteger LVGroup(const LVField *field) {
     NSString *key = [NSString stringWithUTF8String:field->key];
     if ([key hasPrefix:@"smite"] || [key isEqualToString:@"autoSmite"] || [key hasPrefix:@"showSmite"]) return 2;
@@ -153,6 +169,8 @@ static NSInteger LVGroup(const LVField *field) {
     }
     NSUInteger index = self.groups[path.section][path.row].unsignedIntegerValue;
     cell.textLabel.text = LVLabel(lv_fields[index].key);
+    NSString *note=LVImplementationNote(lv_fields[index].key);
+    cell.detailTextLabel.text=note;
     if (lv_fields[index].type == LV_BOOL) {
         UISwitch *control = [UISwitch new];
         control.on = _config.values[index][0] != 0;
@@ -161,7 +179,7 @@ static NSInteger LVGroup(const LVField *field) {
         cell.accessoryView = control;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     } else {
-        cell.detailTextLabel.text = [self fieldText:index];
+        cell.detailTextLabel.text = note ? [NSString stringWithFormat:@"%@ · %@",[self fieldText:index],note] : [self fieldText:index];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     return cell;

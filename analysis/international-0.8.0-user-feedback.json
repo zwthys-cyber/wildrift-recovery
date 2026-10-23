@@ -1,0 +1,15 @@
+{
+  "app_version": "0.8.0",
+  "target_game": "international Wild Rift 7.3.0 (2813)",
+  "target_ios": "17.0",
+  "source": "User-provided screenshot and explicit confirmation in conversation",
+  "enemy_portraits_user_confirmed_visible": true,
+  "observed_scope": "One supplied training scene with an enemy portrait over the minimap and an alignment reference rectangle",
+  "precise_alignment_verified": false,
+  "all_five_hidden_moving_enemies_verified": false,
+  "health_ring_values_verified": false,
+  "ward_lifecycle_verified": false,
+  "monster_overlay_verified": false,
+  "automatic_actions_implemented": false,
+  "raw_screenshot_published": false
+}

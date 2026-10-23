@@ -96,6 +96,20 @@ static void recordCoordinateTrace(NSDictionary *snapshot) {
         }
         [wards addObject:entry];
     }
+    NSMutableArray *monsters=[NSMutableArray new]; BOOL monstersTruncated=NO;
+    for(NSDictionary *actor in snapshot[@"actors"]) {
+        if(![actor[@"classification_read_ok"] boolValue] || ![actor[@"is_monster"] boolValue] ||
+            [actor[@"is_hero"] boolValue]) continue;
+        if(monsters.count==24) { monstersTruncated=YES; break; }
+        NSMutableDictionary *entry=[NSMutableDictionary new];
+        for(NSString *key in keys) if(actor[key]) entry[key]=actor[key];
+        entry[@"minimap_marker_prepared"]=@NO;
+        for(NSDictionary *marker in map[@"markers"]) if([marker[@"is_monster"] boolValue] &&
+            [marker[@"object_id"] isEqual:actor[@"object_id"]] && [marker[@"resource_id"] isEqual:actor[@"resource_id"]]) {
+            entry[@"minimap_marker_prepared"]=@YES; break;
+        }
+        [monsters addObject:entry];
+    }
     [coordinateSamples addObject:@{ @"sampled_at":[NSISO8601DateFormatter.new stringFromDate:NSDate.date],
         @"uptime_seconds":@(now), @"result":result, @"read_attempts":snapshot[@"snapshot_read_attempts"] ?: @0,
         @"local_camp":map[@"local_camp"] ?: @0, @"map_reason":map[@"reason"] ?: @"missing",
@@ -104,12 +118,13 @@ static void recordCoordinateTrace(NSDictionary *snapshot) {
         @"health_cache":map[@"health_cache"] ?: @{}, @"native_health":map[@"native_health"] ?: @{},
         @"logic_positions":map[@"logic_positions"] ?: @{},
         @"hero_list_truncated":@(truncated), @"heroes":heroes, @"wards":wards,
-        @"ward_list_truncated":@(wardsTruncated), @"ward_settings":map[@"wards"] ?: @{} }];
+        @"ward_list_truncated":@(wardsTruncated), @"ward_settings":map[@"wards"] ?: @{},
+        @"monsters":monsters, @"monster_list_truncated":@(monstersTruncated), @"monster_settings":map[@"monsters"] ?: @{} }];
     if(coordinateSamples.count>32) [coordinateSamples removeObjectAtIndex:0];
     NSMutableDictionary *trace=[@{ @"format_version":@1, @"session":hudSession.lowercaseString,
         @"battle_instance":coordinateBattle ?: @"",
         @"producer_pid":@(getpid()), @"profile_uuid":@LV_TARGET_UUID, @"sample_interval_seconds":@1,
-        @"sample_limit":@32, @"hero_limit":@16, @"ward_limit":@16, @"samples":coordinateSamples,
+        @"sample_limit":@32, @"hero_limit":@16, @"ward_limit":@16, @"monster_limit":@24, @"samples":coordinateSamples,
         @"scope":@"Bounded numeric observations through vision changes. Identity-matched native logic coordinates may be used for drawing; candidate and last-position fields are diagnostic only. No full-memory dump, history marker or predicted coordinate." } mutableCopy];
     while(coordinateSamples.count>1 &&
         [NSJSONSerialization dataWithJSONObject:trace options:0 error:NULL].length>512*1024) {
@@ -180,7 +195,7 @@ static void publishMetrics(NSDictionary *snapshot, uint64_t frames, unsigned ori
     metrics.minimap_enabled = hudConfig.values[lv_config_index("drawMinimap")][0] != 0;
     NSDictionary *map = snapshot[@"minimap"];
     metrics.edge_clamped_markers=[map[@"edge_clamped_enemy_count"] unsignedShortValue];
-    for (NSDictionary *marker in map[@"markers"]) if (![marker[@"is_local"] boolValue] && ![marker[@"is_ward"] boolValue]) {
+    for (NSDictionary *marker in map[@"markers"]) if (![marker[@"is_local"] boolValue] && ![marker[@"is_ward"] boolValue] && ![marker[@"is_monster"] boolValue]) {
         ++metrics.displayed_markers;
         if([marker[@"health_fraction_read_ok"] boolValue]) ++metrics.health_ring_markers;
     }
@@ -234,6 +249,9 @@ static NSString *blockLabel(NSString *code) {
 @property(nonatomic, strong) LVHeroPortraits *portraitStore;
 @property(nonatomic, copy) NSDictionary<NSNumber *, UIImage *> *portraitImages;
 @property(nonatomic, strong) UIColor *wardColor;
+@property(nonatomic, strong) UIColor *monsterColor;
+@property(nonatomic) BOOL hideMonsterHealth;
+@property(nonatomic) CGFloat monsterHealthTextSize;
 @end
 @implementation LVMinimapView
 - (void)stopAnimation { [_displayLink invalidate]; _displayLink = nil; _motion.active = 0; }
@@ -259,10 +277,12 @@ static NSString *blockLabel(NSString *code) {
             targets[i] = (LVMinimapMarker){ .object_id=[m[@"object_id"] unsignedIntValue],
                 .resource_id=[m[@"resource_id"] intValue], .ordinal=[m[@"ordinal"] unsignedIntValue],
                 .is_local=[m[@"is_local"] boolValue], .is_ward=[m[@"is_ward"] boolValue],
+                .is_monster=[m[@"is_monster"] boolValue], .health_read_ok=[m[@"health_read_ok"] boolValue],
+                .health_fixed=[m[@"health_fixed"] longLongValue],
                 .u=[m[@"u"] doubleValue], .v=[m[@"v"] doubleValue],
                 .health_fraction_ok=[m[@"health_fraction_read_ok"] boolValue],
                 .health_fraction=[m[@"health_fraction"] doubleValue], .edge_clamped=[m[@"edge_clamped"] boolValue] };
-            if (!targets[i].is_local && !targets[i].is_ward) {
+            if (!targets[i].is_local && !targets[i].is_ward && !targets[i].is_monster) {
                 UIImage *image = [self.portraitStore imageForResourceID:targets[i].resource_id];
                 if (image) images[@(targets[i].resource_id)] = image;
             }
@@ -286,14 +306,40 @@ static NSString *blockLabel(NSString *code) {
         CGContextSetLineWidth(context, 1); CGContextStrokeRect(context, CGRectInset(self.bounds, 1, 1));
     }
     double now = NSProcessInfo.processInfo.systemUptime;
-    for (size_t i = 0; i < _motion.count; ++i) {
+    /* Draw monster labels first so enemy portraits remain above them. */
+    for (unsigned layer=0;layer<2;++layer) for (size_t i = 0; i < _motion.count; ++i) {
         const LVMinimapMarker *marker = &_motion.items[i].target; double u, v;
+        if ((layer==0) != (marker->is_monster!=0)) continue;
         lv_minimap_motion_position(&_motion, i, now, &u, &v);
         CGFloat x = u * self.bounds.size.width, y = v * self.bounds.size.height;
         if (marker->is_local) {
             CGContextSetStrokeColorWithColor(context, UIColor.cyanColor.CGColor); CGContextSetLineWidth(context, 2);
             CGContextMoveToPoint(context, x-5, y); CGContextAddLineToPoint(context, x+5, y);
             CGContextMoveToPoint(context, x, y-5); CGContextAddLineToPoint(context, x, y+5); CGContextStrokePath(context);
+        } else if(marker->is_monster) {
+            CGFloat radius=MAX(3,MIN(5,self.markerSize*.3));
+            x=MAX(radius+1,MIN(self.bounds.size.width-radius-1,x));
+            y=MAX(radius+1,MIN(self.bounds.size.height-radius-1,y));
+            UIColor *color=self.monsterColor ?: UIColor.yellowColor;
+            CGContextSetFillColorWithColor(context,color.CGColor);
+            CGContextSetStrokeColorWithColor(context,[UIColor colorWithWhite:0 alpha:.9].CGColor);
+            CGContextSetLineWidth(context,1.5);
+            CGContextMoveToPoint(context,x,y-radius); CGContextAddLineToPoint(context,x+radius,y);
+            CGContextAddLineToPoint(context,x,y+radius); CGContextAddLineToPoint(context,x-radius,y);
+            CGContextClosePath(context); CGContextDrawPath(context,kCGPathFillStroke);
+            if(!self.hideMonsterHealth && marker->health_read_ok && marker->health_fixed>0) {
+                /* Round a positive fractional HP upward, using bounded integer arithmetic. */
+                int64_t hp=marker->health_fixed/16384+(marker->health_fixed%16384!=0);
+                NSString *text=[NSString stringWithFormat:@"%lld",(long long)hp];
+                NSDictionary *attributes=@{NSFontAttributeName:[UIFont boldSystemFontOfSize:self.monsterHealthTextSize],
+                    NSForegroundColorAttributeName:color};
+                CGSize size=[text sizeWithAttributes:attributes];
+                CGFloat tx=MAX(1,MIN(self.bounds.size.width-size.width-1,x-size.width/2));
+                CGFloat ty=MAX(1,MIN(self.bounds.size.height-size.height-1,y+radius+1));
+                CGRect background=CGRectInset(CGRectMake(tx,ty,size.width,size.height),-1,0);
+                CGContextSetFillColorWithColor(context,[UIColor colorWithWhite:0 alpha:.8].CGColor);
+                CGContextFillRect(context,background); [text drawAtPoint:CGPointMake(tx,ty) withAttributes:attributes];
+            }
         } else if(marker->is_ward) {
             CGFloat radius=MAX(4,MIN(6,self.markerSize*.42));
             x=MAX(radius+1,MIN(self.bounds.size.width-radius-1,x));
@@ -465,9 +511,14 @@ static NSString *blockLabel(NSString *code) {
     const float *wardColor=hudConfig.values[lv_config_index("wardColor")];
     self.minimap.wardColor=[UIColor colorWithRed:MAX(0,MIN(1,wardColor[0])) green:MAX(0,MIN(1,wardColor[1]))
         blue:MAX(0,MIN(1,wardColor[2])) alpha:MAX(0,MIN(1,wardColor[3]))];
+    const float *neutralColor=hudConfig.values[lv_config_index("neutralColor")];
+    self.minimap.monsterColor=[UIColor colorWithRed:MAX(0,MIN(1,neutralColor[0])) green:MAX(0,MIN(1,neutralColor[1]))
+        blue:MAX(0,MIN(1,neutralColor[2])) alpha:MAX(0,MIN(1,neutralColor[3]))];
+    self.minimap.hideMonsterHealth=hudConfig.values[lv_config_index("hideMonsterHealth")][0]!=0;
+    self.minimap.monsterHealthTextSize=MAX(7,MIN(14,hudConfig.values[lv_config_index("monsterHealthTextSize")][0]*.35));
     self.minimap.markers = [map[@"projection_ready"] boolValue] ? map[@"markers"] : @[];
     NSUInteger enemyMarkers = 0;
-    for (NSDictionary *marker in self.minimap.markers) if (![marker[@"is_local"] boolValue] && ![marker[@"is_ward"] boolValue]) ++enemyMarkers;
+    for (NSDictionary *marker in self.minimap.markers) if (![marker[@"is_local"] boolValue] && ![marker[@"is_ward"] boolValue] && ![marker[@"is_monster"] boolValue]) ++enemyMarkers;
     if ([map[@"projection_ready"] boolValue]) {
         self.mapStatus.text = [NSString stringWithFormat:@"敌方已读 %@ · 标记 %lu\n%@ · 死亡 %@ · 未定位 %lu",
             map[@"confirmed_enemy_hero_count"], (unsigned long)enemyMarkers,

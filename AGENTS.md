@@ -6,3 +6,5 @@
 - User target: international Wild Rift 7.3.0 build 2813, iOS 17.0, TrollStore. Original uploaded files are in `/root/wild Rift/` and must be preserved.
 - Do not publish plaintext game IPAs, frameworks or complete metadata. CI input transport uses an encrypted release attachment and an Actions Secret; plaintext exists only on the ephemeral runner during CI. Do not include inputs in source archives or tool installation packages.
 - GitHub checks are not phone runtime verification. Treat historical CN device reports as upstream evidence only.
+
+- Keep ongoing work read-only: no game-process memory writes, game code injection, camera modification, or automatic touch. The user explicitly asked whether the features modify game memory; preserve the clarified read-only scope.

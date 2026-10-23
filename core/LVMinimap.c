@@ -266,7 +266,9 @@ static int add_marker(LVMinimapFrame *out, const LVTargetActor *a, unsigned ordi
     u = fmax(0,fmin(1,u)); v = fmax(0,fmin(1,v));
     if (out->count >= LV_TARGET_MAX_ACTORS) return 0;
     out->markers[out->count++] = (LVMinimapMarker){ .object_id = a->object_id, .resource_id = a->resource_id,
-        .ordinal = ordinal, .is_local = a->is_local, .is_ward = !a->is_hero && a->is_ward,
+        .ordinal = ordinal, .is_local = a->is_local, .is_ward = !a->is_local && !a->is_hero && a->ward_classification_ok && a->is_ward,
+        .is_monster = !a->is_local && !a->is_hero && a->is_monster && !(a->ward_classification_ok && a->is_ward),
+        .health_fixed = a->health_ok ? a->health_fixed : 0, .health_read_ok = a->health_ok,
         .u = u, .v = v, .edge_clamped = clamped,
         .position_source = a->logic_position_ok ? 2 : 1,
         .health_fraction_ok = a->native_health_fraction_ok || a->minimap_health_fraction_ok,
@@ -282,6 +284,11 @@ void lv_minimap_frame(const LVTargetSnapshot *s, const LVMinimapGeometry *g,
 }
 void lv_minimap_frame_with_wards(const LVTargetSnapshot *s, const LVMinimapGeometry *g,
                                 const LVMinimapSettings *settings, unsigned draw_wards, LVMinimapFrame *out) {
+    lv_minimap_frame_with_layers(s,g,settings,draw_wards,0,out);
+}
+void lv_minimap_frame_with_layers(const LVTargetSnapshot *s, const LVMinimapGeometry *g,
+                                 const LVMinimapSettings *settings, unsigned draw_wards,
+                                 unsigned draw_monsters, LVMinimapFrame *out) {
     if (!out) return;
     memset(out, 0, sizeof(*out)); out->reason = "snapshot_unavailable";
     if (!s || s->count > LV_TARGET_MAX_ACTORS || (s->result != LV_TARGET_READY && s->result != LV_TARGET_PARTIAL)) return;
@@ -341,5 +348,19 @@ void lv_minimap_frame_with_wards(const LVTargetSnapshot *s, const LVMinimapGeome
         if(result>0) ++out->ward_markers;
         else if(result<0) ++out->outside_wards;
         else ++out->unavailable_wards;
+    }
+    if(draw_monsters) for(size_t i=0;i<s->count;++i) {
+        const LVTargetActor *a=&s->actors[i];
+        if(!a->values_ok || !a->classification_ok || !a->is_monster || a->is_hero ||
+            a->is_soldier || a->is_building || a->is_local ||
+            (a->ward_classification_ok && a->is_ward) || !a->object_id_ok ||
+            !a->object_id || duplicate_id(s,i)) continue;
+        ++out->confirmed_monsters;
+        if(!a->health_ok) { ++out->unavailable_monsters; continue; }
+        if(a->health_fixed<=0) { ++out->dead_monsters; continue; }
+        int result=add_marker(out,a,0,g,settings);
+        if(result>0) ++out->monster_markers;
+        else if(result<0) ++out->outside_monsters;
+        else ++out->unavailable_monsters;
     }
 }

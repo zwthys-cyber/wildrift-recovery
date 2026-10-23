@@ -108,9 +108,10 @@ static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTarg
     if (!geometry.ready && [@(geometry.reason) isEqual:@"geometry_changed"])
         lv_minimap_read(readTarget, (__bridge void *)reader, base, &geometry);
     BOOL drawWards=config && config->values[lv_config_index("drawWards")][0]!=0;
-    LVMinimapFrame frame; lv_minimap_frame_with_wards(snapshot, &geometry, settings, drawWards, &frame);
+    BOOL drawMonsters=config && config->values[lv_config_index("drawMonsters")][0]!=0;
+    LVMinimapFrame frame; lv_minimap_frame_with_layers(snapshot, &geometry, settings, drawWards, drawMonsters, &frame);
     size_t rawCount=0;
-    for(size_t i=0;i<frame.count;++i) rawCount+=!frame.markers[i].is_local && !frame.markers[i].is_ward;
+    for(size_t i=0;i<frame.count;++i) rawCount+=!frame.markers[i].is_local && !frame.markers[i].is_ward && !frame.markers[i].is_monster;
     size_t rawUnplaced=frame.missing_enemies+frame.outside_enemies;
     unsigned rawReady=frame.ready;
     NSMutableArray *markers = [NSMutableArray new];
@@ -118,6 +119,8 @@ static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTarg
         LVMinimapMarker *m = &frame.markers[i];
         [markers addObject:@{ @"object_id": @(m->object_id), @"resource_id": @(m->resource_id),
             @"ordinal": @(m->ordinal), @"is_local": @(m->is_local != 0), @"is_ward": @(m->is_ward != 0),
+            @"is_monster": @(m->is_monster != 0), @"health_read_ok": @(m->health_read_ok != 0),
+            @"health_fixed": @(m->health_fixed),
             @"u": @(m->u), @"v": @(m->v),
             @"health_fraction_read_ok": @(m->health_fraction_ok != 0), @"health_fraction": @(m->health_fraction),
             @"health_source": m->health_source==1 ? @"native_attributes" :
@@ -137,6 +140,11 @@ static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTarg
             @"current_marker_count":@(frame.ward_markers), @"dead_count":@(frame.dead_wards),
             @"unavailable_count":@(frame.unavailable_wards), @"outside_map_count":@(frame.outside_wards),
             @"classification_source":@"BattleActor.isSummonedWards", @"device_verified":@NO },
+        @"monsters": @{ @"enabled":@(drawMonsters), @"confirmed_count":@(frame.confirmed_monsters),
+            @"current_marker_count":@(frame.monster_markers), @"dead_count":@(frame.dead_monsters),
+            @"unavailable_count":@(frame.unavailable_monsters), @"outside_map_count":@(frame.outside_monsters),
+            @"classification_source":@"BattleActor.isMonster", @"health_source":@"current_attribute_hp",
+            @"respawn_timer_implemented":@NO, @"device_verified":@NO },
         @"health_cache": @{ @"reason": @(health->reason), @"matched_hero_count": @(health->matched),
             @"enabled_hero_count": @(health->enabled), @"valid_fraction_count": @(health->valid),
             @"source": @"game_minimap_cached_percent", @"max_health_inferred": @NO },
@@ -281,5 +289,5 @@ NSDictionary *LVReadTargetSnapshot(LVMachReader *reader, NSDictionary *metadata,
             @"manager_address": hexAddress(snapshot.local_skills.manager),
             @"summoner_manager_address": hexAddress(snapshot.local_skills.summoner_manager),
             @"all": skillList(&snapshot.local_skills.all), @"summoner": skillList(&snapshot.local_skills.summoner) },
-        @"scope": @"Read-only actor, local skill, decision preview and minimap projection. Actor result covers baseline fields; extended fields have independent read flags. Skill-list result covers identity/cooldown; stock/slot/cast state have separate flags. Samples are not atomic. Zero cooldown does not imply castability. Prior 0.6.0 information HUD behavior has user confirmation; new minimap alignment is device-unverified. Automatic touch is not implemented." };
+        @"scope": @"Read-only actor, local skill, decision preview and minimap projection. Actor result covers baseline fields; extended fields have independent read flags. Skill-list result covers identity/cooldown; stock/slot/cast state have separate flags. Samples are not atomic. Zero cooldown does not imply castability. International 0.8.0 enemy portrait visibility is user-confirmed in one scene. Full five-enemy fog coverage, health/ward/monster behavior and precise alignment still require device verification. Automatic touch is not implemented." };
 }

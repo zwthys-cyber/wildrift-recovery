@@ -32,6 +32,9 @@ record = {
     'compiler': metadata['clang_version'], 'sdk': metadata['sdk'],
     'minimap_checks': checks('minimap-checks.txt'),
     'minimap_motion_checks': checks('minimap-motion-checks.txt'),
+    'monster_minimap_checks': checks('monster-minimap-checks.txt'),
+    'enemy_portraits_user_confirmed_visible': True,
+    'monster_minimap_device_verified': False,
     'ward_minimap_checks': checks('ward-minimap-checks.txt'),
     'target_reader_scenarios': checks('target-reader-checks.txt'),
     'minimap_health_checks': checks('minimap-health-checks.txt'),
@@ -49,7 +52,7 @@ record = {
     'enemy_ward_minimap_device_verified': False,
     'bundled_hero_portraits': metadata['minimap_hero_portrait_count'],
     'desktop_icon_payload_verified': True,
-    'scope': 'International 7.3.0 (2813): build, signatures, synthetic reader tests and bounded original instruction comparisons run in GitHub Actions. No international phone runtime evidence. Historical CN reports are retained only as upstream context.'
+    'scope': 'International 7.3.0 (2813): build, signatures, synthetic reader tests and bounded original instruction comparisons run in GitHub Actions. User confirms international 0.8.0 enemy portraits are visible in the supplied scene; monster, ward, health and full fog coverage still require phone verification. Historical CN reports are retained only as upstream context.'
 }
 text = json.dumps(record, ensure_ascii=False, indent=2) + '\n'
 (ROOT / 'analysis/ci-validation.json').write_text(text)

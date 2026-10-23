@@ -37,7 +37,9 @@ void lv_minimap_health_read(LVTargetRead read, void *context, uint64_t base,
 typedef struct {
     uint32_t object_id;
     int32_t resource_id;
-    unsigned ordinal, is_local, is_ward;
+    unsigned ordinal, is_local, is_ward, is_monster;
+    int64_t health_fixed;
+    unsigned health_read_ok;
     double u, v; /* UIKit coordinates in the calibrated rectangle, [0,1]. */
     double health_fraction;
     unsigned health_fraction_ok, edge_clamped;
@@ -52,10 +54,15 @@ typedef struct {
     size_t count;
     size_t edge_clamped_enemies;
     size_t confirmed_wards, ward_markers, dead_wards, unavailable_wards, outside_wards;
+    size_t confirmed_monsters, monster_markers, dead_monsters, unavailable_monsters, outside_monsters;
     LVMinimapMarker markers[LV_TARGET_MAX_ACTORS];
 } LVMinimapFrame;
 void lv_minimap_frame(const LVTargetSnapshot *snapshot, const LVMinimapGeometry *geometry,
                       const LVMinimapSettings *settings, LVMinimapFrame *output);
 void lv_minimap_frame_with_wards(const LVTargetSnapshot *snapshot, const LVMinimapGeometry *geometry,
                                 const LVMinimapSettings *settings, unsigned draw_wards, LVMinimapFrame *output);
+/* Optional layers preserve hero/ward counts. Only established live monsters
+   with current health and position are emitted; no respawn inference. */
+void lv_minimap_frame_with_layers(const LVTargetSnapshot *, const LVMinimapGeometry *,
+                                  const LVMinimapSettings *, unsigned draw_wards, unsigned draw_monsters, LVMinimapFrame *);
 #endif

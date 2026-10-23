@@ -119,7 +119,7 @@ static NSDictionary *collectInputs(pid_t pid, NSString *documents, BOOL engineOn
     BOOL hasMetadata = NO;
     for (NSDictionary *file in files) if ([file[@"role"] isEqualToString:@"il2cpp_metadata"]) hasMetadata = YES;
     NSDictionary *manifest = @{ @"format": @"lvlolm-ios-inputs", @"format_version": @1,
-        @"collector_version": @"0.8.0", @"collection_scope": engineOnly ? @"native_engine_only" : @"unity_metadata_and_engine",
+        @"collector_version": @"0.8.1", @"collection_scope": engineOnly ? @"native_engine_only" : @"unity_metadata_and_engine",
         @"target_pid": @(pid), @"helper_uid": @(getuid()),
         @"user_reported_app_version": @"7.3.0.2813", @"user_reported_resource_version": @"not provided",
         @"bundle_identifier": info[@"CFBundleIdentifier"] ?: @"", @"app_version": info[@"CFBundleShortVersionString"] ?: @"",

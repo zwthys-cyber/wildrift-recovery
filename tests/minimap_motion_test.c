@@ -57,6 +57,21 @@ int main(void) {
     a[0].is_ward=2;check(!lv_minimap_motion_update(&m,a,1,12.2,.15));
     a[0].is_ward=1;a[0].is_local=1;check(!lv_minimap_motion_update(&m,a,1,12.2,.15));
     lv_minimap_motion_clear(&m);
+    a[0]=(LVMinimapMarker){.object_id=44,.resource_id=70001,.is_monster=1,.health_read_ok=1,
+        .health_fixed=7000*INT64_C(16384),.u=.5,.v=.5};
+    check(lv_minimap_motion_update(&m,a,1,13,.15));
+    a[0].u=.52;a[0].health_fixed=3000*INT64_C(16384);
+    check(lv_minimap_motion_update(&m,a,1,13.1,.15));at(&m,0,13.1,.5,.5);
+    check(m.items[0].target.health_fixed==3000*INT64_C(16384));
+    a[0].is_monster=0;a[0].u=.54;
+    check(lv_minimap_motion_update(&m,a,1,13.12,.15));at(&m,0,13.12,.54,.5);
+    a[0].is_monster=1;a[0].health_read_ok=0;check(!lv_minimap_motion_update(&m,a,1,13.2,.15));
+    a[0].health_read_ok=1;a[0].health_fixed=0;check(!lv_minimap_motion_update(&m,a,1,13.2,.15));
+    a[0].health_fixed=-1;check(!lv_minimap_motion_update(&m,a,1,13.2,.15));
+    a[0].health_fixed=1;a[0].is_ward=1;check(!lv_minimap_motion_update(&m,a,1,13.2,.15));
+    a[0].is_ward=0;a[0].is_local=1;check(!lv_minimap_motion_update(&m,a,1,13.2,.15));
+    a[0].is_local=0;a[0].is_monster=2;check(!lv_minimap_motion_update(&m,a,1,13.2,.15));
+    lv_minimap_motion_clear(&m);
     double u,v;check(!lv_minimap_motion_position(&m,0,12,&u,&v));
     check(!lv_minimap_motion_update(NULL,a,1,12,.15));
     printf("Minimap motion: %u checks passed\n",checks);return 0;
