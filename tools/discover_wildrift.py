@@ -13,6 +13,7 @@ import struct
 from pathlib import Path
 from capstone import Cs, CS_ARCH_ARM64, CS_MODE_LITTLE_ENDIAN
 from keystone import Ks, KS_ARCH_ARM64, KS_MODE_LITTLE_ENDIAN
+from macho_rebases import local_rebases
 
 ROOT = Path(__file__).resolve().parents[1]
 if os.environ.get('GITHUB_ACTIONS') != 'true':
@@ -21,6 +22,8 @@ fw = (ROOT/'inputs/UnityFramework').read_bytes()
 raw = (ROOT/'inputs/global-metadata.dat').read_bytes()
 assert hashlib.sha256(fw).hexdigest() == 'b82b1ece4d3017df66ccc68f4306d69d4df1fb69305fe8a287648008821f310c'
 assert hashlib.sha256(raw).hexdigest() == '33ff8fc0b20f782af0b1cee13653b5c3b0073857704e5c41d667258a0e77a7f6'
+fw,rebase_count=local_rebases(fw)
+print('Resolved local chained rebases in analysis RAM:',rebase_count)
 cs=Cs(CS_ARCH_ARM64,CS_MODE_LITTLE_ENDIAN); cs.detail=True
 ks=Ks(KS_ARCH_ARM64,KS_MODE_LITTLE_ENDIAN)
 
