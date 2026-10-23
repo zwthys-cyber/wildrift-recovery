@@ -6,3 +6,6 @@ ios-sdk.tar.xz
 __pycache__/
 tests/config_test
 *.pyc
+*.enc
+*.ipa
+*.tar
