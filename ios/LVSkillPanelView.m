@@ -25,9 +25,10 @@
             [identity drawAtPoint:CGPointMake(4,y) withAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:7*scale],
                 NSForegroundColorAttributeName:UIColor.whiteColor}];
         }
-        NSArray *skills=hero[@"skills"];
+        NSArray *skills=hero[@"display_skills"] ?: hero[@"skills"];
         if(!skills.count) {
-            NSString *message=[hero[@"result"] isEqualToString:@"changed_during_read"] ? @"数据变化中" : @"技能不可读";
+            NSString *message=[hero[@"result"] isEqualToString:@"changed_during_read"] ? @"数据变化中" :
+                ([hero[@"hidden_regular_count"] unsignedIntegerValue]>0 ? @"已隐藏普通技能" : @"暂无可读技能");
             [message drawAtPoint:CGPointMake(avatar+10,y+3) withAttributes:header];continue;
         }
         NSUInteger columns=MIN((NSUInteger)8,skills.count);
@@ -39,7 +40,11 @@
                     drawAtPoint:CGPointMake(x,y+4) withAttributes:header];continue;
             }
             NSDictionary *skill=skills[j];
-            NSString *label=[NSString stringWithFormat:@"%@%@",[skill[@"is_summoner"] boolValue]?@"S":@"#",skill[@"slot_index"]];
+            NSString *role=skill[@"role"];
+            NSString *label=[NSString stringWithFormat:@"#%@",skill[@"slot_index"]];
+            if([role isEqualToString:@"summoner"])label=[NSString stringWithFormat:@"S%@",skill[@"slot_index"]];
+            else if([role isEqualToString:@"ultimate"])label=@"R";
+            else if([role isEqualToString:@"regular"])label=[NSString stringWithFormat:@"技%d",[skill[@"configured_index"] intValue]+1];
             NSString *value=@"?";UIColor *color=UIColor.lightGrayColor;
             if([skill[@"ambiguous"] boolValue]) value=@"?";
             else if([skill[@"level"] intValue]==0) value=@"未学";
@@ -48,7 +53,8 @@
                 else {
                     int64_t fixed=[skill[@"cooldown_fixed"] longLongValue];
                     int64_t seconds=fixed/16384+(fixed%16384!=0);
-                    value=seconds>999 ? @"999+s" : [NSString stringWithFormat:@"%llds",(long long)seconds];
+                    value=!seconds && ![skill[@"cooldown_zero_verified"] boolValue] ? @"待核" :
+                        (seconds>999 ? @"999+s" : [NSString stringWithFormat:@"%llds",(long long)seconds]);
                     color=seconds ? UIColor.yellowColor : UIColor.whiteColor;
                 }
             }

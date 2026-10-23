@@ -43,31 +43,46 @@ static NSDictionary *skillList(LVTargetSkillList *list) {
         @"reported_skill_count": @(list->reported_count), @"read_skill_count": @(list->count),
         @"skipped_skill_count": @(list->skipped), @"skills": skills };
 }
-static NSDictionary *enemySkillPanel(LVMachReader *reader, const LVTargetSnapshot *snapshot, const LVConfig *config) {
+static NSDictionary *enemySkillPanel(LVMachReader *reader, const LVTargetSnapshot *snapshot, const LVConfig *config, uint64_t engineBase, NSString *engineUUID) {
     LVSkillPanel panel;
     BOOL enabled=config && config->values[lv_config_index("drawSkillPanel")][0]!=0;
     lv_skill_panel_read(readTarget,(__bridge void *)reader,snapshot,enabled,&panel);
+    lv_skill_panel_classify(readTarget,(__bridge void *)reader,engineBase,
+        [engineUUID isKindOfClass:NSString.class]?engineUUID.UTF8String:NULL,snapshot,&panel);
+    BOOL hideSmall=config && config->values[lv_config_index("hideSmallSkills")][0]!=0;
     NSMutableArray *heroes=[NSMutableArray new];
     for(size_t i=0;i<panel.count;++i) {
         const LVPanelHero *hero=&panel.heroes[i];NSMutableArray *skills=[NSMutableArray new];
+        NSMutableArray *displayed=[NSMutableArray new];
         for(size_t j=0;j<hero->count;++j) {
             const LVPanelSkill *skill=&hero->skills[j];
-            [skills addObject:@{ @"object_id":@(skill->object_id), @"resource_id":@(skill->resource_id),
+            NSDictionary *entry=@{ @"object_id":@(skill->object_id), @"resource_id":@(skill->resource_id),
                 @"native_address":hexAddress(skill->native), @"slot_address":hexAddress(skill->slot),
+                @"cd_node_address":hexAddress(skill->cd_node),
+                @"cooldown_source":@"sync_skill_cd_trigger_node", @"cooldown_zero_verified":@NO,
+                @"node_values_read_ok":@(skill->node_values_ok!=0), @"node_total_fixed":@(skill->total_fixed),
+                @"node_start_fixed":@(skill->start_fixed), @"configured_cd_read_ok":@(skill->configured_cd_ok!=0),
+                @"configured_cd1_fixed":@(skill->cd1_fixed), @"configured_cd2_fixed":@(skill->cd2_fixed),
                 @"slot_index":@(skill->slot_index), @"level":@(skill->level), @"is_summoner":@(skill->summoner!=0),
                 @"cooldown_read_ok":@(skill->cooldown_ok!=0), @"cooldown_locked":@(skill->locked!=0),
-                @"cooldown_fixed":@(skill->cooldown_fixed), @"ambiguous":@(skill->ambiguous!=0) }];
+                @"cooldown_fixed":@(skill->cooldown_fixed), @"ambiguous":@(skill->ambiguous!=0),
+                @"role":@(lv_skill_panel_role_name(skill->role)), @"configured_index":@(skill->configured_index) };
+            [skills addObject:entry];if(lv_skill_panel_skill_visible(skill,hideSmall))[displayed addObject:entry];
         }
         [heroes addObject:@{ @"object_id":@(hero->object_id), @"resource_id":@(hero->resource_id),
             @"result":resultName(hero->result), @"reason":@(hero->reason), @"skills":skills,
+            @"display_skills":displayed, @"hidden_regular_count":@(skills.count-displayed.count),
+            @"classification_read_ok":@(hero->classification_ok!=0), @"ultimate_resource_id":@(hero->ultimate_resource_id),
             @"unavailable_skill_count":@(hero->unavailable), @"truncated":@(hero->truncated!=0) }];
     }
     return @{ @"enabled":@(panel.enabled!=0), @"result":resultName(panel.result), @"reason":@(panel.reason),
         @"truncated":@(panel.truncated!=0), @"heroes":heroes,
         @"read_only":@YES, @"castability_verified":@NO, @"device_verified":@NO,
         @"slot_label_source":@"native SkillSlot.index; # is a current skill slot, S is independently enumerated in the summoner list",
-        @"ability_name_mapping_implemented":@NO, @"hide_small_skills_implemented":@NO,
-        @"scope":@"Current identity/owner/slot-checked enemy skill cooldowns. Zero is not castability; no countdown inference or history fallback." };
+        @"classification_reason":@(panel.classification_reason ?: "unavailable"),
+        @"skill_role_mapping_implemented":@YES, @"ability_name_mapping_implemented":@NO,
+        @"hide_small_skills_implemented":@YES, @"hide_small_skills":@(hideSmall),
+        @"scope":@"Current identity/owner/slot-checked enemy skill cooldowns. Zero values remain unverified after 0.8.2 device feedback; null nodes are unavailable. No countdown inference or history fallback." };
 }
 
 static NSDictionary *smitePreview(LVTargetSnapshot *snapshot, const LVConfig *config) {
@@ -302,7 +317,7 @@ NSDictionary *LVReadTargetSnapshot(LVMachReader *reader, NSDictionary *metadata,
         @"read_actor_count": @(snapshot.count), @"skipped_actor_count": @(snapshot.skipped),
         @"local_native_address": hexAddress(snapshot.local_native), @"actors": actors,
         @"smite_preview": smitePreview(&snapshot, config),
-        @"enemy_skill_panel":enemySkillPanel(reader,&snapshot,config),
+        @"enemy_skill_panel":enemySkillPanel(reader,&snapshot,config,engineBase,engineUUID),
         @"snapshot_read_attempts": @(attempts),
         @"minimap": minimapSnapshot(reader, base, &snapshot, mapSettings, config, &health, &nativeHealth, &logic),
         @"logic_trace": @{ @"desk":hexAddress(logic.desk), @"frame_root":hexAddress(logic.frame_root),

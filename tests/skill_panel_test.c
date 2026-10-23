@@ -3,6 +3,7 @@
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
+#define ENGINE UINT64_C(0x120000000)
 #define HEAP UINT64_C(0x300000000)
 static unsigned char heap[0x140000];
 static LVTargetSnapshot snapshot;
@@ -17,9 +18,10 @@ static void byte(uint64_t a,unsigned char v){put(a,&v,1);}
 static int reader(void *ctx,uint64_t a,void *out,size_t n) {
     (void)ctx;++reads;assert(reads<100000);
     if(a==failure){memset(out,255,n);return 0;}
+    if(a==ENGINE+0x523cf28 && n==8){uint64_t root=HEAP+0xf000;memcpy(out,&root,8);return 1;}
     if(a<HEAP || a-HEAP+n>sizeof(heap))return 0;
     memcpy(out,heap+a-HEAP,n);
-    if(a==mutation && ++mutation_reads==change_on){assert(n>=4);memcpy(out,&replacement,n>=8?8:4);}
+    if(a==mutation && ++mutation_reads==change_on){memcpy(out,&replacement,n>=8?8:n);}
     return 1;
 }
 static void vector(uint64_t header,uint64_t entries,size_t count) {
@@ -53,6 +55,47 @@ static void setup(void) {
 }
 static void sample(void){reads=0;lv_skill_panel_read(reader,NULL,&snapshot,1,&panel);}
 static LVPanelHero *enemy(void){assert(panel.count);return &panel.heroes[0];}
+static void config_setup(void) {
+    uint64_t b=HEAP+0x10000;
+    q(HEAP+0xf018,HEAP+0xf100);byte(HEAP+0xf11e,1);
+    q(b+0x818,b+0x400);q(b+0x478,b+0xe000);
+    q(b+0xe078,b+0xe804);q(b+0xe080,b+0xe810);
+    d(b+0xe804,10101001);d(b+0xe808,0);d(b+0xe80c,10101002);
+    for(size_t j=0;j<3;++j)q(b+0xa090+j*0x100,b+0x2000+j*0x600);
+}
+static void classify(void) {
+    reads=0;lv_skill_panel_classify(reader,NULL,ENGINE,LV_NATIVE_ENGINE_UUID,&snapshot,&panel);
+}
+static void classification_checks(void) {
+    uint64_t b=HEAP+0x10000;
+    setup();config_setup();sample();classify();
+    check(enemy()->classification_ok && enemy()->ultimate_resource_id==10101002);
+    check(enemy()->skills[0].role==LV_PANEL_REGULAR && enemy()->skills[0].configured_index==0);
+    check(enemy()->skills[1].role==LV_PANEL_ULTIMATE && enemy()->skills[1].configured_index==2);
+    check(enemy()->skills[2].role==LV_PANEL_SUMMONER);
+    check(!lv_skill_panel_skill_visible(&enemy()->skills[0],1));
+    check(lv_skill_panel_skill_visible(&enemy()->skills[0],0));
+    check(lv_skill_panel_skill_visible(&enemy()->skills[1],1));
+    check(lv_skill_panel_skill_visible(&enemy()->skills[2],1));
+    check(!strcmp(lv_skill_panel_role_name(LV_PANEL_ULTIMATE),"ultimate"));
+    /* Replaced current skill is classified by the checked default skill. */
+    q(b+0xa090,b+0xf000);q(b+0xf108,b+0xa000);d(b+0xf020,900);d(b+0xf044,10101001);
+    d(b+0x2044,99999999);sample();classify();check(enemy()->skills[0].role==LV_PANEL_REGULAR);
+    setup();config_setup();d(b+0xe80c,10101001);sample();classify();
+    check(!enemy()->classification_ok && enemy()->skills[0].role==LV_PANEL_UNKNOWN);
+    check(lv_skill_panel_skill_visible(&enemy()->skills[0],1));
+    setup();config_setup();q(b+0xa090,0);sample();classify();check(enemy()->skills[0].role==LV_PANEL_UNKNOWN);
+    setup();config_setup();q(b+0x818,HEAP+0x400);sample();classify();check(!enemy()->classification_ok);
+    setup();config_setup();sample();failure=b+0xe804;classify();check(!enemy()->classification_ok);
+    setup();config_setup();sample();mutation=b+0xe080;replacement=b+0xe814;classify();
+    check(!enemy()->classification_ok && enemy()->skills[1].role==LV_PANEL_UNKNOWN);
+    setup();config_setup();sample();mutation=HEAP+0xf11e;replacement=0;mutation_reads=0;classify();
+    check(!strcmp(panel.classification_reason,"engine_selector_changed") && !enemy()->classification_ok);
+    setup();config_setup();sample();reads=0;
+    lv_skill_panel_classify(reader,NULL,ENGINE,"wrong-profile",&snapshot,&panel);
+    check(!reads && !enemy()->classification_ok && enemy()->skills[0].role==LV_PANEL_UNKNOWN);
+    setup();config_setup();byte(HEAP+0xf11e,0);sample();classify();check(!enemy()->classification_ok);
+}
 int main(void) {
     uint64_t b=HEAP+0x10000,skill=b+0x2000,slot=b+0xa000,node=b+0xc000;
     setup();lv_skill_panel_read(reader,NULL,&snapshot,0,&panel);check(!panel.enabled && !panel.count && !reads);
@@ -60,11 +103,15 @@ int main(void) {
     check(enemy()->object_id==2 && enemy()->skills[0].slot_index==1 && !enemy()->skills[0].summoner);
     check(enemy()->skills[0].cooldown_ok && enemy()->skills[0].cooldown_fixed==9*16384);
     check(enemy()->skills[1].level==0 && enemy()->skills[2].summoner && enemy()->skills[2].slot_index==5);
+    check(enemy()->skills[0].cd_node==node && enemy()->skills[0].node_values_ok);
+    q(node+0x28,12*16384);q(node+0x30,100*16384);q(skill+0xa8,12*16384);q(skill+0xa0,7*16384);
+    sample();check(enemy()->skills[0].total_fixed==12*16384 && enemy()->skills[0].start_fixed==100*16384);
+    check(enemy()->skills[0].configured_cd_ok && enemy()->skills[0].cd1_fixed==12*16384 && enemy()->skills[0].cd2_fixed==7*16384);
     q(node+0x20,3*16384);sample();check(enemy()->skills[0].cooldown_fixed==3*16384);
     q(node+0x20,0);sample();check(enemy()->skills[0].cooldown_ok && !enemy()->skills[0].cooldown_fixed);
     q(node+0x20,(uint64_t)-16384);sample();check(enemy()->skills[0].cooldown_ok && !enemy()->skills[0].cooldown_fixed);
     byte(node+0x18,255);sample();check(enemy()->skills[0].locked && enemy()->skills[0].cooldown_ok);
-    setup();q(skill+0x440,0);sample();check(enemy()->skills[0].cooldown_ok && !enemy()->skills[0].cooldown_fixed);
+    setup();q(skill+0x440,0);sample();check(!enemy()->skills[0].cooldown_ok && !enemy()->skills[0].cooldown_fixed);
     setup();failure=node+0x20;sample();check(!enemy()->skills[0].cooldown_ok && !enemy()->skills[0].cooldown_fixed);
     setup();mutation=skill+0x440;replacement=node+0x100;sample();check(!enemy()->skills[0].cooldown_ok);
     setup();q(skill+0x108,0);sample();check(enemy()->count==2); /* Passive/no slot. */
@@ -111,5 +158,6 @@ int main(void) {
     sample();check(!panel.count && panel.result==LV_TARGET_CHANGED);
     setup();snapshot.count=0;sample();check(!panel.count);
     lv_skill_panel_read(NULL,NULL,NULL,1,&panel);check(!panel.count);
+    classification_checks();
     printf("Enemy skill panel: %u checks passed\n",checks);return 0;
 }

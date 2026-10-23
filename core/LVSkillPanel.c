@@ -56,6 +56,7 @@ static int battle(Reader *r,const LVTargetSnapshot *s) {
 /* Returns 0 for a non-current/passive skill, -1 for unavailable identity. */
 static int skill(Reader *r,uint64_t native,uint64_t actor,unsigned summoner,LVPanelSkill *out) {
     memset(out,0,sizeof(*out));out->native=native;out->summoner=summoner;
+    out->role=summoner ? LV_PANEL_SUMMONER : LV_PANEL_UNKNOWN;out->configured_index=-1;
     uint64_t owner,current,same;int32_t index;uint32_t id,res;
     if(native<0x10000 || native>=(UINT64_C(1)<<48) || (native&7) ||
         !pointer(r,native+0x108,&out->slot))return -1;
@@ -72,14 +73,17 @@ static int skill(Reader *r,uint64_t native,uint64_t actor,unsigned summoner,LVPa
     out->slot_index=index;
     if(pointer(r,native+0x440,&out->cd_node)) {
         uint8_t locked=0;
-        if(!out->cd_node)out->cooldown_ok=1;
-        else if(load(r,out->cd_node+0x18,&locked,1)) {
+        if(out->cd_node && load(r,out->cd_node+0x18,&locked,1)) {
             out->locked=locked!=0;
+            out->node_values_ok=load(r,out->cd_node+0x28,&out->total_fixed,8) &&
+                load(r,out->cd_node+0x30,&out->start_fixed,8);
             out->cooldown_ok=out->locked || load(r,out->cd_node+0x20,&out->cooldown_fixed,8);
         }
         if(out->cooldown_ok && out->cooldown_fixed<0)out->cooldown_fixed=0;
-        if(!pointer(r,native+0x440,&same) || same!=out->cd_node)out->cooldown_ok=0;
+        if(!pointer(r,native+0x440,&same) || same!=out->cd_node){out->cooldown_ok=0;out->node_values_ok=0;}
     }
+    out->configured_cd_ok=load(r,native+0xa8,&out->cd1_fixed,8) &&
+        load(r,native+0xa0,&out->cd2_fixed,8);
     if(!load(r,native+0x20,&id,4) || id!=out->object_id ||
         !load(r,native+0x44,&res,4) || res!=out->resource_id ||
         !pointer(r,native+0x108,&same) || same!=out->slot ||
@@ -142,7 +146,7 @@ static void hero(Reader *r,const LVTargetActor *a,LVPanelHero *h) {
 }
 void lv_skill_panel_read(LVTargetRead read,void *context,const LVTargetSnapshot *s,unsigned enabled,LVSkillPanel *out) {
     if(!out)return;
-    memset(out,0,sizeof(*out));out->enabled=enabled!=0;out->reason="disabled";out->result=LV_TARGET_READY;
+    memset(out,0,sizeof(*out));out->enabled=enabled!=0;out->reason="disabled";out->classification_reason="not_requested";out->result=LV_TARGET_READY;
     if(!enabled)return;
     out->result=LV_TARGET_UNREADABLE;out->reason="snapshot_unavailable";
     if(!read || !s || s->count>LV_TARGET_MAX_ACTORS || (s->result!=LV_TARGET_READY && s->result!=LV_TARGET_PARTIAL))return;
@@ -175,4 +179,115 @@ void lv_skill_panel_read(LVTargetRead read,void *context,const LVTargetSnapshot 
         out->reason="local_or_battle_changed";return;
     }
     if(out->result==LV_TARGET_PARTIAL)out->reason="partial";
+}
+
+/* This bounded vector is a resource-ID list in hero configuration, not a
+   skill pointer list. The native GetRSkill helpers select its last positive ID. */
+#define CONFIG_SKILLS_MAX 64
+typedef struct {uint64_t manager,config,begin,end;size_t count;int32_t ids[CONFIG_SKILLS_MAX];} SkillConfig;
+static int config_read(Reader *r,const LVTargetActor *a,unsigned sync,SkillConfig *c) {
+    memset(c,0,sizeof(*c));uint64_t owner;
+    if(!pointer(r,a->native+0xd0,&c->manager) || !c->manager ||
+        !pointer(r,c->manager+(sync?0x18:0x28),&owner) || owner!=a->native ||
+        !pointer(r,owner+(sync?0x78:0x190),&c->config) || !c->config ||
+        !load(r,c->config+0x78,&c->begin,8) || !load(r,c->config+0x80,&c->end,8) ||
+        c->begin<0x10000 || c->end>=(UINT64_C(1)<<48) || (c->begin&3) || (c->end&3) ||
+        c->end<c->begin || (c->end-c->begin)%4 || c->end-c->begin>CONFIG_SKILLS_MAX*4)return 0;
+    c->count=(size_t)((c->end-c->begin)/4);
+    /* Resource ID vectors contain int32 elements and may be only 4-byte aligned.
+       The vector pointers have separately validated alignment below. */
+    return c->count && load(r,c->begin,c->ids,c->count*4);
+}
+static int config_same(Reader *r,const LVTargetActor *a,unsigned sync,const SkillConfig *c) {
+    SkillConfig again;
+    return config_read(r,a,sync,&again) && c->manager==again.manager && c->config==again.config &&
+        c->begin==again.begin && c->end==again.end && c->count==again.count &&
+        !memcmp(c->ids,again.ids,c->count*4);
+}
+static int config_index(const SkillConfig *c,uint32_t resource) {
+    int index=-1;
+    for(size_t i=0;i<c->count;++i)if(c->ids[i]>0 && (uint32_t)c->ids[i]==resource) {
+        if(index>=0)return -1;
+        index=(int)i;
+    }
+    return index;
+}
+static int default_resource(Reader *r,const LVPanelSkill *skill,uint64_t actor,uint32_t *resource) {
+    uint64_t current,owner,def,slot_again,def_again;uint32_t id,res;
+    if(!pointer(r,skill->slot+0x98,&current) || current!=skill->native ||
+        !pointer(r,skill->native+0x108,&slot_again) || slot_again!=skill->slot ||
+        !pointer(r,skill->slot+0xb0,&owner) || owner!=actor ||
+        !pointer(r,skill->slot+0x90,&def) || !def ||
+        !pointer(r,def+0x108,&slot_again) || slot_again!=skill->slot ||
+        !load(r,def+0x20,&id,4) || !id || !load(r,def+0x44,&res,4) || !res)return 0;
+    uint32_t id_after,res_after,current_id,current_res;
+    if(!pointer(r,skill->slot+0x90,&def_again) || def_again!=def ||
+        !load(r,def+0x20,&id_after,4) || id_after!=id ||
+        !load(r,def+0x44,&res_after,4) || res_after!=res ||
+        !load(r,skill->native+0x20,&current_id,4) || current_id!=skill->object_id ||
+        !load(r,skill->native+0x44,&current_res,4) || current_res!=skill->resource_id ||
+        !pointer(r,skill->slot+0x98,&current) || current!=skill->native ||
+        !pointer(r,def+0x108,&slot_again) || slot_again!=skill->slot ||
+        !pointer(r,skill->slot+0xb0,&owner) || owner!=actor)return 0;
+    *resource=res;return 1;
+}
+static void clear_roles(LVPanelHero *h) {
+    h->classification_ok=0;h->ultimate_resource_id=0;
+    for(size_t j=0;j<h->count;++j){h->skills[j].role=h->skills[j].summoner?LV_PANEL_SUMMONER:LV_PANEL_UNKNOWN;
+        h->skills[j].configured_index=-1;}
+}
+void lv_skill_panel_classify(LVTargetRead read,void *context,uint64_t base,const char *uuid,
+                            const LVTargetSnapshot *s,LVSkillPanel *panel) {
+    if(!panel || !panel->enabled)return;
+    panel->classification_reason="engine_profile_unavailable";
+    if(panel->count>LV_PANEL_MAX_HEROES)return;
+    for(size_t i=0;i<panel->count;++i){
+        if(panel->heroes[i].count>LV_PANEL_MAX_SKILLS){panel->count=0;return;}
+        clear_roles(&panel->heroes[i]);
+    }
+    if(!read || !s || s->count>LV_TARGET_MAX_ACTORS || !uuid || strcmp(uuid,LV_NATIVE_ENGINE_UUID) ||
+        base<0x10000 || base>(UINT64_C(1)<<48)-0x523cf30)return;
+    Reader r={read,context};uint64_t root,config,same;uint8_t sync,same_mode;
+    if(!pointer(&r,base+0x523cf28,&root) || !root || !pointer(&r,root+0x18,&config) || !config ||
+        !load(&r,config+0x1e,&sync,1) || sync>1){panel->classification_reason="engine_selector_unavailable";return;}
+    size_t classified=0;
+    for(size_t i=0;i<panel->count;++i) {
+        LVPanelHero *h=&panel->heroes[i];const LVTargetActor *a=NULL;
+        for(size_t j=0;j<s->count;++j)if(s->actors[j].object_id_ok && s->actors[j].object_id==h->object_id &&
+            s->actors[j].resource_id==h->resource_id){if(a){a=NULL;break;}a=&s->actors[j];}
+        if(!a || !a->values_ok || !a->classification_ok || !a->is_hero || !identity(&r,a))continue;
+        SkillConfig c;
+        if(!config_read(&r,a,sync,&c))continue;
+        int ultimate=-1;
+        for(size_t j=0;j<c.count;++j)if(c.ids[j]>0)ultimate=(int)j;
+        if(ultimate<0 || config_index(&c,(uint32_t)c.ids[ultimate])!=ultimate)continue;
+        h->ultimate_resource_id=(uint32_t)c.ids[ultimate];
+        for(size_t j=0;j<h->count;++j) {
+            LVPanelSkill *skill=&h->skills[j];
+            if(skill->summoner || skill->ambiguous)continue;
+            uint32_t resource;
+            if(!default_resource(&r,skill,a->native,&resource))continue;
+            int index=config_index(&c,resource);
+            if(index<0)continue;
+            skill->configured_index=index;
+            skill->role=index==ultimate ? LV_PANEL_ULTIMATE : LV_PANEL_REGULAR;
+        }
+        if(!identity(&r,a) || !config_same(&r,a,sync,&c)) {clear_roles(h);continue;}
+        unsigned complete=1;
+        for(size_t j=0;j<h->count;++j)if(h->skills[j].role==LV_PANEL_UNKNOWN)complete=0;
+        h->classification_ok=complete;classified+=complete;
+    }
+    if(!pointer(&r,base+0x523cf28,&same) || same!=root || !pointer(&r,root+0x18,&same) || same!=config ||
+        !load(&r,config+0x1e,&same_mode,1) || same_mode!=sync) {
+        for(size_t i=0;i<panel->count;++i)clear_roles(&panel->heroes[i]);
+        panel->classification_reason="engine_selector_changed";return;
+    }
+    panel->classification_reason=classified==panel->count ? "ready" : "partial_or_unavailable";
+}
+int lv_skill_panel_skill_visible(const LVPanelSkill *skill,unsigned hide_small_skills) {
+    return skill && !(hide_small_skills && skill->role==LV_PANEL_REGULAR);
+}
+const char *lv_skill_panel_role_name(LVPanelRole role) {
+    switch(role){case LV_PANEL_REGULAR:return "regular";case LV_PANEL_ULTIMATE:return "ultimate";
+        case LV_PANEL_SUMMONER:return "summoner";default:return "unknown";}
 }

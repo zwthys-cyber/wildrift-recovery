@@ -11,7 +11,7 @@ import struct
 import unittest
 from pathlib import Path
 from unicorn import Uc, UC_ARCH_ARM64, UC_MODE_ARM, UC_HOOK_CODE
-from unicorn.arm64_const import UC_ARM64_REG_X0, UC_ARM64_REG_X1, UC_ARM64_REG_X2, UC_ARM64_REG_X8, UC_ARM64_REG_X9, UC_ARM64_REG_X19, UC_ARM64_REG_SP, UC_ARM64_REG_LR
+from unicorn.arm64_const import UC_ARM64_REG_X0, UC_ARM64_REG_X1, UC_ARM64_REG_X2, UC_ARM64_REG_X8, UC_ARM64_REG_X9, UC_ARM64_REG_X19, UC_ARM64_REG_X20, UC_ARM64_REG_SP, UC_ARM64_REG_LR
 
 ROOT=Path(__file__).resolve().parents[1]
 ENGINE=Path(os.environ.get('LVLOLM_IOS_ENGINE',str(ROOT/'inputs/ios-engine-0.7.5/Bundle/Frameworks/FEProj.framework/FEProj')))
@@ -49,6 +49,38 @@ class OriginalEngineGetters(unittest.TestCase):
     def setUpClass(cls):
         cls.data=ENGINE.read_bytes()
         if hashlib.sha256(cls.data).hexdigest()!=ENGINE_SHA: raise ValueError('Wrong native engine profile')
+
+    def test_original_sync_cooldown_accessor_uses_same_cached_field(self):
+        # Named SkillCDNode.GetRemainCDSync forwards to _FE_TN51.
+        # A zero return is not evidence of a current/castable game skill.
+        ranges=((0x62c0,0x6344),(0xd03e60,0xd03e84),(0x1015164,0x1015174))
+        for mode in (0,1):
+            for value in (0,1,16384,9*16384,-16384):
+                u=machine(self.data,ranges)
+                q(u,0x523cf28,HEAP+0x1000);q(u,HEAP+0x1018,HEAP+0x2000)
+                u.mem_write(HEAP+0x201e,bytes([mode]))
+                q(u,HEAP+(0x20 if mode else 0x18),value)
+                u.reg_write(UC_ARM64_REG_X0,HEAP);u.reg_write(UC_ARM64_REG_X1,HEAP+0xf000)
+                u.emu_start(0x62c0,HALT,count=100)
+                self.assertEqual(struct.unpack('<q',bytes(u.mem_read(HEAP+0xf000,8)))[0],value)
+
+    def test_original_ultimate_selects_last_positive_configured_id(self):
+        # Execute the actual reverse selection loop; stop BEFORE the native
+        # GetSkill call. No allocator, hotfix or game methods are executed.
+        for ids in ((101,102,103,104),(101,0,103,0),(101,-1,0),(-1,0),(),(0,104),
+                    tuple(range(1,33))):
+            u=machine(self.data,((0xffa3ac,0xffa3f0),))
+            if ids:u.mem_write(HEAP,struct.pack('<'+'i'*len(ids),*ids))
+            u.reg_write(UC_ARM64_REG_X20,HEAP)
+            u.reg_write(UC_ARM64_REG_X9,HEAP+len(ids)*4)
+            u.reg_write(UC_ARM64_REG_X19,HEAP+0x1000)
+            positives=[v for v in ids if v>0]
+            stop=0xffa3ec if positives else 0xffa400
+            u.emu_start(0xffa3ac,stop,count=500)
+            if positives:
+                self.assertEqual(u.reg_read(UC_ARM64_REG_X1),positives[-1])
+                self.assertEqual(u.reg_read(UC_ARM64_REG_X0),HEAP+0x1000)
+                self.assertEqual(u.reg_read(UC_ARM64_REG_X2),0)
 
     def test_original_logger_accessor_is_not_the_runtime_battle(self):
         # The 0.7.8 test correctly executed this helper, but incorrectly
