@@ -80,6 +80,6 @@ while pending and len(seen)<10:
   if ins.mnemonic in ('bl','b'):
    target=ins.operands[0].imm
    if 0x4000<=target<0x4585948 and target not in seen:pending.append(target)
-  if ins.mnemonic in ('ret','b'):break
+  if ins.mnemonic=='b':break
 (out/'skill-panel-getters.asm').write_text('\n'.join(lines)+'\n')
 print('GetRSkillSync native symbol:',name,hex(entry))
