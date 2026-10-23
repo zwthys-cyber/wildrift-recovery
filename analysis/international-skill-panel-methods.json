@@ -1,0 +1,16 @@
+{
+  "FrameEngine.Logic.ActorComponentSkillMgr.get_slots": "0x3933574",
+  "FrameEngine.Logic.ActorComponentSkillMgr.GetSkillSlotByIndexSync": "0x3934950",
+  "FrameEngine.Logic.ActorComponentSkillMgr.GetRSkillSync": "0x3934bc0",
+  "FrameEngine.Logic.ActorComponentSkillMgr.GetSkillIDByIndexSync": "0x3935430",
+  "FrameEngine.Logic.ActorSkill.get_objId": "0x39451d0",
+  "FrameEngine.Logic.ActorSkill.get_level": "0x3945288",
+  "FrameEngine.Logic.ActorSkill.get_resId": "0x39452ac",
+  "FrameEngine.Logic.ActorSkill.get__slot": "0x3945480",
+  "FrameEngine.Logic.SkillSlot.get_level": "0x3bd7de8",
+  "FrameEngine.Logic.SkillSlot.get_defaultSkill": "0x3bd7f24",
+  "FrameEngine.Logic.SkillSlot.get_currentSkill": "0x3bd7ff0",
+  "FrameEngine.Logic.SkillSlot.get_orignalSkill": "0x3bd80bc",
+  "FrameEngine.Logic.SkillSlot.get_owner": "0x3bd82ac",
+  "FrameEngine.Logic.SkillSlot.get_index": "0x3bd8378"
+}

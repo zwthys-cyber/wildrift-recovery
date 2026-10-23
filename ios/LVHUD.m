@@ -1,3 +1,4 @@
+#import "LVSkillPanelView.h"
 #import "LVGameIdentity.h"
 /* Plugin bootstrap and global-window hosting adapted from Lessica/TrollSpeed
    a609be260c8261ead36509c3bc4ded8479da9c40 (MIT). See TrollSpeed-LICENSE.txt.
@@ -117,6 +118,7 @@ static void recordCoordinateTrace(NSDictionary *snapshot) {
         @"outside_map_enemies":map[@"outside_map_enemy_count"] ?: @0,
         @"health_cache":map[@"health_cache"] ?: @{}, @"native_health":map[@"native_health"] ?: @{},
         @"logic_positions":map[@"logic_positions"] ?: @{},
+        @"enemy_skill_panel":snapshot[@"enemy_skill_panel"] ?: @{},
         @"hero_list_truncated":@(truncated), @"heroes":heroes, @"wards":wards,
         @"ward_list_truncated":@(wardsTruncated), @"ward_settings":map[@"wards"] ?: @{},
         @"monsters":monsters, @"monster_list_truncated":@(monstersTruncated), @"monster_settings":map[@"monsters"] ?: @{} }];
@@ -395,6 +397,7 @@ static NSString *blockLabel(NSString *code) {
 @property(nonatomic, strong) UILabel *label;
 @property(nonatomic, strong) LVMinimapView *minimap;
 @property(nonatomic, strong) UILabel *mapStatus;
+@property(nonatomic, strong) LVSkillPanelView *skillPanel;
 @property(nonatomic, copy) NSArray *minimapBasis;
 @property(nonatomic) NSTimeInterval lastSampleAt;
 @property(nonatomic, strong) id orientationObserver;
@@ -426,6 +429,11 @@ static NSString *blockLabel(NSString *code) {
     self.minimap.references = hudMapSettings.values[LV_MAP_REFERENCES] != 0;
     self.minimap.markerSize = hudMapSettings.values[LV_MAP_MARKER_SIZE];
     [self.canvas addSubview:self.minimap];
+    self.skillPanel=[LVSkillPanelView new];self.skillPanel.opaque=NO;
+    self.skillPanel.backgroundColor=[UIColor colorWithWhite:0 alpha:.65];
+    self.skillPanel.layer.cornerRadius=5;self.skillPanel.layer.masksToBounds=YES;
+    self.skillPanel.userInteractionEnabled=NO;self.skillPanel.portraitStore=self.minimap.portraitStore;
+    [self.canvas addSubview:self.skillPanel];
     self.mapStatus = [UILabel new]; self.mapStatus.numberOfLines = 2; self.mapStatus.userInteractionEnabled = NO;
     self.mapStatus.font = [UIFont monospacedSystemFontOfSize:10 weight:UIFontWeightMedium];
     self.mapStatus.textColor = UIColor.whiteColor;
@@ -474,10 +482,26 @@ static NSString *blockLabel(NSString *code) {
     BOOL show = UIInterfaceOrientationIsLandscape(orientation) && hudConfig.values[lv_config_index("drawMinimap")][0] != 0;
     self.minimap.hidden = !show;
     self.mapStatus.hidden = !show || hudMapSettings.values[LV_HUD_INFO_PANEL] == 0;
+    [self layoutSkillPanel];
+}
+- (void)layoutSkillPanel {
+    CGSize size=self.canvas.bounds.size;
+    CGFloat scale=MAX(.7,MIN(1.8,1+hudConfig.values[lv_config_index("skillPanelSize")][0]/100));
+    CGFloat width=MIN(296*scale,MAX(1,size.width-16));
+    CGFloat height=MIN((19+30*MAX(1,self.skillPanel.heroes.count))*scale,MAX(1,size.height-16));
+    CGFloat x=hudConfig.values[lv_config_index("skillPanelOffsetX")][0];
+    CGFloat y=hudConfig.values[lv_config_index("skillPanelOffsetY")][0];
+    if(x==0)x=CGRectGetMaxX(self.minimap.frame)+8;
+    if(y==0)y=self.minimap.frame.origin.y;
+    x=MAX(4,MIN(size.width-width-4,x));y=MAX(4,MIN(size.height-height-4,y));
+    self.skillPanel.frame=CGRectMake(x,y,width,height);self.skillPanel.displayScale=scale;[self.skillPanel setNeedsDisplay];
+    self.skillPanel.hidden=!UIInterfaceOrientationIsLandscape(self.currentOrientation) ||
+        hudConfig.values[lv_config_index("drawSkillPanel")][0]==0;
 }
 - (void)sample {
     if (self.lastSampleAt && NSProcessInfo.processInfo.systemUptime - self.lastSampleAt > 2) {
         self.minimap.markers = @[]; self.mapStatus.text = @"位置采样过期 · 已清除标记";
+        self.skillPanel.heroes=@[];self.skillPanel.statusReason=@"stale";
     }
     if (self.sampling) return; self.sampling = YES;
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
@@ -500,6 +524,10 @@ static NSString *blockLabel(NSString *code) {
     });
 }
 - (void)presentSnapshot:(NSDictionary *)snapshot {
+    NSDictionary *panel=snapshot[@"enemy_skill_panel"];
+    self.skillPanel.heroes=panel[@"heroes"] ?: @[];
+    self.skillPanel.statusReason=panel[@"reason"] ?: @"unavailable";
+    [self layoutSkillPanel];
     NSDictionary *map = snapshot[@"minimap"];
     NSDictionary *geometry = map[@"geometry"];
     NSArray *basis = @[map[@"local_camp"] ?: @0, map[@"rotation_degrees"] ?: @0,

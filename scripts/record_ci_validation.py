@@ -32,6 +32,8 @@ record = {
     'compiler': metadata['clang_version'], 'sdk': metadata['sdk'],
     'minimap_checks': checks('minimap-checks.txt'),
     'minimap_motion_checks': checks('minimap-motion-checks.txt'),
+    'enemy_skill_panel_checks': checks('skill-panel-checks.txt'),
+    'enemy_skill_panel_device_verified': False,
     'monster_minimap_checks': checks('monster-minimap-checks.txt'),
     'enemy_portraits_user_confirmed_visible': True,
     'monster_minimap_device_verified': False,

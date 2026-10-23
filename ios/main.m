@@ -40,8 +40,8 @@ static NSString *LVLabel(const char *key) {
             @"entityOffsetY": @"实体上下", @"entityBoxWidthScale": @"实体框宽度",
             @"entityBoxHeightScale": @"实体框高度", @"entityAvatarSize": @"实体头像大小",
             @"entityHealthTextSize": @"实体血量文字大小", @"monsterHealthTextSize": @"野怪血量文字大小",
-            @"entitySkillIconSize": @"实体技能图标大小", @"skillPanelOffsetX": @"技能面板左右",
-            @"skillPanelOffsetY": @"技能面板上下", @"skillPanelSize": @"技能面板大小",
+            @"entitySkillIconSize": @"实体技能图标大小", @"skillPanelOffsetX": @"技能面板左侧（点，0 自动）",
+            @"skillPanelOffsetY": @"技能面板顶部（点，0 自动）", @"skillPanelSize": @"技能面板大小",
             @"friendlyColor": @"友方颜色", @"enemyColor": @"敌方颜色", @"wardColor": @"眼位颜色",
             @"wardVisionRangeBrightness": @"眼位范围亮度", @"neutralColor": @"中立单位颜色"
         };
@@ -53,6 +53,9 @@ static NSString *LVLabel(const char *key) {
 static NSString *LVImplementationNote(const char *rawKey) {
     NSString *key=@(rawKey);
     if ([key isEqualToString:@"drawMinimap"]) return @"敌人头像已获当前场景实机确认";
+    if ([key isEqualToString:@"drawSkillPanel"]) return @"当前槽位冷却；# 为技能槽，S 为召唤师槽，新版待实测";
+    if ([key hasPrefix:@"skillPanel"]) return @"已接入敌方技能面板；修改后重新启动悬浮窗";
+    if ([key isEqualToString:@"hideSmallSkills"]) return @"技能名称/大招分类尚未完成，此开关暂不生效";
     if ([key isEqualToString:@"drawWards"]) return @"已实现；眼位出现和销毁仍需实机确认";
     if ([key isEqualToString:@"drawMonsters"]) return @"显示当前可读且存活的野怪；新版待实机确认";
     if ([key isEqualToString:@"hideMonsterHealth"]) return @"仅隐藏野怪血量文字，保留标记";

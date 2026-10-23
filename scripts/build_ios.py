@@ -32,7 +32,7 @@ def build(sdk, clang, linker, ldid):
               '-O2', '-Wall', '-Werror', '-Wno-deprecated-declarations',
               '-fvisibility=hidden', '-I', ROOT / 'core', '-I', ROOT / 'ios']
     files = ['ios/main.m', 'ios/LVMachReader.m', 'ios/LVHelper.m', 'ios/LVProbe.m', 'ios/LVCollect.m', 'ios/LVHUDTrace.m',
-             'ios/LVSnapshot.m', 'ios/LVSnapshotController.m', 'ios/LVHUD.m', 'ios/LVHeroPortraits.m', 'ios/LVHUDControl.m', 'ios/LVMinimapSettings.m', 'core/LVMinimap.c', 'core/LVMinimapMotion.c', 'core/LVHUDTelemetry.c', 'core/LVConfig.c', 'core/LVActions.c', 'core/LVZip.c', 'core/LVTarget.c', 'core/LVLogicPosition.c', 'core/LVSmitePreview.c']
+             'ios/LVSnapshot.m', 'ios/LVSnapshotController.m', 'ios/LVHUD.m', 'ios/LVHeroPortraits.m', 'ios/LVHUDControl.m', 'ios/LVMinimapSettings.m', 'ios/LVSkillPanelView.m', 'core/LVSkillPanel.c', 'core/LVMinimap.c', 'core/LVMinimapMotion.c', 'core/LVHUDTelemetry.c', 'core/LVConfig.c', 'core/LVActions.c', 'core/LVZip.c', 'core/LVTarget.c', 'core/LVLogicPosition.c', 'core/LVSmitePreview.c']
     objects = {}
     for filename in files:
         src = ROOT / filename
@@ -46,10 +46,10 @@ def build(sdk, clang, linker, ldid):
     run(*links, '-framework', 'UIKit', '-framework', 'CoreGraphics', objects['main'], objects['LVConfig'], objects['LVActions'],
         objects['LVMachReader'], objects['LVHelper'], objects['LVSnapshotController'], objects['LVHUDControl'], objects['LVHUDTrace'], objects['LVHUDTelemetry'], objects['LVMinimapSettings'], objects['LVMinimap'], '-o', app / 'LVRecovery')
     run(*links, '-lz', objects['LVProbe'], objects['LVMachReader'], objects['LVCollect'], objects['LVZip'],
-        objects['LVSnapshot'], objects['LVTarget'], objects['LVLogicPosition'], objects['LVSmitePreview'], objects['LVActions'], objects['LVConfig'], objects['LVHUDControl'], objects['LVHUDTrace'], objects['LVHUDTelemetry'], objects['LVMinimap'], '-o', app / 'LVProbe')
+        objects['LVSnapshot'], objects['LVTarget'], objects['LVSkillPanel'], objects['LVLogicPosition'], objects['LVSmitePreview'], objects['LVActions'], objects['LVConfig'], objects['LVHUDControl'], objects['LVHUDTrace'], objects['LVHUDTelemetry'], objects['LVMinimap'], '-o', app / 'LVProbe')
     run(*links, '-framework', 'UIKit', '-framework', 'QuartzCore', '-framework', 'CoreGraphics',
-        objects['LVHUD'], objects['LVHUDControl'], objects['LVHUDTrace'], objects['LVMachReader'], objects['LVSnapshot'], objects['LVTarget'], objects['LVLogicPosition'],
-        objects['LVSmitePreview'], objects['LVActions'], objects['LVConfig'], objects['LVHUDTelemetry'], objects['LVMinimap'], objects['LVMinimapMotion'], objects['LVHeroPortraits'], '-o', app / 'LVHUD')
+        objects['LVHUD'], objects['LVHUDControl'], objects['LVHUDTrace'], objects['LVMachReader'], objects['LVSnapshot'], objects['LVTarget'], objects['LVSkillPanel'], objects['LVLogicPosition'],
+        objects['LVSmitePreview'], objects['LVActions'], objects['LVConfig'], objects['LVHUDTelemetry'], objects['LVMinimap'], objects['LVMinimapMotion'], objects['LVHeroPortraits'], objects['LVSkillPanelView'], '-o', app / 'LVHUD')
     info = plistlib.loads((ROOT / 'ios/Info.plist').read_bytes())
     (app / 'Info.plist').write_bytes(plistlib.dumps(info, fmt=plistlib.FMT_BINARY))
     shutil.copy2(ROOT / 'ios/recovered_config.json', app / 'recovered_config.json')
@@ -172,6 +172,10 @@ def build(sdk, clang, linker, ldid):
         enemy_portraits_user_confirmed_visible=True,
         minimap_monster_markers_implemented=True, minimap_monster_health_text_implemented=True,
         minimap_monster_device_verified=False, monster_respawn_timer_implemented=False,
+        enemy_skill_panel_implemented=True, enemy_skill_panel_device_verified=False,
+        enemy_skill_panel_slot_labels='native slot indices, not inferred ability names',
+        enemy_skill_panel_original_getter_evidence='analysis/international-skill-panel-getters.asm',
+        enemy_skill_panel_hide_small_skills_implemented=False,
         game_memory_writes_implemented=False, game_code_injection_implemented=False,
         automatic_touch_implemented=False,
         minimap_latest_device_issue='0.8.0 enemy portraits confirmed visible by user. Monster overlay is new in 0.8.1; full fog coverage, exact alignment, HP and ward lifecycle still await phone verification.',

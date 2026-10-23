@@ -2,6 +2,7 @@
 #import "LVMachReader.h"
 #include "LVTarget.h"
 #include "LVSmitePreview.h"
+#include "LVSkillPanel.h"
 #include <errno.h>
 
 static int readTarget(void *context, uint64_t address, void *buffer, size_t length) {
@@ -42,6 +43,33 @@ static NSDictionary *skillList(LVTargetSkillList *list) {
         @"reported_skill_count": @(list->reported_count), @"read_skill_count": @(list->count),
         @"skipped_skill_count": @(list->skipped), @"skills": skills };
 }
+static NSDictionary *enemySkillPanel(LVMachReader *reader, const LVTargetSnapshot *snapshot, const LVConfig *config) {
+    LVSkillPanel panel;
+    BOOL enabled=config && config->values[lv_config_index("drawSkillPanel")][0]!=0;
+    lv_skill_panel_read(readTarget,(__bridge void *)reader,snapshot,enabled,&panel);
+    NSMutableArray *heroes=[NSMutableArray new];
+    for(size_t i=0;i<panel.count;++i) {
+        const LVPanelHero *hero=&panel.heroes[i];NSMutableArray *skills=[NSMutableArray new];
+        for(size_t j=0;j<hero->count;++j) {
+            const LVPanelSkill *skill=&hero->skills[j];
+            [skills addObject:@{ @"object_id":@(skill->object_id), @"resource_id":@(skill->resource_id),
+                @"native_address":hexAddress(skill->native), @"slot_address":hexAddress(skill->slot),
+                @"slot_index":@(skill->slot_index), @"level":@(skill->level), @"is_summoner":@(skill->summoner!=0),
+                @"cooldown_read_ok":@(skill->cooldown_ok!=0), @"cooldown_locked":@(skill->locked!=0),
+                @"cooldown_fixed":@(skill->cooldown_fixed), @"ambiguous":@(skill->ambiguous!=0) }];
+        }
+        [heroes addObject:@{ @"object_id":@(hero->object_id), @"resource_id":@(hero->resource_id),
+            @"result":resultName(hero->result), @"reason":@(hero->reason), @"skills":skills,
+            @"unavailable_skill_count":@(hero->unavailable), @"truncated":@(hero->truncated!=0) }];
+    }
+    return @{ @"enabled":@(panel.enabled!=0), @"result":resultName(panel.result), @"reason":@(panel.reason),
+        @"truncated":@(panel.truncated!=0), @"heroes":heroes,
+        @"read_only":@YES, @"castability_verified":@NO, @"device_verified":@NO,
+        @"slot_label_source":@"native SkillSlot.index; # is a current skill slot, S is independently enumerated in the summoner list",
+        @"ability_name_mapping_implemented":@NO, @"hide_small_skills_implemented":@NO,
+        @"scope":@"Current identity/owner/slot-checked enemy skill cooldowns. Zero is not castability; no countdown inference or history fallback." };
+}
+
 static NSDictionary *smitePreview(LVTargetSnapshot *snapshot, const LVConfig *config) {
     LVSmitePreview p; lv_smite_preview(snapshot, config, &p);
     NSMutableArray *blocks = [NSMutableArray new], *candidates = [NSMutableArray new];
@@ -274,6 +302,7 @@ NSDictionary *LVReadTargetSnapshot(LVMachReader *reader, NSDictionary *metadata,
         @"read_actor_count": @(snapshot.count), @"skipped_actor_count": @(snapshot.skipped),
         @"local_native_address": hexAddress(snapshot.local_native), @"actors": actors,
         @"smite_preview": smitePreview(&snapshot, config),
+        @"enemy_skill_panel":enemySkillPanel(reader,&snapshot,config),
         @"snapshot_read_attempts": @(attempts),
         @"minimap": minimapSnapshot(reader, base, &snapshot, mapSettings, config, &health, &nativeHealth, &logic),
         @"logic_trace": @{ @"desk":hexAddress(logic.desk), @"frame_root":hexAddress(logic.frame_root),

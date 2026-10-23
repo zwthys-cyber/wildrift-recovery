@@ -169,5 +169,21 @@ class OriginalGetters(unittest.TestCase):
             uc.emu_start(start,end,count=100)
             self.assertEqual(uc.reg_read(UC_ARM64_REG_X1),value)
 
+    def test_panel_slot_identity_getters(self):
+        from unicorn.arm64_const import UC_ARM64_REG_X20
+        for index in (-1,0,1,3,5,31,32):
+            start=0x3bd8378
+            uc=machine(self.fw,start,start+12)
+            q(uc,HEAP+0x18,HEAP+0x1000);d(uc,HEAP+0x10b8,index)
+            uc.reg_write(UC_ARM64_REG_X0,HEAP);uc.emu_start(start,HALT,count=100)
+            self.assertEqual(uc.reg_read(UC_ARM64_REG_X0),index&0xffffffff)
+        # Execute only the two original pure loads, stopping before wrapper conversion.
+        for start,member in ((0x3bd82e8,0xb0),(0x3bd802c,0x98),(0x39454bc,0x108)):
+            for value in (0,HEAP+0x2000,HEAP+0x4000):
+                uc=machine(self.fw,start,start+8);q(uc,HEAP+0x18,HEAP+0x1000)
+                q(uc,HEAP+0x1000+member,value);uc.reg_write(UC_ARM64_REG_X19,HEAP)
+                uc.emu_start(start,start+8,count=10)
+                self.assertEqual(uc.reg_read(UC_ARM64_REG_X20),value)
+
 
 if __name__ == '__main__': unittest.main()
