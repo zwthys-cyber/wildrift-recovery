@@ -15,7 +15,7 @@ from unicorn.arm64_const import UC_ARM64_REG_X0, UC_ARM64_REG_X1, UC_ARM64_REG_X
 
 ROOT=Path(__file__).resolve().parents[1]
 ENGINE=Path(os.environ.get('LVLOLM_IOS_ENGINE',str(ROOT/'inputs/ios-engine-0.7.5/Bundle/Frameworks/FEProj.framework/FEProj')))
-ENGINE_SHA='69ed33e4b969139bda80946404528584a879f63ae4032c65fcb7412c3db4431e'
+ENGINE_SHA='e24ae2f5c2cc2a4910ff9c4e04177ca9f8a8fea0eb70ed790ed79cfbe0146eeb'
 HEAP,STACK,HALT=0x350000000,0x60000000,0x70000000
 
 def q(u,a,v): u.mem_write(a,struct.pack('<Q',v&((1<<64)-1)))

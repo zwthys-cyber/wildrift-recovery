@@ -96,7 +96,7 @@ for addr in candidates(md.tables['types']['count']):
     reg=addr-0x50
     try:
         tc,tp=q(reg+0x30),q(reg+0x38);fp=q(addr+8)
-        if not 0<tc<1000000:continue
+        if not 0<tc<1000000 or q(addr+16)!=md.tables['types']['count']:continue
         for i in range(6):q(fp+i*8);q(tp+i*8)
         regs.append(reg)
     except (ValueError,struct.error):pass
@@ -131,9 +131,9 @@ for old in baseline['selected_types']:
         if om and om['native_address']:methods[hex(om['native_address'])]=hex(method['native_address'])
     selected.append(dict(t,fields=fields,methods=new_methods,changed_offsets=differences))
 # UI types are kept in separate original reports.
-for filename in ('ios-minimap-layout.json','ios-minimap-health-layout.json','ios-ward-layout.json'):
+for filename in ('ios-minimap-layout.json','ios-minimap-health-layout.json','ios-skill-layout.json','ios-state-layout.json','ios-ward-layout.json'):
     report=json.loads((ROOT/'analysis'/filename).read_text())
-    for old in report.get('selected_types',[]):
+    for old in report.get('selected_types',report.get('classes',[])):
         k=(old['namespace'],old['name']);t=by_name[k];mapping[str(old['index'])]=t['index']
         fields=native.fields(t);new_methods=native.methods(t)
         for om in old.get('methods',[]):
