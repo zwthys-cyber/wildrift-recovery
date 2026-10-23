@@ -32,3 +32,7 @@
 0.8.3 冷却诊断新增 `cd_node_address`、`cooldown_source`、`cooldown_zero_verified`、`node_total_fixed`、`node_start_fixed`、`configured_cd1_fixed`、`configured_cd2_fixed` 和独立读取状态。配置 CD1/CD2 只用于诊断，不作为当前剩余冷却。原始 Sync getter 在同步模式下同样读取节点 +0x20，换方法名称不能证明修复。采样心跳与游戏 tick 是不同的新鲜度证据，游戏暂停时心跳仍可能持续。
 
 技能角色分类使用 UUID 绑定的 FEProj 同步/原生选择器与 GetRSkill 的配置 ID 逆序选择规则，核对 slot.defaultSkill 的身份、槽和拥有者；确认的大招标为 R，普通配置技能标为“技N”，召唤师列表仍标为 SN，未知保持 #N。“隐藏小技能”仅隐藏确认的普通配置技能；完整原始技能仍在 skills 中，display_skills 为当前显示筛选。此分类不提供技能名称或可释放判断。
+
+0.8.4 增加独立逻辑冷却源。原始命名 Lua 属性 BattleActor.skillMgr (0x395dc7c) 读取逻辑英雄 +0x200；原生 GetSkill 通过管理器 +0x2d8/+0x2e0 列表和技能配置资源 ID 查找。资源 ID 必须在当前逻辑列表中唯一，管理器拥有者、逻辑英雄身份、触发器拥有者、当前同步槽和列表在读取后重新核对。原生调用方通过技能 +0x590 取得节点，GetState/GetRemainCD 使用节点 +0x10/+0x18；这些与同步结构的 +0x440、+0x18/+0x20 不同。尚无匹配的技能继续显示同步诊断，不能宣称所有普通/召唤师技能都已覆盖。
+
+新增 logic_skill_address、logic_cd_node_address、logic_cooldown_read_ok、logic_cooldown_reason 和 logic_remain_raw；cooldown_source 明确最终显示值来自原生逻辑还是同步缓存，cooldown_node_address 指向对应来源。零值继续“待核”，不代表可释放。不使用 start+total−游戏时间补值，不记录/自行递减历史冷却。0.8.3 报告开头的 not_in_battle 是早于实际 HUD 追踪的探测；空快照的 classification_reason 改为 snapshot_unavailable，避免误报分类 ready。

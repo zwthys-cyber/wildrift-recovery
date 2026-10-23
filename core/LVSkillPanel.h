@@ -13,6 +13,10 @@ typedef struct {
     int32_t slot_index, level;
     int64_t cooldown_fixed, total_fixed, start_fixed, cd1_fixed, cd2_fixed;
     unsigned node_values_ok, configured_cd_ok;
+    uint64_t logic_native, logic_cd_node;
+    int64_t logic_remain_raw;
+    unsigned logic_cooldown_ok;
+    const char *logic_cooldown_reason;
     unsigned summoner, cooldown_ok, locked, ambiguous;
     LVPanelRole role;
     int32_t configured_index;
@@ -42,6 +46,8 @@ void lv_skill_panel_read(LVTargetRead, void *, const LVTargetSnapshot *, unsigne
    Classification failure preserves raw slot/cooldown data as unknown. */
 void lv_skill_panel_classify(LVTargetRead, void *, uint64_t engine_base, const char *engine_uuid,
                             const LVTargetSnapshot *, LVSkillPanel *);
+void lv_skill_panel_native_cooldowns(LVTargetRead, void *, uint64_t engine_base, const char *engine_uuid,
+                                    const LVTargetSnapshot *, LVSkillPanel *);
 int lv_skill_panel_skill_visible(const LVPanelSkill *, unsigned hide_small_skills);
 const char *lv_skill_panel_role_name(LVPanelRole);
 #endif

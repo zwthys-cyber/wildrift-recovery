@@ -47,6 +47,8 @@ static NSDictionary *enemySkillPanel(LVMachReader *reader, const LVTargetSnapsho
     LVSkillPanel panel;
     BOOL enabled=config && config->values[lv_config_index("drawSkillPanel")][0]!=0;
     lv_skill_panel_read(readTarget,(__bridge void *)reader,snapshot,enabled,&panel);
+    lv_skill_panel_native_cooldowns(readTarget,(__bridge void *)reader,engineBase,
+        [engineUUID isKindOfClass:NSString.class]?engineUUID.UTF8String:NULL,snapshot,&panel);
     lv_skill_panel_classify(readTarget,(__bridge void *)reader,engineBase,
         [engineUUID isKindOfClass:NSString.class]?engineUUID.UTF8String:NULL,snapshot,&panel);
     BOOL hideSmall=config && config->values[lv_config_index("hideSmallSkills")][0]!=0;
@@ -59,7 +61,11 @@ static NSDictionary *enemySkillPanel(LVMachReader *reader, const LVTargetSnapsho
             NSDictionary *entry=@{ @"object_id":@(skill->object_id), @"resource_id":@(skill->resource_id),
                 @"native_address":hexAddress(skill->native), @"slot_address":hexAddress(skill->slot),
                 @"cd_node_address":hexAddress(skill->cd_node),
-                @"cooldown_source":@"sync_skill_cd_trigger_node", @"cooldown_zero_verified":@NO,
+                @"cooldown_source":skill->logic_cooldown_ok?@"native_skill_cd_trigger_node":@"sync_skill_cd_trigger_node",
+                @"cooldown_node_address":hexAddress(skill->logic_cooldown_ok?skill->logic_cd_node:skill->cd_node),
+                @"logic_skill_address":hexAddress(skill->logic_native), @"logic_cd_node_address":hexAddress(skill->logic_cd_node),
+                @"logic_cooldown_read_ok":@(skill->logic_cooldown_ok!=0), @"logic_remain_raw":@(skill->logic_remain_raw),
+                @"logic_cooldown_reason":@(skill->logic_cooldown_reason ?: "unavailable"), @"cooldown_zero_verified":@NO,
                 @"node_values_read_ok":@(skill->node_values_ok!=0), @"node_total_fixed":@(skill->total_fixed),
                 @"node_start_fixed":@(skill->start_fixed), @"configured_cd_read_ok":@(skill->configured_cd_ok!=0),
                 @"configured_cd1_fixed":@(skill->cd1_fixed), @"configured_cd2_fixed":@(skill->cd2_fixed),
@@ -82,7 +88,7 @@ static NSDictionary *enemySkillPanel(LVMachReader *reader, const LVTargetSnapsho
         @"classification_reason":@(panel.classification_reason ?: "unavailable"),
         @"skill_role_mapping_implemented":@YES, @"ability_name_mapping_implemented":@NO,
         @"hide_small_skills_implemented":@YES, @"hide_small_skills":@(hideSmall),
-        @"scope":@"Current identity/owner/slot-checked enemy skill cooldowns. Zero values remain unverified after 0.8.2 device feedback; null nodes are unavailable. No countdown inference or history fallback." };
+        @"scope":@"Current identity/owner/slot-checked enemy skill cooldowns. Identity-matched native logic skill nodes are preferred to the sync cache. Zero values remain unverified; null nodes are unavailable. No clock arithmetic, countdown inference or history fallback." };
 }
 
 static NSDictionary *smitePreview(LVTargetSnapshot *snapshot, const LVConfig *config) {

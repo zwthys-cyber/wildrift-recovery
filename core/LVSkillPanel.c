@@ -56,7 +56,7 @@ static int battle(Reader *r,const LVTargetSnapshot *s) {
 /* Returns 0 for a non-current/passive skill, -1 for unavailable identity. */
 static int skill(Reader *r,uint64_t native,uint64_t actor,unsigned summoner,LVPanelSkill *out) {
     memset(out,0,sizeof(*out));out->native=native;out->summoner=summoner;
-    out->role=summoner ? LV_PANEL_SUMMONER : LV_PANEL_UNKNOWN;out->configured_index=-1;
+    out->role=summoner ? LV_PANEL_SUMMONER : LV_PANEL_UNKNOWN;out->configured_index=-1;out->logic_cooldown_reason="not_requested";
     uint64_t owner,current,same;int32_t index;uint32_t id,res;
     if(native<0x10000 || native>=(UINT64_C(1)<<48) || (native&7) ||
         !pointer(r,native+0x108,&out->slot))return -1;
@@ -245,7 +245,10 @@ void lv_skill_panel_classify(LVTargetRead read,void *context,uint64_t base,const
         if(panel->heroes[i].count>LV_PANEL_MAX_SKILLS){panel->count=0;return;}
         clear_roles(&panel->heroes[i]);
     }
-    if(!read || !s || s->count>LV_TARGET_MAX_ACTORS || !uuid || strcmp(uuid,LV_NATIVE_ENGINE_UUID) ||
+    if(!s || (s->result!=LV_TARGET_READY && s->result!=LV_TARGET_PARTIAL) || !panel->count) {
+        panel->classification_reason="snapshot_unavailable";return;
+    }
+    if(!read || s->count>LV_TARGET_MAX_ACTORS || !uuid || strcmp(uuid,LV_NATIVE_ENGINE_UUID) ||
         base<0x10000 || base>(UINT64_C(1)<<48)-0x523cf30)return;
     Reader r={read,context};uint64_t root,config,same;uint8_t sync,same_mode;
     if(!pointer(&r,base+0x523cf28,&root) || !root || !pointer(&r,root+0x18,&config) || !config ||
@@ -290,4 +293,99 @@ int lv_skill_panel_skill_visible(const LVPanelSkill *skill,unsigned hide_small_s
 const char *lv_skill_panel_role_name(LVPanelRole role) {
     switch(role){case LV_PANEL_REGULAR:return "regular";case LV_PANEL_ULTIMATE:return "ultimate";
         case LV_PANEL_SUMMONER:return "summoner";default:return "unknown";}
+}
+
+/* Named native BattleActor.skillMgr getter 395dc7c reads actor +200.
+   Native GetSkill iterates manager +2d8/+2e0; its resource equality
+   path is skill +668 -> wrapper +8 -> resource +c (ff1a6c/ff8b98).
+   ff5bcc obtains trigger at +570; ff5c70 obtains node at +590.
+   Node GetState/GetRemainCD use +10/+18, distinct from sync +18/+20.
+   No game calls, clock arithmetic or persistent values are used here. */
+static int logic_actor_identity(Reader *r,const LVTargetActor *a) {
+    uint32_t id;int32_t res,camp;
+    return a->logic_position_ok && a->logic_native &&
+        load(r,a->logic_native+0x14,&id,4) && id==a->object_id &&
+        load(r,a->logic_native+0xc4,&res,4) && res==a->resource_id &&
+        load(r,a->logic_native+0x198,&camp,4) && camp==a->camp;
+}
+static int native_vector(Reader *r,uint64_t header,Vector *v) {
+    memset(v,0,sizeof(*v));v->header=header;
+    if(!pointer(r,header,&v->begin) || !pointer(r,header+8,&v->end) ||
+        v->end<v->begin || (v->end-v->begin)%8 ||
+        v->end-v->begin>LV_TARGET_MAX_SKILLS*8)return 0;
+    v->count=(size_t)((v->end-v->begin)/8);
+    if(v->count && !load(r,v->begin,v->entries,v->count*8))return 0;
+    for(size_t i=0;i<v->count;++i) {
+        if(!v->entries[i] || (v->entries[i]&7))return 0;
+        for(size_t j=0;j<i;++j)if(v->entries[i]==v->entries[j])return 0;
+    }
+    return 1;
+}
+static int native_resource(Reader *r,uint64_t n,uint32_t *id) {
+    uint64_t wrapper,config;
+    return pointer(r,n+0x668,&wrapper) && wrapper && pointer(r,wrapper+8,&config) && config &&
+        load(r,config+0xc,id,4) && *id;
+}
+void lv_skill_panel_native_cooldowns(LVTargetRead read,void *context,uint64_t base,const char *uuid,
+                                    const LVTargetSnapshot *s,LVSkillPanel *panel) {
+    if(!panel || !panel->enabled || panel->count>LV_PANEL_MAX_HEROES)return;
+    for(size_t i=0;i<panel->count;++i) {
+        if(panel->heroes[i].count>LV_PANEL_MAX_SKILLS)return;
+        for(size_t j=0;j<panel->heroes[i].count;++j) {
+            LVPanelSkill *k=&panel->heroes[i].skills[j];
+            if(k->logic_cooldown_ok){k->cooldown_ok=0;k->cooldown_fixed=0;k->locked=0;}
+            k->logic_cooldown_ok=0;k->logic_native=0;k->logic_cd_node=0;k->logic_remain_raw=0;
+            k->logic_cooldown_reason="logic_profile_unavailable";
+        }
+    }
+    if(!read || !s || s->count>LV_TARGET_MAX_ACTORS || !uuid || strcmp(uuid,LV_NATIVE_ENGINE_UUID) ||
+        base<0x10000 || base>(UINT64_C(1)<<48)-0x523cf40 ||
+        (s->result!=LV_TARGET_READY && s->result!=LV_TARGET_PARTIAL))return;
+    Reader r={read,context};
+    for(size_t i=0;i<panel->count;++i) {
+        LVPanelHero *h=&panel->heroes[i];const LVTargetActor *a=NULL;
+        for(size_t j=0;j<s->count;++j)if(s->actors[j].object_id_ok &&
+            s->actors[j].object_id==h->object_id && s->actors[j].resource_id==h->resource_id) {
+            if(a){a=NULL;break;}a=&s->actors[j];
+        }
+        uint64_t manager=0,owner=0;Vector list;
+        int ready=a && identity(&r,a) && logic_actor_identity(&r,a) &&
+            pointer(&r,a->logic_native+0x200,&manager) && manager &&
+            pointer(&r,manager+0x28,&owner) && owner==a->logic_native &&
+            native_vector(&r,manager+0x2d8,&list);
+        for(size_t j=0;j<h->count;++j) {
+            LVPanelSkill *k=&h->skills[j];
+            k->logic_cooldown_reason=ready?"skill_not_found":"logic_manager_unavailable";
+            if(!ready || k->ambiguous)continue;
+            uint64_t found=0;unsigned matches=0,complete=1;
+            for(size_t z=0;z<list.count;++z) {
+                uint32_t res;
+                if(!native_resource(&r,list.entries[z],&res)){complete=0;break;}
+                if(res==k->resource_id){found=list.entries[z];++matches;}
+            }
+            if(!complete){k->logic_cooldown_reason="skill_configuration_unavailable";continue;}
+            if(matches!=1){if(matches>1)k->logic_cooldown_reason="skill_ambiguous";continue;}
+            uint64_t node=0,same=0;uint32_t res;uint8_t locked=0;int64_t remain=0;
+            k->logic_native=found;k->logic_cooldown_reason="node_unavailable";
+            if(!pointer(&r,found+0x580,&owner) || owner!=found ||
+                !pointer(&r,found+0x590,&node) || !node ||
+                !load(&r,node+0x10,&locked,1) || locked>1 ||
+                !load(&r,node+0x18,&remain,8))continue;
+            k->logic_cd_node=node;k->logic_remain_raw=remain;
+            Vector again;
+            if(!native_resource(&r,found,&res) || res!=k->resource_id ||
+                !pointer(&r,found+0x580,&same) || same!=found ||
+                !pointer(&r,found+0x590,&same) || same!=node ||
+                !native_vector(&r,manager+0x2d8,&again) || again.begin!=list.begin || again.end!=list.end ||
+                again.count!=list.count || memcmp(again.entries,list.entries,list.count*8) ||
+                !pointer(&r,a->logic_native+0x200,&same) || same!=manager ||
+                !pointer(&r,manager+0x28,&same) || same!=a->logic_native ||
+                !identity(&r,a) || !logic_actor_identity(&r,a) ||
+                !pointer(&r,k->slot+0x98,&same) || same!=k->native) {
+                k->logic_cooldown_reason="identity_or_list_changed";continue;
+            }
+            k->logic_cooldown_ok=1;k->logic_cooldown_reason="ready";
+            k->cooldown_fixed=remain<0?0:remain;k->locked=locked;k->cooldown_ok=1;
+        }
+    }
 }

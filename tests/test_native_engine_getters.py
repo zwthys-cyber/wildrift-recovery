@@ -82,6 +82,29 @@ class OriginalEngineGetters(unittest.TestCase):
                 self.assertEqual(u.reg_read(UC_ARM64_REG_X0),HEAP+0x1000)
                 self.assertEqual(u.reg_read(UC_ARM64_REG_X2),0)
 
+    def test_original_native_skill_trigger_and_resource_accessors(self):
+        # Execute original native consumers, distinct from sync +440/+20.
+        u=machine(self.data,((0xff5c70,0xff5c74),(0xff1a6c,0xff1aa0),
+                             (0x1015164,0x101516c),(0x1024bf0,0x1024bf4),(0x395dc7c,0x395dc84)))
+        skill=HEAP+0x1000;node=HEAP+0x3000
+        q(u,HEAP+0x200,HEAP+0x2000);u.reg_write(UC_ARM64_REG_X0,HEAP)
+        u.emu_start(0x395dc7c,HALT,count=4)
+        self.assertEqual(u.reg_read(UC_ARM64_REG_X0),HEAP+0x2000)
+        q(u,skill+0x590,node);q(u,skill+0x440,HEAP+0x4000)
+        u.reg_write(UC_ARM64_REG_X19,skill);u.emu_start(0xff5c70,0xff5c74,count=4)
+        self.assertEqual(u.reg_read(UC_ARM64_REG_X19),node)
+        for remain in (0,16384,9*16384,-16384):
+            q(u,node+0x18,remain);q(u,node+0x20,12345)
+            u.reg_write(UC_ARM64_REG_X0,node);u.reg_write(UC_ARM64_REG_LR,HALT)
+            u.emu_start(0x1015164,HALT,count=4)
+            self.assertEqual(u.reg_read(UC_ARM64_REG_X0),remain&((1<<64)-1))
+        q(u,skill+0x668,HEAP+0x5000)
+        u.reg_write(UC_ARM64_REG_X0,skill);u.emu_start(0xff1a6c,HALT,count=20)
+        self.assertEqual(u.reg_read(UC_ARM64_REG_X0),HEAP+0x5000)
+        q(u,skill+0x580,skill);u.reg_write(UC_ARM64_REG_X19,skill+0x570)
+        u.emu_start(0x1024bf0,0x1024bf4,count=4)
+        self.assertEqual(u.reg_read(UC_ARM64_REG_X19),skill)
+
     def test_original_logger_accessor_is_not_the_runtime_battle(self):
         # The 0.7.8 test correctly executed this helper, but incorrectly
         # named its result Battle. It actually returns a distinct logger.

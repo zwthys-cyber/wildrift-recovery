@@ -95,6 +95,48 @@ static void classification_checks(void) {
     lv_skill_panel_classify(reader,NULL,ENGINE,"wrong-profile",&snapshot,&panel);
     check(!reads && !enemy()->classification_ok && enemy()->skills[0].role==LV_PANEL_UNKNOWN);
     setup();config_setup();byte(HEAP+0xf11e,0);sample();classify();check(!enemy()->classification_ok);
+    setup();snapshot.result=LV_TARGET_NOT_IN_BATTLE;sample();classify();
+    check(!panel.count && !strcmp(panel.classification_reason,"snapshot_unavailable"));
+}
+static void native_setup(void) {
+    uint64_t b=HEAP+0x10000,logic=b+0xf000,manager=b+0xe400;
+    snapshot.actors[1].logic_native=logic;snapshot.actors[1].logic_position_ok=1;
+    d(logic+0x14,2);d(logic+0xc4,snapshot.actors[1].resource_id);d(logic+0x198,2);
+    q(logic+0x200,manager);
+    q(manager+0x28,logic);q(manager+0x2d8,b+0xdc00);q(manager+0x2e0,b+0xdc10);
+    for(size_t j=0;j<2;++j) {
+        uint64_t n=b+0x4000+j*0x800,node=b+0xd800+j*0x80,wrapper=b+0xda00+j*0x20,cfg=b+0xdb00+j*0x20;
+        q(b+0xdc00+j*8,n);q(n+0x580,n);q(n+0x590,node);
+        q(n+0x668,wrapper);q(wrapper+8,cfg);d(cfg+0xc,10101001+(int32_t)j);
+        q(node+0x18,(j?2:7)*16384);byte(node+0x10,0);
+        q(b+0xc020+j*0x100,0);
+    }
+}
+static void native_sample(void) {
+    reads=0;lv_skill_panel_native_cooldowns(reader,NULL,ENGINE,LV_NATIVE_ENGINE_UUID,&snapshot,&panel);
+}
+static void native_checks(void) {
+    uint64_t b=HEAP+0x10000;
+    setup();native_setup();sample();native_sample();
+    check(enemy()->skills[0].logic_cooldown_ok && enemy()->skills[0].cooldown_fixed==7*16384);
+    check(enemy()->skills[1].logic_cooldown_ok && enemy()->skills[1].cooldown_fixed==2*16384);
+    check(!enemy()->skills[2].logic_cooldown_ok); /* No speculative summoner mapping. */
+    setup();native_setup();q(b+0xd818,0);sample();native_sample();
+    check(enemy()->skills[0].logic_cooldown_ok && !enemy()->skills[0].cooldown_fixed);
+    setup();native_setup();q(b+0xd818,(uint64_t)-12345);sample();native_sample();
+    check(enemy()->skills[0].logic_remain_raw==-12345 && !enemy()->skills[0].cooldown_fixed);
+    setup();native_setup();byte(b+0xd810,1);sample();native_sample();check(enemy()->skills[0].locked);
+    setup();native_setup();byte(b+0xd810,255);sample();native_sample();check(!enemy()->skills[0].logic_cooldown_ok);
+    setup();native_setup();q(b+0x4580,0);sample();native_sample();check(!enemy()->skills[0].logic_cooldown_ok);
+    setup();native_setup();q(b+0xe428,HEAP+0x400);sample();native_sample();check(!enemy()->skills[0].logic_cooldown_ok);
+    setup();native_setup();d(b+0xdb2c,10101001);sample();native_sample();
+    check(!enemy()->skills[0].logic_cooldown_ok && !strcmp(enemy()->skills[0].logic_cooldown_reason,"skill_ambiguous"));
+    setup();native_setup();sample();failure=b+0xd818;native_sample();check(!enemy()->skills[0].logic_cooldown_ok);
+    setup();native_setup();sample();mutation=b+0x4590;replacement=b+0xd880;native_sample();
+    check(!enemy()->skills[0].logic_cooldown_ok && !strcmp(enemy()->skills[0].logic_cooldown_reason,"identity_or_list_changed"));
+    setup();native_setup();sample();reads=0;
+    lv_skill_panel_native_cooldowns(reader,NULL,ENGINE,"wrong-profile",&snapshot,&panel);
+    check(!reads && !enemy()->skills[0].logic_cooldown_ok);
 }
 int main(void) {
     uint64_t b=HEAP+0x10000,skill=b+0x2000,slot=b+0xa000,node=b+0xc000;
@@ -158,6 +200,6 @@ int main(void) {
     sample();check(!panel.count && panel.result==LV_TARGET_CHANGED);
     setup();snapshot.count=0;sample();check(!panel.count);
     lv_skill_panel_read(NULL,NULL,NULL,1,&panel);check(!panel.count);
-    classification_checks();
+    classification_checks();native_checks();
     printf("Enemy skill panel: %u checks passed\n",checks);return 0;
 }
