@@ -61,3 +61,23 @@ for label,data,start,end in (('managed SkillCDNode ctor',fw,0x3ba8058,0x3ba8214)
  extra.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(data[start:end],start))
 (out/'skill-cooldown-consumers.asm').write_text('\n'.join(extra)+'\n')
 print('Selected cooldown consumers:',len(consumers))
+import struct
+# Direct original callers identify how ActorSkill obtains its trigger, without
+# guessing an offset from the managed sync representation.
+callers=[]
+for pc in range(0,len(engine)-4,4):
+ w=struct.unpack_from('<I',engine,pc)[0]
+ if w>>26!=0x25:continue
+ imm=w&0x3ffffff
+ if imm&0x2000000:imm-=0x4000000
+ target=pc+imm*4
+ if target in (0x102498c,0x10249b0,0x1015164,0x101516c):
+  callers.append((pc,target))
+for pc,target in callers[:40]:
+ extra.append(f'; cooldown caller {pc:#x} -> {target:#x}')
+ extra.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(engine[max(0,pc-96):pc+36],max(0,pc-96)))
+for start,end in ((0xff1a6c,0xff1ae0),(0x32edfb0,0x32ee080)):
+ extra.append(f'; selected native field/clock accessor {start:#x}')
+ extra.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(engine[start:end],start))
+(out/'skill-cooldown-consumers.asm').write_text('\n'.join(extra)+'\n')
+print('Selected direct cooldown callers:',len(callers))
