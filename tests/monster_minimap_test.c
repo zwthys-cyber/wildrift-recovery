@@ -60,7 +60,7 @@ int main(void) {
         setup(camp);snapshot.actors[3].health_fixed=1;sample(1);check(monster() && monster()->health_fixed==1);
         setup(camp);snapshot.actors[3].position_fixed[0]=52*16384;sample(1);
         check(monster() && monster()->edge_clamped && !frame.edge_clamped_enemies);
-        setup(camp);settings.values[LV_MAP_MANUAL]=1;geometry.ready=0;sample(1);check(monster());
+        setup(camp);settings.values[LV_MAP_MANUAL]=1;geometry.ready=0;sample(1);check(monster()!=NULL);
         setup(camp);geometry.full_map_showing=1;sample(1);check(!frame.count && !monster());
         setup(camp);geometry.viewport_mode=1;sample(1);check(!frame.count);
         setup(camp);snapshot.result=LV_TARGET_CHANGED;sample(1);check(!frame.count);
