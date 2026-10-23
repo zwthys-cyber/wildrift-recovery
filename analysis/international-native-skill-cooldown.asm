@@ -115,3 +115,85 @@
 0395dc80: ret      
 ; named skillMgr property getter 0x35f9dd8
 ; named skillMgr property getter 0x3619494
+; selected node accessor and trigger helper evidence (international-analysis run)
+; GetState engine 0x1014ff4
+01014ff4: stp      x20, x19, [sp, #-0x20]!
+01014ff8: stp      x29, x30, [sp, #0x10]
+01014ffc: add      x29, sp, #0x10
+01015000: mov      x19, x0
+01015004: adrp     x8, #0x51ab000
+01015008: ldr      x8, [x8, #0x48]
+0101500c: cbz      x8, #0x1015078
+01015010: sub      sp, sp, #0xa0
+01015014: stp      x0, x1, [sp]
+01015018: stp      x2, x3, [sp, #0x10]
+0101501c: stp      x4, x5, [sp, #0x20]
+01015020: stp      x6, x7, [sp, #0x30]
+01015024: stp      x8, x19, [sp, #0x40]
+01015028: stp      x20, x21, [sp, #0x50]
+0101502c: stp      x22, x23, [sp, #0x60]
+01015030: stp      x24, x25, [sp, #0x70]
+01015034: stp      x26, x27, [sp, #0x80]
+01015038: str      x28, [sp, #0x90]
+0101503c: mov      x0, sp
+01015040: mov      x1, x29
+01015044: mov      w2, #0xa0
+01015048: bl       #0x41fdc1c
+0101504c: ldp      x0, x1, [sp]
+01015050: ldp      x8, x2, [sp, #0x10]
+01015054: ldp      x19, x20, [sp, #0x20]
+01015058: ldp      x21, x22, [sp, #0x30]
+0101505c: ldp      x23, x24, [sp, #0x40]
+01015060: ldp      x25, x26, [sp, #0x50]
+01015064: ldp      x27, x28, [sp, #0x60]
+01015068: ldp      x29, x30, [sp, #0x70]
+0101506c: add      sp, sp, x2
+01015070: ret      
+01015074: bl       #0x41fd89c
+01015078: ldrb     w8, [x19, #0x10]
+0101507c: cbz      w8, #0x1015090
+01015080: mov      w0, #1
+01015084: ldp      x29, x30, [sp, #0x10]
+01015088: ldp      x20, x19, [sp], #0x20
+0101508c: ret      
+; GetStateSync engine 0x10150ac
+; engine node getters +18/+20/+28 0x1015164
+01015164: ldr      x0, [x0, #0x18]
+01015168: ret      
+0101516c: ldr      x0, [x0, #0x20]
+01015170: ret      
+01015174: ldr      x0, [x0, #0x20]
+01015178: ret      
+0101517c: ldr      x0, [x0, #0x28]
+01015180: ret      
+; IsCDing/IsCDingSync helpers 0x102498c
+0102498c: ldr      x0, [x0, #0x20]
+01024990: cbz      x0, #0x10249ac
+01024994: stp      x29, x30, [sp, #-0x10]!
+01024998: mov      x29, sp
+0102499c: bl       #0x1014ff4
+010249a0: cmp      w0, #2
+010249a4: cset     w0, eq
+010249a8: ldp      x29, x30, [sp], #0x10
+010249ac: ret      
+010249b0: ldr      x0, [x0, #0x20]
+010249b4: cbz      x0, #0x10249d0
+010249b8: stp      x29, x30, [sp, #-0x10]!
+010249bc: mov      x29, sp
+010249c0: bl       #0x10150ac
+010249c4: cmp      w0, #2
+010249c8: cset     w0, eq
+010249cc: ldp      x29, x30, [sp], #0x10
+; trigger owner resource context 0x1024bf0
+01024bf0: ldr      x19, [x19, #0x10]
+01024bf4: mov      x0, x19
+01024bf8: bl       #0xff1a6c
+01024bfc: cbz      x0, #0x1024c30
+01024c00: ldr      x8, [x0, #0x10]
+01024c04: cbz      x8, #0x1024c44
+01024c08: ldp      x8, x9, [x8, #0x120]
+01024c0c: cmp      x9, x8
+01024c10: b.eq     #0x1024d00
+01024c14: ldr      x21, [x8]
+01024c18: add      x20, x21, #8
+01024c1c: mov      x8, #-0x2222222222222223

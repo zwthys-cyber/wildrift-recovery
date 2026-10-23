@@ -335,6 +335,7 @@ void lv_skill_panel_native_cooldowns(LVTargetRead read,void *context,uint64_t ba
             LVPanelSkill *k=&panel->heroes[i].skills[j];
             if(k->logic_cooldown_ok){k->cooldown_ok=0;k->cooldown_fixed=0;k->locked=0;}
             k->logic_cooldown_ok=0;k->logic_native=0;k->logic_cd_node=0;k->logic_remain_raw=0;
+            k->logic_total_raw=0;k->logic_start_raw=0;k->logic_node_values_ok=0;
             k->logic_cooldown_reason="logic_profile_unavailable";
         }
     }
@@ -375,6 +376,12 @@ void lv_skill_panel_native_cooldowns(LVTargetRead read,void *context,uint64_t ba
                 !load(&r,node+0x10,&locked,1) ||
                 !load(&r,node+0x18,&remain,8))continue;
             k->logic_cd_node=node;k->logic_remain_raw=remain;
+            /* Engine node total/start diagnostics. Engine getters 101516c/101517c
+               read +20/+28 and the sync mirror (skill +440) is the engine data
+               shifted by 8 (locked +10->+18, remain +18->+20, total +20->+28,
+               start +28->+30). Non-gating: only remain drives the display. */
+            k->logic_node_values_ok=load(&r,node+0x20,&k->logic_total_raw,8) &&
+                load(&r,node+0x28,&k->logic_start_raw,8);
             Vector again;
             if(!native_resource(&r,found,&res) || res!=k->resource_id ||
                 !pointer(&r,found+0x580,&same) || same!=found ||

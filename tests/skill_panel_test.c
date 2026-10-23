@@ -109,6 +109,7 @@ static void native_setup(void) {
         q(b+0xdc00+j*8,n);q(n+0x580,n);q(n+0x590,node);
         q(n+0x668,wrapper);q(wrapper+8,cfg);d(cfg+0xc,10101001+(int32_t)j);
         q(node+0x18,(j?2:7)*16384);byte(node+0x10,0);
+        q(node+0x20,(j?5:9)*16384);q(node+0x28,(j?1:3)*16384);
         q(b+0xc020+j*0x100,0);
     }
 }
@@ -120,6 +121,10 @@ static void native_checks(void) {
     setup();native_setup();sample();native_sample();
     check(enemy()->skills[0].logic_cooldown_ok && enemy()->skills[0].cooldown_fixed==7*16384);
     check(enemy()->skills[1].logic_cooldown_ok && enemy()->skills[1].cooldown_fixed==2*16384);
+    check(enemy()->skills[0].logic_node_values_ok && enemy()->skills[0].logic_total_raw==9*16384
+        && enemy()->skills[0].logic_start_raw==3*16384);
+    check(enemy()->skills[1].logic_node_values_ok && enemy()->skills[1].logic_total_raw==5*16384
+        && enemy()->skills[1].logic_start_raw==1*16384);
     check(!enemy()->skills[2].logic_cooldown_ok); /* No speculative summoner mapping. */
     setup();native_setup();q(b+0xd818,0);sample();native_sample();
     check(enemy()->skills[0].logic_cooldown_ok && !enemy()->skills[0].cooldown_fixed);

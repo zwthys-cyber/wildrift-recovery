@@ -65,6 +65,8 @@ static NSDictionary *enemySkillPanel(LVMachReader *reader, const LVTargetSnapsho
                 @"cooldown_node_address":hexAddress(skill->logic_cooldown_ok?skill->logic_cd_node:skill->cd_node),
                 @"logic_skill_address":hexAddress(skill->logic_native), @"logic_cd_node_address":hexAddress(skill->logic_cd_node),
                 @"logic_cooldown_read_ok":@(skill->logic_cooldown_ok!=0), @"logic_remain_raw":@(skill->logic_remain_raw),
+                @"logic_node_values_read_ok":@(skill->logic_node_values_ok!=0), @"logic_total_raw":@(skill->logic_total_raw),
+                @"logic_start_raw":@(skill->logic_start_raw),
                 @"logic_cooldown_reason":@(skill->logic_cooldown_reason ?: "unavailable"), @"cooldown_zero_verified":@NO,
                 @"node_values_read_ok":@(skill->node_values_ok!=0), @"node_total_fixed":@(skill->total_fixed),
                 @"node_start_fixed":@(skill->start_fixed), @"configured_cd_read_ok":@(skill->configured_cd_ok!=0),

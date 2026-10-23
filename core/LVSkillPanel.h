@@ -14,8 +14,8 @@ typedef struct {
     int64_t cooldown_fixed, total_fixed, start_fixed, cd1_fixed, cd2_fixed;
     unsigned node_values_ok, configured_cd_ok;
     uint64_t logic_native, logic_cd_node;
-    int64_t logic_remain_raw;
-    unsigned logic_cooldown_ok;
+    int64_t logic_remain_raw, logic_total_raw, logic_start_raw;
+    unsigned logic_cooldown_ok, logic_node_values_ok;
     const char *logic_cooldown_reason;
     unsigned summoner, cooldown_ok, locked, ambiguous;
     LVPanelRole role;
