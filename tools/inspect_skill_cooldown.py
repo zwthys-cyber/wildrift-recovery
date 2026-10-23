@@ -81,3 +81,28 @@ for start,end in ((0xff1a6c,0xff1ae0),(0x32edfb0,0x32ee080)):
  extra.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(engine[start:end],start))
 (out/'skill-cooldown-consumers.asm').write_text('\n'.join(extra)+'\n')
 print('Selected direct cooldown callers:',len(callers))
+# Locate the named native Lua skill-manager registration; only matching string
+# references and their short instruction context are exported.
+needles=(b'get_skillMgr\0',b'skillMgr\0',b'GetSkillMgr\0')
+positions=set()
+for needle in needles:
+ at=engine.find(needle)
+ while at>=0:
+  positions.add(at);at=engine.find(needle,at+1)
+pages={p&~4095 for p in positions}
+for pc in range(0,min(len(engine)-12,0x4200000),4):
+ w=struct.unpack_from('<I',engine,pc)[0]
+ if w&0x9f000000!=0x90000000:continue
+ imm=((w>>5)&0x7ffff)<<2|((w>>29)&3)
+ if imm&0x100000:imm-=0x200000
+ page=(pc&~4095)+(imm<<12)
+ if page not in pages:continue
+ decoded=list(cs.disasm(engine[pc:pc+16],pc))
+ for ins in decoded[1:]:
+  if ins.mnemonic=='add' and len(ins.operands)>2 and ins.operands[2].type==2:
+   target=page+ins.operands[2].imm
+   if target in positions:
+    extra.append(f'; named skill-manager string reference {pc:#x} -> {target:#x}')
+    extra.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(engine[max(0,pc-48):pc+64],max(0,pc-48)))
+(out/'skill-cooldown-consumers.asm').write_text('\n'.join(extra)+'\n')
+print('Named skill-manager strings:',[hex(v) for v in positions])
