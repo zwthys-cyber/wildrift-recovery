@@ -26,9 +26,16 @@ ks=Ks(KS_ARCH_ARM64,KS_MODE_LITTLE_ENDIAN)
 
 def locate(name, lines):
     listing=(ROOT/'analysis/ios-assembly'/name).read_text().splitlines()[:lines]
-    asm=';'.join(line.split(':',1)[1].strip() for line in listing)
-    code=bytes(ks.asm(asm)[0])
-    matches=[m.start() for m in re.finditer(re.escape(code),fw) if m.start()%4==0]
+    parts=[]; previous=''
+    for line in listing:
+        instruction=line.split(':',1)[1].strip()
+        mnemonic=instruction.split()[0]
+        relative=mnemonic in ('adr','adrp','bl','b','cbz','cbnz','tbz','tbnz') or mnemonic.startswith('b.')
+        address_pair=previous=='adrp' and mnemonic in ('ldr','str','add')
+        parts.append(b'.{4}' if relative or address_pair else re.escape(bytes(ks.asm(instruction)[0])))
+        previous=mnemonic
+    pattern=b''.join(parts)
+    matches=[m.start() for m in re.finditer(pattern,fw,re.DOTALL) if m.start()%4==0]
     if len(matches)!=1: raise ValueError((name,'signature matches',matches))
     return matches[0]
 
@@ -41,9 +48,9 @@ def ref(pc):
     raise ValueError((hex(pc),b.mnemonic))
 
 stream=locate('02ca2b04.asm',10)
-loader=locate('02cc3438.asm',6)
-names=locate('02cc4004.asm',6)
-klass=locate('02cc42e8.asm',8)
+loader=locate('02cc3438.asm',30)
+names=locate('02cc4004.asm',30)
+klass=locate('02cc42e8.asm',23)
 constants=ref(stream+0x50)
 key=ref(loader+0x64)
 string_key=ref(names+0xac)
