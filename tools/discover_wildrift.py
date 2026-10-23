@@ -43,7 +43,7 @@ def ref(pc):
 stream=locate('02ca2b04.asm',10)
 loader=locate('02cc3438.asm',6)
 names=locate('02cc4004.asm',6)
-klass=locate('02cc42e8.asm',11)
+klass=locate('02cc42e8.asm',8)
 constants=ref(stream+0x50)
 key=ref(loader+0x64)
 string_key=ref(names+0xac)
