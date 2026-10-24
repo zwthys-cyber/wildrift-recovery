@@ -47,5 +47,19 @@
       "smite preview recognizes both 81100101 and 81110101",
       "panel labels: 1技能/2技能/3技能/R and 闪现/惩戒 for confirmed summoner ids"
     ]
+  },
+  "round_3": {
+    "reviewed_at": "2026-10-23T23:00:00+00:00",
+    "enemy_regular_skills_native_ok": 4,
+    "enemy_ultimate_native_source_confirmed": true,
+    "enemy_ultimate_not_cast_this_session": true,
+    "summoner_stage": "summoner_manager_unavailable",
+    "hero_360_null_on_device": true,
+    "logic_summoner_manager_address": "0x0",
+    "shipped": [
+      "route B: manager +140 root with +60/+68 list and +74 resources",
+      "read-only probe of manager slots 0x140/0x158/0x1d8/0x1e8/0x270/0x278/0x280/0x308/0x310/0x360",
+      "slot probe distinguishes null from unreadable"
+    ]
   }
 }
