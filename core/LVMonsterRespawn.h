@@ -9,7 +9,7 @@ typedef struct {
 } LVMonsterRespawnTimer;
 typedef struct {
     const char *reason;
-    unsigned enabled;
+    unsigned enabled, class_root_fallbacks;
     size_t count, examined, unavailable, duplicates;
     LVMonsterRespawnTimer timers[LV_RESPAWN_MAX_TIMERS];
 } LVMonsterRespawnReport;

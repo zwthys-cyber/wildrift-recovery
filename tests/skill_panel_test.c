@@ -78,6 +78,12 @@ static void classification_checks(void) {
     check(lv_skill_panel_skill_visible(&enemy()->skills[0],0));
     check(lv_skill_panel_skill_visible(&enemy()->skills[1],1));
     check(lv_skill_panel_skill_visible(&enemy()->skills[2],1));
+    LVPanelSkill label_check=enemy()->skills[2];
+    label_check.resource_id=10000001;
+    check(!lv_skill_panel_skill_visible(&label_check,1));
+    check(!lv_skill_panel_skill_visible(&label_check,0));
+    label_check.resource_id=81090101;label_check.slot_index=5;
+    check(lv_skill_panel_skill_visible(&label_check,1));
     check(!strcmp(lv_skill_panel_role_name(LV_PANEL_ULTIMATE),"ultimate"));
     /* Replaced current skill is classified by the checked default skill. */
     q(b+0xa090,b+0xf000);q(b+0xf108,b+0xa000);d(b+0xf020,900);d(b+0xf044,10101001);

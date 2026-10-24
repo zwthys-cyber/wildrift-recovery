@@ -288,7 +288,10 @@ void lv_skill_panel_classify(LVTargetRead read,void *context,uint64_t base,const
     panel->classification_reason=classified==panel->count ? "ready" : "partial_or_unavailable";
 }
 int lv_skill_panel_skill_visible(const LVPanelSkill *skill,unsigned hide_small_skills) {
-    return skill && (!hide_small_skills || skill->role==LV_PANEL_ULTIMATE || skill->role==LV_PANEL_SUMMONER);
+    /* The device report identifies the unwanted S5 entry by resource, not
+       by slot: equipped summoner skills may occupy different slot indices. */
+    return skill && skill->resource_id!=10000001 &&
+        (!hide_small_skills || skill->role==LV_PANEL_ULTIMATE || skill->role==LV_PANEL_SUMMONER);
 }
 const char *lv_skill_panel_role_name(LVPanelRole role) {
     switch(role){case LV_PANEL_REGULAR:return "regular";case LV_PANEL_ULTIMATE:return "ultimate";

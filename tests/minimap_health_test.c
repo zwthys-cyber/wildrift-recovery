@@ -66,6 +66,13 @@ int main(void) {
     check(!strcmp(report.reason,"ready") && report.matched==2 && report.enabled==2 && report.valid==2);
     check(snapshot.actors[0].minimap_health_fraction_ok && snapshot.actors[0].minimap_health_fraction_fixed==4096);
     check(snapshot.actors[1].minimap_health_fraction_ok && snapshot.actors[1].minimap_health_fraction_fixed==16384);
+    fixture();block(0x100000000+LV_MINIMAP_CONTROLLER_CLASS_GLOBAL,8);
+    q(0x100000000+LV_MINIMAP_CONTROLLER_CLASS_GLOBAL,0x230000);q(0x200000+LV_TYPE_MINIMAP_CONTROLLER*8,0);
+    read_health();check(report.valid==2 && report.class_root_fallbacks==1);
+    q(0x100000000+LV_MINIMAP_CONTROLLER_CLASS_GLOBAL,0x230100);read_health();
+    check(!report.valid && !strcmp(report.reason,"map_controller_class_unavailable"));
+    fixture();q(0x240000,0);read_health();check(!report.valid && !strcmp(report.reason,"map_entity_unavailable"));
+    fixture();read_health();
     b(0x2601b4,0); read_health(); check(report.valid==1 && report.enabled==1 && !snapshot.actors[0].minimap_health_fraction_ok);
     fixture(); b(0x2600c1,0); read_health(); check(report.valid==1); /* hidden = no current HP ring */
     fixture(); b(0x2600c0,0); read_health(); check(report.matched==1 && report.valid==1);

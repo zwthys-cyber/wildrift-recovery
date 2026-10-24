@@ -56,7 +56,7 @@ static NSDictionary *enemySkillPanel(LVMachReader *reader, const LVTargetSnapsho
     NSMutableArray *heroes=[NSMutableArray new];
     for(size_t i=0;i<panel.count;++i) {
         const LVPanelHero *hero=&panel.heroes[i];NSMutableArray *skills=[NSMutableArray new];
-        NSMutableArray *displayed=[NSMutableArray new];NSUInteger hiddenRegular=0,hiddenUnknown=0;
+        NSMutableArray *displayed=[NSMutableArray new];NSUInteger hiddenRegular=0,hiddenUnknown=0,hiddenAuxiliary=0;
         for(size_t j=0;j<hero->count;++j) {
             const LVPanelSkill *skill=&hero->skills[j];
             NSDictionary *entry=@{ @"object_id":@(skill->object_id), @"resource_id":@(skill->resource_id),
@@ -79,6 +79,7 @@ static NSDictionary *enemySkillPanel(LVMachReader *reader, const LVTargetSnapsho
                 @"role":@(lv_skill_panel_role_name(skill->role)), @"configured_index":@(skill->configured_index) };
             [skills addObject:entry];
             if(lv_skill_panel_skill_visible(skill,hideSmall))[displayed addObject:entry];
+            else if(skill->resource_id==10000001)++hiddenAuxiliary;
             else if(skill->role==LV_PANEL_REGULAR)++hiddenRegular;
             else ++hiddenUnknown;
         }
@@ -91,6 +92,7 @@ static NSDictionary *enemySkillPanel(LVMachReader *reader, const LVTargetSnapsho
         [heroes addObject:@{ @"object_id":@(hero->object_id), @"resource_id":@(hero->resource_id),
             @"result":resultName(hero->result), @"reason":@(hero->reason), @"skills":skills,
             @"display_skills":displayed, @"hidden_regular_count":@(hiddenRegular), @"hidden_unknown_count":@(hiddenUnknown),
+            @"hidden_auxiliary_count":@(hiddenAuxiliary),
             @"classification_read_ok":@(hero->classification_ok!=0), @"ultimate_resource_id":@(hero->ultimate_resource_id),
             @"logic_summoner_manager_address":hexAddress(hero->logic_summoner_manager),
             @"logic_summoner_manager_ok":@(hero->logic_summoner_manager_ok!=0),
@@ -226,12 +228,14 @@ static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTarg
             @"classification_source":@"BattleActor.isMonster", @"health_source":@"current_attribute_hp",
             @"respawn_timer_implemented":@YES, @"device_verified":@NO },
         @"respawn_timers": @{ @"enabled":@(timersEnabled), @"reason":@(respawn.reason),
+            @"class_root_fallbacks":@(respawn.class_root_fallbacks),
             @"source":@"current_monster_anchor_timeNeedToBorn", @"read_only":@YES,
             @"device_verified":@NO, @"examined_anchor_count":@(respawn.examined),
             @"read_timer_count":@(respawn.count), @"marker_count":@(timers.count),
             @"unavailable_count":@(respawn.unavailable), @"duplicate_count":@(respawn.duplicates),
             @"timers":timers, @"scope":@"Current game-owned BornCountDown monster anchors and remaining Q14 time only. No historical death timers or clock extrapolation. Only currently available anchor UI bindings are sampled." },
         @"health_cache": @{ @"reason": @(health->reason), @"matched_hero_count": @(health->matched),
+            @"class_root_fallbacks":@(health->class_root_fallbacks),
             @"enabled_hero_count": @(health->enabled), @"valid_fraction_count": @(health->valid),
             @"source": @"game_minimap_cached_percent", @"max_health_inferred": @NO },
         @"native_health": @{ @"reason": @(nativeHealth->reason),
@@ -256,6 +260,7 @@ static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTarg
             @"source": @"native_logic_transform" },
         @"markers": markers, @"alignment_device_verified": @NO,
         @"geometry": @{ @"ready": @(geometry.ready != 0), @"reason": @(geometry.reason),
+            @"class_root_fallbacks":@(geometry.class_root_fallbacks),
             @"viewport_mode": @(geometry.viewport_mode != 0), @"full_map_showing": @(geometry.full_map_showing != 0),
             @"zoom_state": @(geometry.zoom_state), @"scale_x": @(geometry.scale_x), @"scale_z": @(geometry.scale_z),
             @"half_width": @(geometry.half_width), @"half_height": @(geometry.half_height) },

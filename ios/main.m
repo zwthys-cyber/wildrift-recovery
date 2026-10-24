@@ -389,6 +389,7 @@ static NSInteger LVGroup(const LVField *field) {
                 if (starting) self.hudStatus = @"已提交显示请求；请切回游戏核对";
                 else if (![sampling[@"available"] boolValue]) self.hudStatus = @"进程运行；尚未取得完整采样，请导出报告";
                 else if (![sampling[@"fresh"] boolValue]) self.hudStatus = @"进程运行；采样已有超过 3 秒未更新，请导出报告";
+                else if ([sampling[@"last_result"] isEqual:@"not_in_battle"]) self.hudStatus = @"采样持续更新；当前未找到对局，报告保留此前有效追踪";
                 else if (![sampling[@"latest_snapshot_usable"] boolValue]) self.hudStatus = @"采样持续更新；最近一次游戏读取不可用，请导出报告";
                 else self.hudStatus = [NSString stringWithFormat:@"采样 %@ 次、%@ 个对象；画面请在游戏中核对", sampling[@"frames_completed"], sampling[@"read_actor_count"]];
             }

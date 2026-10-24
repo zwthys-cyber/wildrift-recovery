@@ -60,6 +60,17 @@ class InternationalProfile(unittest.TestCase):
             self.assertEqual(self.native.methods(t),selected['methods'])
             self.assertEqual(selected['changed_offsets'],[])
 
+    def test_original_minimap_class_globals(self):
+        # Actual original consumer instructions, independently of our fixture.
+        cs=Cs(CS_ARCH_ARM64,CS_MODE_LITTLE_ENDIAN);cs.detail=True
+        for macro,pc in (('LV_MINIMAP_CONTROLLER_CLASS_GLOBAL',0x5e713a0),
+                         ('LV_MINIMAP_MAPPING_CLASS_GLOBAL',0x5e96960)):
+            a,b=list(cs.disasm(self.fw[pc:pc+8],pc))
+            self.assertEqual((a.mnemonic,b.mnemonic),('adrp','ldr'))
+            actual=a.operands[1].imm+b.operands[1].mem.disp
+            declared=int(re.search(macro+r' UINT64_C\((0x[0-9a-f]+)\)',self.profile)[1],16)
+            self.assertEqual(actual,declared)
+
     def test_chained_rebases_do_not_mutate_input(self):
         from macho_rebases import local_rebases
         import hashlib

@@ -1,0 +1,10 @@
+{
+  "version": "0.8.6",
+  "framework_uuid": "B59675EA-20A7-306E-97FF-5EA41A2B36C6",
+  "evidence": "Selected original instructions recovered in GitHub-hosted analysis run 40066173128; original binary and full metadata are not published.",
+  "roots": [
+    {"class": "UIMainBattleMiniMapCtrl", "type_index": 6835, "global_offset": "0xed75280", "consumer": "get_NormalMiniMapInstance", "class_load_instructions": ["0x5e713a0", "0x5e713a4"], "statics_offset": "0xb8", "instance_offset": "0x18"},
+    {"class": "UIMiniMappingMgr", "type_index": 6839, "global_offset": "0xed754e0", "consumer": ".cctor", "class_load_instructions": ["0x5e96960", "0x5e96964"], "statics_offset": "0xb8", "instance_offset": "0x0"}
+  ],
+  "scope": "Read resolved class pointers only; exact runtime class names and empty namespaces required. No class initialization, game calls, writes or memory scan. Runtime fallback use and failure stages require a new device report."
+}

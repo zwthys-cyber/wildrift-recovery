@@ -7,7 +7,7 @@
 static unsigned char memory[0x80000];
 static LVTargetSnapshot snapshot;
 static LVMonsterRespawnReport report;
-static uint64_t failure,mutation,replacement;
+static uint64_t failure,mutation,replacement,global_root;
 static unsigned reads,mutation_reads,checks;
 static void put(uint64_t a,const void *p,size_t n){assert(a>=HEAP && a-HEAP+n<=sizeof(memory));memcpy(memory+a-HEAP,p,n);}
 static void q(uint64_t a,uint64_t n){put(a,&n,8);}
@@ -19,6 +19,7 @@ static int reader(void *context,uint64_t a,void *p,size_t n) {
     (void)context;++reads;assert(reads<20000);
     if(a==failure)return 0;
     if(a==BASE+LV_TARGET_CLASS_CACHE_OFFSET){uint64_t v=HEAP;memcpy(p,&v,8);return 1;}
+    if(a==BASE+LV_MINIMAP_CONTROLLER_CLASS_GLOBAL){memcpy(p,&global_root,8);return 1;}
     if(a<HEAP || a-HEAP+n>sizeof(memory))return 0;
     memcpy(p,memory+a-HEAP,n);
     if(a==mutation && ++mutation_reads==2)memcpy(p,&replacement,n<8?n:8);
@@ -30,7 +31,7 @@ static void cls(unsigned i,const char *name,const char *ns) {
 }
 static void setup(void) {
     memset(memory,0,sizeof(memory));memset(&snapshot,0,sizeof(snapshot));snapshot.result=LV_TARGET_READY;
-    failure=mutation=replacement=reads=mutation_reads=0;
+    failure=mutation=replacement=global_root=reads=mutation_reads=0;
     cls(0,"UIMainBattleMiniMapCtrl","");cls(1,"MiniMapEntityCtrl","");cls(2,"UIMiniMapIconCtrl","");
     cls(3,"UIMiniIconAnchorCtrl","");cls(4,"MonsterAnchor","FrameEngine.Logic");cls(5,"AnchorDataData","FrameEngine.Interface");
     q(HEAP+LV_TYPE_MINIMAP_CONTROLLER*8ULL,HEAP+0x50000);
@@ -53,6 +54,11 @@ static void setup(void) {
 static void sample(void){reads=0;lv_monster_respawn_read(reader,NULL,BASE,LV_TARGET_UUID,&snapshot,1,&report);}
 int main(void) {
     setup();sample();check(report.count==1 && !strcmp(report.reason,"ready"));
+    setup();q(HEAP+LV_TYPE_MINIMAP_CONTROLLER*8ULL,0);global_root=HEAP+0x50000;sample();
+    check(report.count==1 && report.class_root_fallbacks==1);
+    global_root=HEAP+0x50200;sample();check(!report.count && !strcmp(report.reason,"map_controller_class_unavailable"));
+    setup();q(HEAP+0x55088,0);sample();check(!report.count && !strcmp(report.reason,"anchor_dictionary_unavailable"));
+    setup();sample();
     check(report.timers[0].anchor_id==7 && report.timers[0].poi_type==2 && report.timers[0].remaining_fixed==90*16384);
     check(report.timers[0].position_fixed[0]==-10*16384 && report.timers[0].position_fixed[2]==20*16384);
     q(HEAP+0x5a068,89*16384);sample();check(report.timers[0].remaining_fixed==89*16384);

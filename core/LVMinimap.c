@@ -116,6 +116,16 @@ static int class_name(LVTargetRead read, void *ctx, uint64_t cls, const char *na
     return n <= sizeof(text) && load(read, ctx, cls + 0x10, &np, 8) && load(read, ctx, cls + 0x18, &sp, 8) &&
         load(read, ctx, np, text, n) && !memcmp(text, name, n) && load(read, ctx, sp, &ns, 1) && ns == 0;
 }
+/* Some UI classes can be available through the original method's TypeInfo
+   global before this metadata cache slot is populated. Never initialize the
+   game class: accept only an already-resolved pointer with the exact name. */
+static int map_class(LVTargetRead read,void *ctx,uint64_t base,uint64_t cache,
+                     unsigned index,uint64_t global,const char *name,uint64_t *cls,unsigned *fallbacks) {
+    if(ptr(read,ctx,cache+index*8ULL,cls) && class_name(read,ctx,*cls,name))return 1;
+    if(!ptr(read,ctx,base+global,cls) || !class_name(read,ctx,*cls,name))return 0;
+    if(fallbacks)++*fallbacks;
+    return 1;
+}
 static float f32(const unsigned char *data, size_t offset) { float f; memcpy(&f, data + offset - 0x10, 4); return f; }
 static int geometry_equal(const unsigned char *a, const unsigned char *b) {
     /* Animation/camera vectors between these fields are unrelated to projection. */
@@ -127,13 +137,24 @@ void lv_minimap_read(LVTargetRead read, void *ctx, uint64_t base, LVMinimapGeome
     memset(out, 0, sizeof(*out)); out->reason = "geometry_unavailable";
     if (!valid_address(base, 8) || base > (UINT64_C(1) << 48) - (LV_TARGET_CLASS_CACHE_OFFSET+8)) return;
     uint64_t cache, cls, statics, instance, ui_cls, ui_statics, ui, object_cls;
-    if (!ptr(read, ctx, base + LV_TARGET_CLASS_CACHE_OFFSET, &cache) || !ptr(read, ctx, cache + LV_TYPE_MINIMAP_MAPPING * 8ULL, &cls) ||
-        !class_name(read, ctx, cls, "UIMiniMappingMgr") || !ptr(read, ctx, cls + 0xb8, &statics) ||
-        !ptr(read, ctx, statics, &instance) || !ptr(read, ctx, instance, &object_cls) || object_cls != cls ||
-        !ptr(read, ctx, cache + LV_TYPE_MINIMAP_CONTROLLER * 8ULL, &ui_cls) || !class_name(read, ctx, ui_cls, "UIMainBattleMiniMapCtrl") ||
-        !ptr(read, ctx, ui_cls + 0xb8, &ui_statics) || !ptr(read, ctx, ui_statics + 0x18, &ui) ||
-        !ptr(read, ctx, ui, &object_cls) || object_cls != ui_cls) return;
+    out->reason="map_class_cache_unavailable";
+    if (!ptr(read, ctx, base + LV_TARGET_CLASS_CACHE_OFFSET, &cache)) return;
+    out->reason="mapping_class_unavailable";
+    if (!map_class(read,ctx,base,cache,LV_TYPE_MINIMAP_MAPPING,LV_MINIMAP_MAPPING_CLASS_GLOBAL,
+                   "UIMiniMappingMgr",&cls,&out->class_root_fallbacks)) return;
+    out->reason="mapping_statics_unavailable";
+    if (!ptr(read, ctx, cls + 0xb8, &statics)) return;
+    out->reason="mapping_instance_unavailable";
+    if (!ptr(read, ctx, statics, &instance) || !ptr(read, ctx, instance, &object_cls) || object_cls != cls) return;
+    out->reason="map_controller_class_unavailable";
+    if (!map_class(read,ctx,base,cache,LV_TYPE_MINIMAP_CONTROLLER,LV_MINIMAP_CONTROLLER_CLASS_GLOBAL,
+                   "UIMainBattleMiniMapCtrl",&ui_cls,&out->class_root_fallbacks)) return;
+    out->reason="map_controller_statics_unavailable";
+    if (!ptr(read, ctx, ui_cls + 0xb8, &ui_statics)) return;
+    out->reason="normal_map_instance_unavailable";
+    if (!ptr(read, ctx, ui_statics + 0x18, &ui) || !ptr(read, ctx, ui, &object_cls) || object_cls != ui_cls) return;
     unsigned char data[0x74], after[0x74]; uint8_t full, full_after; uint32_t zoom, zoom_after;
+    out->reason="map_geometry_fields_unreadable";
     if (!load(read, ctx, instance + 0x10, data, sizeof(data)) || !load(read, ctx, ui + 0x2d9, &full, 1) ||
         !load(read, ctx, ui + 0x330, &zoom, 4)) return;
     int32_t suspended; memcpy(&suspended, data + 0x60, 4);
@@ -141,7 +162,8 @@ void lv_minimap_read(LVTargetRead read, void *ctx, uint64_t base, LVMinimapGeome
     uint64_t same_cache, same_cls, same_statics, same_instance, same_ui;
     if (!load(read, ctx, instance + 0x10, after, sizeof(after)) || !geometry_equal(data,after) ||
         !ptr(read, ctx, base + LV_TARGET_CLASS_CACHE_OFFSET, &same_cache) || same_cache != cache ||
-        !ptr(read, ctx, cache + LV_TYPE_MINIMAP_MAPPING * 8ULL, &same_cls) || same_cls != cls ||
+        !map_class(read,ctx,base,cache,LV_TYPE_MINIMAP_MAPPING,LV_MINIMAP_MAPPING_CLASS_GLOBAL,"UIMiniMappingMgr",&same_cls,NULL) || same_cls != cls ||
+        !map_class(read,ctx,base,cache,LV_TYPE_MINIMAP_CONTROLLER,LV_MINIMAP_CONTROLLER_CLASS_GLOBAL,"UIMainBattleMiniMapCtrl",&same_cls,NULL) || same_cls != ui_cls ||
         !ptr(read, ctx, cls + 0xb8, &same_statics) || same_statics != statics ||
         !ptr(read, ctx, statics, &same_instance) || same_instance != instance ||
         !ptr(read, ctx, ui_cls + 0xb8, &same_statics) || same_statics != ui_statics ||
@@ -173,14 +195,24 @@ void lv_minimap_health_read(LVTargetRead read, void *ctx, uint64_t base,
     if ((s->result!=LV_TARGET_READY && s->result!=LV_TARGET_PARTIAL) ||
         !valid_address(base,8) || base > (UINT64_C(1)<<48)-(LV_TARGET_CLASS_CACHE_OFFSET+8)) return;
     uint64_t cache, cls, statics, entity, icons, dictionary, entries, hero_cls, object_cls, capacity;
-    if (!ptr(read,ctx,base+LV_TARGET_CLASS_CACHE_OFFSET,&cache) || !ptr(read,ctx,cache+LV_TYPE_MINIMAP_CONTROLLER*8ULL,&cls) ||
-        !class_name(read,ctx,cls,"UIMainBattleMiniMapCtrl") || !ptr(read,ctx,cls+0xb8,&statics) ||
-        !ptr(read,ctx,statics,&entity) || !ptr(read,ctx,entity,&object_cls) ||
-        !class_name(read,ctx,object_cls,"MiniMapEntityCtrl") || !ptr(read,ctx,entity+0x190,&icons) ||
-        !ptr(read,ctx,icons,&object_cls) || !class_name(read,ctx,object_cls,"UIMiniMapIconCtrl") ||
-        !ptr(read,ctx,icons+0x80,&dictionary) || !ptr(read,ctx,dictionary+0x18,&entries) ||
-        !load(read,ctx,entries+0x18,&capacity,8) || capacity>4096 ||
-        !ptr(read,ctx,cache+LV_TYPE_MINIMAP_HERO_ICON*8ULL,&hero_cls) || !class_name(read,ctx,hero_cls,"UIMiniIconHeroCtrl")) return;
+    result.reason="map_class_cache_unavailable";
+    if (!ptr(read,ctx,base+LV_TARGET_CLASS_CACHE_OFFSET,&cache))goto discard;
+    result.reason="map_controller_class_unavailable";
+    if (!map_class(read,ctx,base,cache,LV_TYPE_MINIMAP_CONTROLLER,LV_MINIMAP_CONTROLLER_CLASS_GLOBAL,
+                   "UIMainBattleMiniMapCtrl",&cls,&result.class_root_fallbacks))goto discard;
+    result.reason="map_controller_statics_unavailable";
+    if (!ptr(read,ctx,cls+0xb8,&statics))goto discard;
+    result.reason="map_entity_unavailable";
+    if (!ptr(read,ctx,statics,&entity) || !ptr(read,ctx,entity,&object_cls) ||
+        !class_name(read,ctx,object_cls,"MiniMapEntityCtrl"))goto discard;
+    result.reason="map_icons_unavailable";
+    if (!ptr(read,ctx,entity+0x190,&icons) || !ptr(read,ctx,icons,&object_cls) ||
+        !class_name(read,ctx,object_cls,"UIMiniMapIconCtrl"))goto discard;
+    result.reason="hero_icon_dictionary_unavailable";
+    if (!ptr(read,ctx,icons+0x80,&dictionary) || !ptr(read,ctx,dictionary+0x18,&entries) ||
+        !load(read,ctx,entries+0x18,&capacity,8) || capacity>4096)goto discard;
+    result.reason="hero_icon_class_unavailable";
+    if (!ptr(read,ctx,cache+LV_TYPE_MINIMAP_HERO_ICON*8ULL,&hero_cls) || !class_name(read,ctx,hero_cls,"UIMiniIconHeroCtrl"))goto discard;
     unsigned seen[LV_TARGET_MAX_ACTORS]={0};
     /* GetIconByBattleActor 0x738b8bc..8d8 verifies +18 entries, array +20,
        24-byte Entry<UInt32,UIMiniIconBaseCtrl> and value +10. Read bounded
@@ -223,6 +255,7 @@ void lv_minimap_health_read(LVTargetRead read, void *ctx, uint64_t base,
     }
     uint64_t same;
     if(!ptr(read,ctx,base+LV_TARGET_CLASS_CACHE_OFFSET,&same) || same!=cache ||
+        !map_class(read,ctx,base,cache,LV_TYPE_MINIMAP_CONTROLLER,LV_MINIMAP_CONTROLLER_CLASS_GLOBAL,"UIMainBattleMiniMapCtrl",&same,NULL) || same!=cls ||
         !ptr(read,ctx,cls+0xb8,&same) || same!=statics || !ptr(read,ctx,statics,&same) || same!=entity ||
         !ptr(read,ctx,entity+0x190,&same) || same!=icons || !ptr(read,ctx,icons+0x80,&same) || same!=dictionary ||
         !ptr(read,ctx,dictionary+0x18,&same) || same!=entries ||

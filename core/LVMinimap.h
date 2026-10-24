@@ -20,7 +20,7 @@ int lv_minimap_parse(LVMinimapSettings *settings, const char *text);
 size_t lv_minimap_serialize(const LVMinimapSettings *settings, char *output, size_t capacity);
 
 typedef struct {
-    unsigned ready, viewport_mode, full_map_showing;
+    unsigned ready, viewport_mode, full_map_showing, class_root_fallbacks;
     const char *reason;
     float scale_x, scale_z, half_width, half_height;
     uint32_t zoom_state;
@@ -30,6 +30,7 @@ void lv_minimap_read(LVTargetRead read, void *context, uint64_t base, LVMinimapG
 typedef struct {
     const char *reason;
     size_t matched, enabled, valid;
+    unsigned class_root_fallbacks;
 } LVMinimapHealthReport;
 /* Read UIMiniIconHeroCtrl.currentHpPercent without executing game methods. */
 void lv_minimap_health_read(LVTargetRead read, void *context, uint64_t base,

@@ -37,18 +37,30 @@ void lv_monster_respawn_read(LVTargetRead read,void *context,uint64_t base,const
     if(!uuid || strcmp(uuid,LV_TARGET_UUID) || base<0x10000 || base>(UINT64_C(1)<<48)-LV_TARGET_CLASS_CACHE_OFFSET-8)return;
     Reader r={read,context};uint64_t cache,controller_cls,statics,entity,icons,dict,entries,capacity;
     uint64_t icon_cls,anchor_cls,config_cls,cls,same;
-    out->reason="anchor_collection_unavailable";
-    if(!ptr(&r,base+LV_TARGET_CLASS_CACHE_OFFSET,&cache) ||
-        !ptr(&r,cache+LV_TYPE_MINIMAP_CONTROLLER*8ULL,&controller_cls) ||
-        !named(&r,controller_cls,"UIMainBattleMiniMapCtrl","") ||
-        !ptr(&r,controller_cls+0xb8,&statics) || !ptr(&r,statics,&entity) ||
-        !ptr(&r,entity,&cls) || !named(&r,cls,"MiniMapEntityCtrl","") ||
-        !ptr(&r,entity+0x190,&icons) || !ptr(&r,icons,&cls) || !named(&r,cls,"UIMiniMapIconCtrl","") ||
-        !ptr(&r,icons+0x88,&dict) || !ptr(&r,dict+0x18,&entries) ||
-        !load(&r,entries+0x18,&capacity,8) || capacity>MAX_ENTRIES ||
-        !ptr(&r,cache+ICON_ANCHOR_TYPE*8ULL,&icon_cls) || !named(&r,icon_cls,"UIMiniIconAnchorCtrl","") ||
+    out->reason="map_class_cache_unavailable";
+    if(!ptr(&r,base+LV_TARGET_CLASS_CACHE_OFFSET,&cache))return;
+    out->reason="map_controller_class_unavailable";
+    uint64_t controller_slot=cache+LV_TYPE_MINIMAP_CONTROLLER*8ULL;
+    if(!ptr(&r,controller_slot,&controller_cls) || !named(&r,controller_cls,"UIMainBattleMiniMapCtrl","")) {
+        controller_slot=base+LV_MINIMAP_CONTROLLER_CLASS_GLOBAL;
+        if(!ptr(&r,controller_slot,&controller_cls) || !named(&r,controller_cls,"UIMainBattleMiniMapCtrl",""))return;
+        out->class_root_fallbacks=1;
+    }
+    out->reason="map_controller_statics_unavailable";
+    if(!ptr(&r,controller_cls+0xb8,&statics))return;
+    out->reason="map_entity_unavailable";
+    if(!ptr(&r,statics,&entity) || !ptr(&r,entity,&cls) || !named(&r,cls,"MiniMapEntityCtrl",""))return;
+    out->reason="map_icons_unavailable";
+    if(!ptr(&r,entity+0x190,&icons) || !ptr(&r,icons,&cls) || !named(&r,cls,"UIMiniMapIconCtrl",""))return;
+    out->reason="anchor_dictionary_unavailable";
+    if(!ptr(&r,icons+0x88,&dict))return;
+    out->reason="anchor_entries_unavailable";
+    if(!ptr(&r,dict+0x18,&entries) || !load(&r,entries+0x18,&capacity,8) || capacity>MAX_ENTRIES)return;
+    out->reason="anchor_classes_unavailable";
+    if(!ptr(&r,cache+ICON_ANCHOR_TYPE*8ULL,&icon_cls) || !named(&r,icon_cls,"UIMiniIconAnchorCtrl","") ||
         !ptr(&r,cache+ANCHOR_TYPE*8ULL,&anchor_cls) || !named(&r,anchor_cls,"MonsterAnchor","FrameEngine.Logic") ||
         !ptr(&r,cache+CONFIG_TYPE*8ULL,&config_cls) || !named(&r,config_cls,"AnchorDataData","FrameEngine.Interface"))return;
+    out->reason="anchor_dictionary_version_unreadable";
     int32_t version;
     if(!load(&r,dict+0x24,&version,4))return;
     out->reason="ready";uint64_t seen[LV_RESPAWN_MAX_TIMERS]={0};
@@ -98,6 +110,7 @@ void lv_monster_respawn_read(LVTargetRead read,void *context,uint64_t base,const
     }
     int32_t after_version;uint64_t after_capacity;
     if(!ptr(&r,base+LV_TARGET_CLASS_CACHE_OFFSET,&same) || same!=cache ||
+        !ptr(&r,controller_slot,&same) || same!=controller_cls ||
         !ptr(&r,controller_cls+0xb8,&same) || same!=statics || !ptr(&r,statics,&same) || same!=entity ||
         !ptr(&r,entity+0x190,&same) || same!=icons || !ptr(&r,icons+0x88,&same) || same!=dict ||
         !ptr(&r,dict+0x18,&same) || same!=entries || !load(&r,entries+0x18,&after_capacity,8) || after_capacity!=capacity ||
