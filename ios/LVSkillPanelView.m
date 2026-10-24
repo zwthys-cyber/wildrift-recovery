@@ -1,6 +1,16 @@
 #import "LVSkillPanelView.h"
 #import "LVHeroPortraits.h"
 
+static NSString *summonerSpellName(NSDictionary *skill) {
+    /* Device-confirmed international summoner resource IDs: 81090101 Flash,
+       81100101 Smite (the CN original carries 81110101 in the same slot).
+       Unknown IDs keep the S#N slot label. */
+    NSDictionary *names=@{ @81090101:@"闪现", @81100101:@"惩戒", @81110101:@"惩戒" };
+    NSString *name=names[skill[@"resource_id"]];
+    if(name) return name;
+    return [NSString stringWithFormat:@"S%@",skill[@"slot_index"]];
+}
+
 @implementation LVSkillPanelView
 - (void)setHeroes:(NSArray<NSDictionary *> *)heroes { _heroes=[heroes copy] ?: @[];[self setNeedsDisplay]; }
 - (void)setStatusReason:(NSString *)reason { _statusReason=[reason copy];[self setNeedsDisplay]; }
@@ -42,9 +52,9 @@
             NSDictionary *skill=skills[j];
             NSString *role=skill[@"role"];
             NSString *label=[NSString stringWithFormat:@"#%@",skill[@"slot_index"]];
-            if([role isEqualToString:@"summoner"])label=[NSString stringWithFormat:@"S%@",skill[@"slot_index"]];
+            if([role isEqualToString:@"summoner"])label=summonerSpellName(skill);
             else if([role isEqualToString:@"ultimate"])label=@"R";
-            else if([role isEqualToString:@"regular"])label=[NSString stringWithFormat:@"技%d",[skill[@"configured_index"] intValue]+1];
+            else if([role isEqualToString:@"regular"])label=[NSString stringWithFormat:@"%d技能",[skill[@"configured_index"] intValue]+1];
             NSString *value=@"?";UIColor *color=UIColor.lightGrayColor;
             if([skill[@"ambiguous"] boolValue]) value=@"?";
             else if([skill[@"level"] intValue]==0) value=@"未学";

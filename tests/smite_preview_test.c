@@ -80,6 +80,8 @@ int main(void) {
     assert(p.threshold == 1000 && !p.threshold_from_level);
     fixture(&s, &c); s.local_skills.summoner.skills[0].resource_id = 81090101; lv_smite_preview(&s, &c, &p);
     assert(p.blockers & LV_PREVIEW_NO_SMITE);
+    fixture(&s, &c); s.local_skills.summoner.skills[0].resource_id = 81100101; lv_smite_preview(&s, &c, &p);
+    assert(p.would_trigger && !(p.blockers & LV_PREVIEW_NO_SMITE)); /* International 2813 smite id. */
     fixture(&s, &c); s.local_skills.summoner.count = 2;
     s.local_skills.summoner.skills[1] = s.local_skills.summoner.skills[0]; lv_smite_preview(&s, &c, &p);
     assert(p.blockers & LV_PREVIEW_AMBIGUOUS_SMITE);
