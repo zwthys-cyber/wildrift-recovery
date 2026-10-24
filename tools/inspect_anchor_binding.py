@@ -34,3 +34,15 @@ for index in range(md.tables['types']['count']):
   extra_asm.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(fw[start:start+1024],start))
 (ROOT/'build/anchor-binding-layouts.json').write_text(json.dumps(layouts+extra,indent=2))
 (ROOT/'build/anchor-binding-getters.asm').write_text('\n'.join(lines+extra_asm)+'\n')
+context_layouts=[];context_asm=[]
+for index in range(md.tables['types']['count']):
+ t=md.type(index)
+ if index!=34199 and not ('MapDC' in t['name'] or 'MapData' in t['name']):continue
+ if t['namespace'] not in ('FrameEngine.Logic','FrameEngine.Interface'):continue
+ context_layouts.append({'index':index,'type':t['namespace']+'.'+t['name'],'fields':native.fields(t),'methods':native.methods(t)})
+ for m in native.methods(t):
+  if not (m['name'].startswith('get_') and any(w in m['name'].lower() for w in ('map','instance','battle'))):continue
+  start=m['native_address'];context_asm.append(f'; {t["name"]}.{m["name"]} {start:#x}')
+  context_asm.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(fw[start:start+256],start))
+(ROOT/'build/anchor-binding-layouts.json').write_text(json.dumps(layouts+extra+context_layouts,indent=2))
+(ROOT/'build/anchor-binding-getters.asm').write_text('\n'.join(lines+extra_asm+context_asm)+'\n')
