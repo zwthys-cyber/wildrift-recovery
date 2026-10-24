@@ -70,3 +70,18 @@ for index in range(md.tables['types']['count']):
  if t['namespace']=='TMPro' and t['name']=='TMP_Text':
   lines.append('; TMP_Text fields '+repr([(f['name'],f['offset']) for f in native.fields(t) if f['name'] in ('m_text','m_fontSize')]))
 (ROOT/'build/monster-timer-consumers.asm').write_text('\n'.join(lines)+'\n')
+
+roots=[];asm=[]
+for index in range(md.tables['types']['count']):
+ t=md.type(index)
+ if t['namespace'] not in ('FrameEngine.Logic','FrameEngine.Interface'):continue
+ if t['name'] not in ('MapMgr','MapAnchorMgr','MapBlockAnchorMgr','MapBlockAnchor','MonsterAnchor','Battle','AnchorDataData'):continue
+ methods=native.methods(t);roots.append({'index':index,'type':t['namespace']+'.'+t['name'],'fields':native.fields(t),'methods':methods})
+ for m in methods:
+  if m['name'] not in ('get_mapMgr','get_anchorMgr','get_mapAnchorMgr','get_blockAnchorMgr','get_anchorData','get_fixPosition','get_position','get_poiType','get_analysisGroup','get_anchorType','get_id','get_ID','get_objId'):continue
+  start=m['native_address'];asm.append(f'; {t["name"]}.{m["name"]} {start:#x}')
+  for ins in cs.disasm(fw[start:start+512],start):
+   asm.append(f'{ins.address:08x}: {ins.mnemonic:8s} {ins.op_str}')
+   if ins.mnemonic=='ret':break
+(ROOT/'build/monster-anchor-roots.json').write_text(json.dumps(roots,indent=2))
+(ROOT/'build/monster-anchor-roots.asm').write_text('\n'.join(asm)+'\n')
