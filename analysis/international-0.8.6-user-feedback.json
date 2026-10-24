@@ -1,0 +1,18 @@
+{
+  "app_version": "0.8.6",
+  "scope": "Sanitized numeric observations from the user-provided device report; no process addresses, player identities, session IDs or full input dump.",
+  "auxiliary_resource_10000001_hidden_for_all_five_enemies": true,
+  "summoner_native_read_reasons": "ready for all reported enemy summoner skills",
+  "observed_flash_remaining_seconds": [72.2158203125, 71.1279296875, 70.1080322265625, 69.0201416015625, 68.2042236328125],
+  "countdown_observation": "The first five trace samples contain decreasing native remaining values. Later samples stabilize; no future countdown is inferred.",
+  "latest_prepared_enemy_markers": 4,
+  "latest_enemy_heroes": 5,
+  "latest_enemy_heroes_with_zero_health": 1,
+  "map_geometry": "ready",
+  "native_health_valid_heroes": 10,
+  "minimap_ui_health_cache": "ready",
+  "class_root_fallbacks": 0,
+  "respawn_timer_reason": "map_entity_unavailable",
+  "respawn_examined_anchors": 0,
+  "interpretation": "Current scene projection and HP data are readable. Prepared markers do not prove screen alignment or complete fog coverage. Zero fallback use does not validate the alternate root. Code inspection found an unnecessary string alignment condition in the respawn reader; correcting it still requires device verification."
+}

@@ -16,7 +16,9 @@ static int ptr(Reader *r,uint64_t a,uint64_t *p) {
 }
 static int named(Reader *r,uint64_t cls,const char *name,const char *ns) {
     uint64_t a,b;char x[64],y[64];size_t n=strlen(name)+1,m=strlen(ns)+1;
-    return n<=sizeof(x) && m<=sizeof(y) && ptr(r,cls+0x10,&a) && ptr(r,cls+0x18,&b) &&
+    /* These fields point to byte strings, whose addresses need no pointer
+       alignment. Keep aligned ptr() checks for managed/native objects only. */
+    return n<=sizeof(x) && m<=sizeof(y) && load(r,cls+0x10,&a,8) && load(r,cls+0x18,&b,8) &&
         load(r,a,x,n) && !memcmp(x,name,n) && load(r,b,y,m) && !memcmp(y,ns,m);
 }
 static int instance(Reader *r,uint64_t object,uint64_t cls) {

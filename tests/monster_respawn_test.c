@@ -26,7 +26,8 @@ static int reader(void *context,uint64_t a,void *p,size_t n) {
     return 1;
 }
 static void cls(unsigned i,const char *name,const char *ns) {
-    uint64_t c=HEAP+0x50000+i*0x200,a=HEAP+0x51000+i*0x80,z=HEAP+0x51800+i*0x80;
+    /* Runtime class names and namespace strings need not be 8-byte aligned. */
+    uint64_t c=HEAP+0x50000+i*0x200,a=HEAP+0x51003+i*0x80,z=HEAP+0x51805+i*0x80;
     q(c+0x10,a);q(c+0x18,z);put(a,name,strlen(name)+1);put(z,ns,strlen(ns)+1);
 }
 static void setup(void) {
@@ -54,6 +55,14 @@ static void setup(void) {
 static void sample(void){reads=0;lv_monster_respawn_read(reader,NULL,BASE,LV_TARGET_UUID,&snapshot,1,&report);}
 int main(void) {
     setup();sample();check(report.count==1 && !strcmp(report.reason,"ready"));
+    setup();cls(1,"MiniMapEntityCtrlExtra","");sample();
+    check(!report.count && !strcmp(report.reason,"map_entity_unavailable"));
+    setup();cls(1,"MiniMapEntityCtrl","OtherNamespace");sample();
+    check(!report.count && !strcmp(report.reason,"map_entity_unavailable"));
+    setup();q(HEAP+0x50210,0x42);sample();check(!report.count);
+    setup();failure=HEAP+0x51083;sample();check(!report.count);
+    setup();q(HEAP+0x50218,(UINT64_C(1)<<48)-1);sample();check(!report.count);
+    setup();sample();
     setup();q(HEAP+LV_TYPE_MINIMAP_CONTROLLER*8ULL,0);global_root=HEAP+0x50000;sample();
     check(report.count==1 && report.class_root_fallbacks==1);
     global_root=HEAP+0x50200;sample();check(!report.count && !strcmp(report.reason,"map_controller_class_unavailable"));
