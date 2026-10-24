@@ -111,8 +111,17 @@ assert timer_enums['AnchorDataData_POIType']['Dragon']==2
 # The fixed configuration position is a data vector, distinct from encrypted
 # live transforms. Export its named component accessors only.
 t=md.type(34130);vlines=[f'; {t["namespace"]}.{t["name"]}']
+vlines.append('; FIELDS '+repr(native.fields(t)))
+vlines.append('; METHODS '+repr(native.methods(t)))
 for m in native.methods(t):
- if m['name'] not in ('get_x','get_y','get_z'):continue
+ if m['name'] not in ('get_x','get_y','get_z','get_Item','get_Length','get_Count','GetValue','Get','GetElement','get_value'):continue
  start=m['native_address'];vlines.append(f'; {m["name"]} {start:#x}')
+ vlines.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(fw[start:start+256],start))
+(ROOT/'build/anchor-position-components.asm').write_text('\n'.join(vlines)+'\n')
+
+t=md.type(36514)
+for m in native.methods(t):
+ if m['name']!='get_transformPos':continue
+ start=m['native_address'];vlines.append(f'; AnchorDataData.get_transformPos {start:#x}')
  vlines.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(fw[start:start+32],start))
 (ROOT/'build/anchor-position-components.asm').write_text('\n'.join(vlines)+'\n')
