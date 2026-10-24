@@ -26,6 +26,7 @@ jobs:
         run: |
           python3 tools/inspect_skill_cooldown.py
           python3 tools/inspect_summoner_cooldown.py
+          python3 tools/inspect_runtime_features.py
       - name: Validate original international native engine getters
         env:
           LVLOLM_IOS_ENGINE: inputs/FEProj
@@ -44,6 +45,8 @@ jobs:
             build/skill-cooldown-consumers.asm
             build/summoner-cooldown.asm
             build/summoner-labels.json
+            build/runtime-feature-layouts.json
+            build/spell-label-initializers.asm
       - name: Remove private inputs
         if: always()
         run: rm -rf inputs
