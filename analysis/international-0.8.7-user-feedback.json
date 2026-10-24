@@ -1,0 +1,12 @@
+{
+  "app_version": "0.8.7",
+  "scope": "Sanitized numeric observations; no device paths, process addresses or player/session identities.",
+  "usable_hud_samples": 8,
+  "prepared_enemy_markers": 5,
+  "enemy_health_ring_markers": 5,
+  "minimap_projection_ready": true,
+  "auxiliary_resource_10000001_hidden_for_all_five_enemies": true,
+  "ultimate_and_summoner_cooldowns": "Multiple native values decrease across successive samples; an ultimate reaches zero, and smite changes from zero to a positive remaining value. Castability is not established.",
+  "respawn": {"examined_anchors": 7, "unavailable": 7, "read_timers": 0, "markers": 0, "reason": "no_current_respawn_timer"},
+  "interpretation": "The prior string fix unblocks anchor enumeration. The old combined rejection condition cannot identify why all seven anchors failed. Add bounded per-anchor diagnostics and distinguish exclusion from unreadability before relaxing eligibility. Prepared markers do not prove on-screen alignment or complete fog coverage."
+}

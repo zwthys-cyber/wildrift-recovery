@@ -199,6 +199,15 @@ static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTarg
     BOOL timersEnabled=config && config->values[lv_config_index("showMonsterRespawn")][0]!=0;
     LVMonsterRespawnReport respawn;
     lv_monster_respawn_read(readTarget,(__bridge void *)reader,base,LV_TARGET_UUID,snapshot,timersEnabled,&respawn);
+    NSMutableArray *anchorObservations=[NSMutableArray new];
+    for(size_t i=0;i<respawn.observation_count;++i) {
+        const LVMonsterRespawnObservation *o=&respawn.observations[i];
+        [anchorObservations addObject:@{ @"anchor_id":@(o->anchor_id), @"reason":@(o->reason), @"diagnostic_only":@YES,
+            @"flags_read_ok":@(o->flags_ok), @"state_read_ok":@(o->state_ok),
+            @"initialized":@(o->active), @"showing":@(o->showing), @"recycled":@(o->recycled),
+            @"current_time_state":@(o->state), @"anchor_type":@(o->anchor_type), @"poi_type":@(o->poi_type),
+            @"remaining_read_ok":@(o->timer_ok), @"remaining_fixed":@(o->remaining_fixed) }];
+    }
     NSMutableArray *timers=[NSMutableArray new];
     if(frame.ready)for(size_t i=0;i<respawn.count;++i) {
         const LVMonsterRespawnTimer *t=&respawn.timers[i];double u,v;
@@ -233,6 +242,8 @@ static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTarg
             @"device_verified":@NO, @"examined_anchor_count":@(respawn.examined),
             @"read_timer_count":@(respawn.count), @"marker_count":@(timers.count),
             @"unavailable_count":@(respawn.unavailable), @"duplicate_count":@(respawn.duplicates),
+            @"not_counting_count":@(respawn.not_counting), @"excluded_count":@(respawn.excluded),
+            @"anchor_observations":anchorObservations, @"observations_truncated":@(respawn.observations_truncated),
             @"timers":timers, @"scope":@"Current game-owned BornCountDown monster anchors and remaining Q14 time only. No historical death timers or clock extrapolation. Only currently available anchor UI bindings are sampled." },
         @"health_cache": @{ @"reason": @(health->reason), @"matched_hero_count": @(health->matched),
             @"class_root_fallbacks":@(health->class_root_fallbacks),

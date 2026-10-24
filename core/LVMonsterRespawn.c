@@ -75,19 +75,39 @@ void lv_monster_respawn_read(LVTargetRead read,void *context,uint64_t base,const
         ++out->examined;
         uint64_t anchor,native,config,raw_config;uint8_t active,showing,recycled;int32_t state,type;
         LVMonsterRespawnTimer t={.anchor_id=key};
-        /* Current UI BornCountDown state excludes live/leaving anchors. It is
-           not used to estimate a deadline. The remaining Q14 value is the
-           game's MonsterAnchor.timeNeedToBorn (+68), used by its own UI. */
-        if(!load(&r,icon+0xc0,&active,1) || active!=1 || !load(&r,icon+0xc1,&showing,1) || showing!=1 ||
-            !load(&r,icon+0xc8,&recycled,1) || recycled || !load(&r,icon+0x1e8,&state,4) || state!=1 ||
-            !ptr(&r,icon+0x1c8,&anchor) || !instance(&r,anchor,anchor_cls) || !handle(&r,anchor,&native) ||
-            !ptr(&r,anchor+0x60,&config) || !instance(&r,config,config_cls) || !handle(&r,config,&raw_config) ||
-            !load(&r,raw_config+0x1a4,&type,4) || type!=0 ||
-            !load(&r,raw_config+0x1a0,&t.poi_type,4) || !combat_poi(t.poi_type) ||
-            !load(&r,native+0x68,&t.remaining_fixed,8) || t.remaining_fixed<=0 || t.remaining_fixed>3600*INT64_C(16384) ||
-            !load(&r,raw_config+0x128,t.position_fixed,sizeof(t.position_fixed))) {++out->unavailable;continue;}
+        LVMonsterRespawnObservation observation={.anchor_id=key,.reason="not_sampled",
+            .active=-1,.showing=-1,.recycled=-1,.state=-1,.anchor_type=-1,.poi_type=-1};
+        /* Each rejection has an explicit category. An alive/hidden anchor is
+           not an unreadable anchor and does not establish a respawn timer. */
+#define REJECT(why,category) {observation.reason=(why);++out->category;goto record_anchor;}
+        if(!load(&r,icon+0xc0,&active,1) || !load(&r,icon+0xc1,&showing,1) ||
+            !load(&r,icon+0xc8,&recycled,1))REJECT("icon_flags_unreadable",unavailable);
+        observation.flags_ok=1;observation.active=active;observation.showing=showing;observation.recycled=recycled;
+        if(!load(&r,icon+0x1e8,&state,4))REJECT("anchor_state_unreadable",unavailable);
+        observation.state_ok=1;observation.state=state;
+        if(state<0 || state>4)REJECT("anchor_state_invalid",unavailable);
+        if(active!=1)REJECT("icon_not_initialized",excluded);
+        if(showing!=1)REJECT("icon_hidden",excluded);
+        if(recycled)REJECT("icon_recycled",excluded);
+        if(state!=1)REJECT("not_born_countdown",not_counting);
+        if(!ptr(&r,icon+0x1c8,&anchor) || !instance(&r,anchor,anchor_cls))REJECT("anchor_binding_unavailable",unavailable);
+        if(!handle(&r,anchor,&native))REJECT("anchor_handle_unavailable",unavailable);
+        if(!ptr(&r,anchor+0x60,&config) || !instance(&r,config,config_cls))REJECT("anchor_config_unavailable",unavailable);
+        if(!handle(&r,config,&raw_config))REJECT("config_handle_unavailable",unavailable);
+        if(!load(&r,raw_config+0x1a4,&type,4))REJECT("anchor_type_unreadable",unavailable);
+        observation.anchor_type=type;
+        if(type!=0)REJECT("not_monster_anchor",excluded);
+        if(!load(&r,raw_config+0x1a0,&t.poi_type,4))REJECT("anchor_poi_unreadable",unavailable);
+        observation.poi_type=t.poi_type;
+        if(!combat_poi(t.poi_type))REJECT("not_combat_monster_poi",excluded);
+        if(!load(&r,native+0x68,&t.remaining_fixed,8))REJECT("remaining_time_unreadable",unavailable);
+        observation.timer_ok=1;observation.remaining_fixed=t.remaining_fixed;
+        if(!t.remaining_fixed)REJECT("no_remaining_timer",not_counting);
+        if(t.remaining_fixed<0 || t.remaining_fixed>3600*INT64_C(16384))REJECT("remaining_time_invalid",unavailable);
+        if(!load(&r,raw_config+0x128,t.position_fixed,sizeof(t.position_fixed)))REJECT("anchor_position_unreadable",unavailable);
         unsigned valid=1;
         for(size_t j=0;j<3;++j)if(t.position_fixed[j]<-200*INT64_C(16384) || t.position_fixed[j]>200*INT64_C(16384))valid=0;
+        if(!valid)REJECT("anchor_position_invalid",unavailable);
         int32_t after_state,after_type,after_poi;int64_t position[3];uint64_t after_native,after_config;
         if(!valid || !load(&r,entries+0x20+i*24,again,sizeof(again)) || memcmp(entry,again,sizeof(entry)) ||
             !instance(&r,icon,icon_cls) || !ptr(&r,icon+0x1c8,&same) || same!=anchor ||
@@ -100,15 +120,36 @@ void lv_monster_respawn_read(LVTargetRead read,void *context,uint64_t base,const
             !load(&r,raw_config+0x1a4,&after_type,4) || after_type!=type ||
             !load(&r,raw_config+0x1a0,&after_poi,4) || after_poi!=t.poi_type ||
             !load(&r,raw_config+0x128,position,sizeof(position)) || memcmp(position,t.position_fixed,sizeof(position))) {
-            ++out->unavailable;continue;
+            REJECT("anchor_changed_during_read",unavailable);
         }
         unsigned duplicate=0;
         for(size_t j=0;j<out->count;++j)if(seen[j]==native || out->timers[j].anchor_id==key) {
             out->timers[j].remaining_fixed=0;duplicate=1;++out->duplicates;
         }
-        if(duplicate)continue;
+        if(duplicate){observation.reason="duplicate_anchor";goto record_anchor;}
         if(out->count==LV_RESPAWN_MAX_TIMERS){out->reason="anchor_limit";out->count=0;return;}
-        seen[out->count]=native;out->timers[out->count++]=t;
+        seen[out->count]=native;out->timers[out->count++]=t;observation.reason="ready";
+record_anchor:
+        /* Bounded diagnostics also sample a checked current binding for
+           excluded icons. A positive raw value here never makes a marker:
+           only the fully checked BornCountDown path above emits timers. */
+        {
+            uint64_t observed_anchor,observed_native,observed_config,observed_raw;
+            if(ptr(&r,icon+0x1c8,&observed_anchor) && instance(&r,observed_anchor,anchor_cls) &&
+                handle(&r,observed_anchor,&observed_native)) {
+                if(!observation.timer_ok && load(&r,observed_native+0x68,&observation.remaining_fixed,8))observation.timer_ok=1;
+                if(ptr(&r,observed_anchor+0x60,&observed_config) && instance(&r,observed_config,config_cls) &&
+                    handle(&r,observed_config,&observed_raw)) {
+                    int32_t observed_value;
+                    if(observation.anchor_type==-1 && load(&r,observed_raw+0x1a4,&observed_value,4))observation.anchor_type=observed_value;
+                    if(observation.poi_type==-1 && load(&r,observed_raw+0x1a0,&observed_value,4))observation.poi_type=observed_value;
+                }
+            }
+        }
+        if(out->observation_count<LV_RESPAWN_MAX_OBSERVATIONS)
+            out->observations[out->observation_count++]=observation;
+        else out->observations_truncated=1;
+#undef REJECT
     }
     int32_t after_version;uint64_t after_capacity;
     if(!ptr(&r,base+LV_TARGET_CLASS_CACHE_OFFSET,&same) || same!=cache ||
@@ -122,5 +163,5 @@ void lv_monster_respawn_read(LVTargetRead read,void *context,uint64_t base,const
     size_t kept=0;
     for(size_t i=0;i<out->count;++i)if(out->timers[i].remaining_fixed>0)out->timers[kept++]=out->timers[i];
     out->count=kept;
-    if(!kept)out->reason="no_current_respawn_timer";
+    if(!kept)out->reason=out->unavailable ? "anchor_data_unavailable" : "no_current_respawn_timer";
 }

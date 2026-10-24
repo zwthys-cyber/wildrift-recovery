@@ -55,6 +55,28 @@ static void setup(void) {
 static void sample(void){reads=0;lv_monster_respawn_read(reader,NULL,BASE,LV_TARGET_UUID,&snapshot,1,&report);}
 int main(void) {
     setup();sample();check(report.count==1 && !strcmp(report.reason,"ready"));
+    check(report.observation_count==1 && !strcmp(report.observations[0].reason,"ready") &&
+        report.observations[0].timer_ok && report.observations[0].remaining_fixed==90*16384);
+    setup();d(HEAP+0x601e8,2);sample();
+    check(!report.count && !report.unavailable && report.not_counting==1 &&
+        report.observations[0].state_ok && report.observations[0].state==2 &&
+        !strcmp(report.observations[0].reason,"not_born_countdown") && !strcmp(report.reason,"no_current_respawn_timer"));
+    check(report.observations[0].timer_ok && report.observations[0].remaining_fixed>0 && !report.count);
+    setup();b(HEAP+0x600c1,0);sample();
+    check(!report.count && !report.unavailable && report.excluded==1 && !strcmp(report.observations[0].reason,"icon_hidden"));
+    setup();failure=HEAP+0x601e8;sample();
+    check(report.unavailable==1 && !report.observations[0].state_ok &&
+        !strcmp(report.observations[0].reason,"anchor_state_unreadable") && !strcmp(report.reason,"anchor_data_unavailable"));
+    setup();q(HEAP+0x58060,0);sample();
+    check(report.unavailable==1 && !strcmp(report.observations[0].reason,"anchor_config_unavailable"));
+    setup();failure=HEAP+0x5a068;sample();
+    check(report.unavailable==1 && !report.observations[0].timer_ok && !strcmp(report.observations[0].reason,"remaining_time_unreadable"));
+    setup();q(HEAP+0x5a068,0);sample();
+    check(!report.unavailable && report.not_counting==1 && report.observations[0].timer_ok &&
+        !strcmp(report.observations[0].reason,"no_remaining_timer"));
+    setup();d(HEAP+0x601e8,8);sample();
+    check(report.unavailable==1 && !strcmp(report.observations[0].reason,"anchor_state_invalid"));
+    setup();sample();
     setup();cls(1,"MiniMapEntityCtrlExtra","");sample();
     check(!report.count && !strcmp(report.reason,"map_entity_unavailable"));
     setup();cls(1,"MiniMapEntityCtrl","OtherNamespace");sample();
@@ -99,5 +121,11 @@ int main(void) {
     setup();d(HEAP+0x57038,124);d(HEAP+0x57040,8);q(HEAP+0x57048,HEAP+0x60000);sample();
     check(!report.count && report.duplicates==1);
     setup();d(HEAP+0x57020,-1);sample();check(!report.count); /* Dictionary tombstone. */
+    setup();q(HEAP+0x57018,20);
+    for(unsigned i=0;i<20;++i) {
+        uint64_t entry=HEAP+0x57020+i*24;
+        d(entry,123);d(entry+8,7+(int32_t)i);q(entry+16,HEAP+0x60000);
+    }
+    sample();check(!report.count && report.observation_count==LV_RESPAWN_MAX_OBSERVATIONS && report.observations_truncated);
     printf("Monster respawn: %u checks passed\n",checks);return 0;
 }
