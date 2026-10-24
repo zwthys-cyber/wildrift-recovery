@@ -5,6 +5,7 @@
 #import "LVHUDControl.h"
 #import "LVMinimapSettings.h"
 #include "LVConfig.h"
+#include <string.h>
 
 static NSDictionary *LVWithEntry(NSDictionary *source, NSString *key, id value) {
     NSMutableDictionary *result = [source mutableCopy];

@@ -52,3 +52,21 @@ for index in range(md.tables['types']['count']):
  anchors.append({'index':index,'type':t['namespace']+'.'+t['name'],'fields':native.fields(t),
   'methods':[m for m in native.methods(t) if any(w in m['name'].lower() for w in ('anchor','time','pos'))]})
 (ROOT/'build/monster-anchor-layouts.json').write_text(json.dumps(anchors,indent=2))
+
+# Selected original map timer consumers, preserving current game semantics.
+lines=[]
+for index,names in ((6772,('OnLogicTimeUpdate',)),(6768,('OnLogicTimeUpdate','SetTime')),
+ (6766,('OnLogicTimeUpdate','SetTime')),(35519,('get_showTimeForVisi','get_bornTimeForVisi','get_timeNeedToBorn')),
+ (34491,('get_fixTime',)),(6774,('UpdatePosition','UpdatePos','UpdatePosByFollow'))):
+ t=md.type(index)
+ for m in native.methods(t):
+  if m['name'] not in names:continue
+  start=m['native_address'];lines.append(f'; {t["name"]}.{m["name"]} {start:#x}')
+  size=64 if m['name'].startswith('get_') and index==35519 else 4096
+  lines.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(fw[start:start+size],start))
+# TMPro base text field layout is used only if a current UI countdown is proven.
+for index in range(md.tables['types']['count']):
+ t=md.type(index)
+ if t['namespace']=='TMPro' and t['name']=='TMP_Text':
+  lines.append('; TMP_Text fields '+repr([(f['name'],f['offset']) for f in native.fields(t) if f['name'] in ('m_text','m_fontSize')]))
+(ROOT/'build/monster-timer-consumers.asm').write_text('\n'.join(lines)+'\n')

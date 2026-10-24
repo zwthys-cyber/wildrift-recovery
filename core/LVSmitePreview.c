@@ -9,9 +9,9 @@ static float config_value(const LVConfig *c, const char *key) {
     return i >= 0 ? c->values[i][0] : 0;
 }
 static int is_smite_resource(uint32_t id) {
-    /* The CN original checks 81110101. International 2813 device traces show
-       the same summoner slot carrying 81100101 (0.8.4 local skill lists). */
-    return id == 81110101 || id == 81100101;
+    /* Original international ENUM_SUMMON_SKILL_TYPE: 81100101 is Ignite,
+       81110101 is Smite. A summoner-list position does not establish its name. */
+    return id == 81110101;
 }
 static int actor_values(const LVTargetActor *a) {
     /* The original normalized model uses signed IDs. Never wrap uint32 into
@@ -136,7 +136,7 @@ void lv_smite_preview(const LVTargetSnapshot *s, const LVConfig *config, LVSmite
         .red_enabled = out->red_enabled, .blue_enabled = out->blue_enabled, .dragon_enabled = out->dragon_enabled,
         .range = out->range_fixed, .fallback_damage = out->fallback_threshold, .width = 1, .height = 1,
         /* The CN rule core expects its own smite id; the adapter normalizes
-           the international 81100101 to the CN id before invoking it. */
+           the verified Smite resource id before invoking it. */
         .skill_read_ok = 1, .skill_id = 81110101, .skill_cooldown = (float)((double)skill->cooldown_fixed / 16384.0),
         .damage_rank = skill->level };
     LVSmiteState state = {0}; LVSmiteDecision decision;

@@ -53,6 +53,7 @@ jobs:
             build/spell-label-initializers.asm
             build/international-spell-ids.json
             build/monster-anchor-layouts.json
+            build/monster-timer-consumers.asm
       - name: Remove private inputs
         if: always()
         run: rm -rf inputs

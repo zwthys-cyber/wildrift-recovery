@@ -2,10 +2,12 @@
 #import "LVHeroPortraits.h"
 
 static NSString *summonerSpellName(NSDictionary *skill) {
-    /* Device-confirmed international summoner resource IDs: 81090101 Flash,
-       81100101 Smite (the CN original carries 81110101 in the same slot).
-       Unknown IDs keep the S#N slot label. */
-    NSDictionary *names=@{ @81090101:@"闪现", @81100101:@"惩戒", @81110101:@"惩戒" };
+    /* International ENUM_SUMMON_SKILL_TYPE values recovered from original
+       metadata; see analysis/international-spell-ids.json. */
+    NSDictionary *names=@{ @81010101:@"疾跑", @81020101:@"雪球", @81030101:@"治疗",
+        @81041011:@"清晰术", @81050101:@"屏障", @81060101:@"虚弱", @81090101:@"闪现",
+        @81100101:@"引燃", @81110101:@"惩戒", @81140101:@"自动惩戒",
+        @89030101:@"雪球", @89040101:@"雪球", @89050101:@"雪球" };
     NSString *name=names[skill[@"resource_id"]];
     if(name) return name;
     return [NSString stringWithFormat:@"S%@",skill[@"slot_index"]];
