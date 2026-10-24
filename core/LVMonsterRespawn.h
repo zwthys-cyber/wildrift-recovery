@@ -6,9 +6,12 @@
 typedef struct {
     uint32_t anchor_id;
     const char *reason;
+    const char *config_reason;
     int32_t active, showing, recycled, state, anchor_type, poi_type;
     unsigned flags_ok, state_ok, timer_ok, config_source;
+    unsigned config_ok, position_ok;
     int64_t remaining_fixed;
+    int64_t position_fixed[3];
 } LVMonsterRespawnObservation;
 typedef struct {
     uint32_t anchor_id;
@@ -20,6 +23,7 @@ typedef struct {
     unsigned enabled, class_root_fallbacks;
     size_t count, examined, unavailable, duplicates, native_config_count;
     size_t not_counting, excluded, observation_count;
+    size_t config_observation_count, native_config_observation_count;
     unsigned observations_truncated;
     LVMonsterRespawnObservation observations[LV_RESPAWN_MAX_OBSERVATIONS];
     LVMonsterRespawnTimer timers[LV_RESPAWN_MAX_TIMERS];

@@ -79,6 +79,29 @@ static void native_setup(int mode) {
     q(HEAP+0x6b038,HEAP+0x5b000);
 }
 int main(void) {
+    /* User 0.8.9 trace: states 0/2/4, lazy cache empty, including an INT64_MAX
+       time sentinel. Exercise native config without emitting any timer. */
+    for(int state=0;state<=4;++state)if(state!=1) {
+        native_setup(2);d(HEAP+0x601e8,state);sample();
+        check(!report.count && report.not_counting==1 && !report.native_config_count &&
+            report.native_config_observation_count==1 && report.config_observation_count==1);
+        check(report.observations[0].config_ok && report.observations[0].position_ok &&
+            !strcmp(report.observations[0].reason,"not_born_countdown") &&
+            !strcmp(report.observations[0].config_reason,"ready") &&
+            report.observations[0].position_fixed[0]==-10*16384);
+    }
+    native_setup(2);d(HEAP+0x601e8,2);q(HEAP+0x5a068,INT64_MAX);sample();
+    check(!report.count && report.observations[0].remaining_fixed==INT64_MAX && report.observations[0].config_ok);
+    native_setup(2);d(HEAP+0x601e8,4);d(HEAP+0x76008,4);sample();
+    check(!report.count && !report.unavailable && !report.observations[0].config_ok &&
+        !strcmp(report.observations[0].reason,"not_born_countdown") &&
+        !strcmp(report.observations[0].config_reason,"managed_map_payload_unsupported"));
+    native_setup(2);d(HEAP+0x601e8,2);mutation=HEAP+0x6b038;replacement=HEAP+0x5b008;sample();
+    check(!report.count && !report.observations[0].config_ok &&
+        !strcmp(report.observations[0].config_reason,"anchor_config_changed"));
+    native_setup(2);d(HEAP+0x601e8,2);q(HEAP+0x5b128,10000*16384);sample();
+    check(!report.count && report.observations[0].config_ok && !report.observations[0].position_ok &&
+        !strcmp(report.observations[0].config_reason,"anchor_position_invalid"));
     for(int mode=0;mode<=2;++mode) {
         native_setup(mode);sample();check(report.count==1 && report.native_config_count==1 &&
             report.observations[0].config_source==2 && report.timers[0].remaining_fixed==90*16384);

@@ -94,6 +94,47 @@ static int native_config(Reader *r,uint64_t base,uint64_t cache,const LVLogicPos
         !handle(r,object,&same) || same!=data || !current_desk(r,logic))return 0;
     *reason="ready";return 1;
 }
+/* This probe is separate from timer eligibility: a config can be available
+   while the icon is showing a living monster or another UI state. Probe at
+   most the retained observation limit, and never promote a probe to a timer. */
+static void observe_config(Reader *r,uint64_t base,uint64_t cache,const LVLogicPositionReport *logic,
+                           uint64_t icon,uint64_t anchor_cls,uint64_t config_cls,
+                           LVMonsterRespawnObservation *o) {
+    uint64_t anchor,native,config=0,raw,again,after;unsigned source;
+    const char *why="anchor_config_unavailable";
+    o->config_reason="anchor_binding_unavailable";
+    if(!ptr(r,icon+0x1c8,&anchor) || !instance(r,anchor,anchor_cls))return;
+    o->config_reason="anchor_handle_unavailable";
+    if(!handle(r,anchor,&native))return;
+    if(!o->timer_ok && load(r,native+0x68,&o->remaining_fixed,8))o->timer_ok=1;
+    o->config_reason=why;
+    if(ptr(r,anchor+0x60,&config) && instance(r,config,config_cls) && handle(r,config,&raw))source=1;
+    else {
+        if(!logic)return;
+        if(!native_config(r,base,cache,logic,native,o->anchor_id,&raw,&why)) {o->config_reason=why;return;}
+        source=2;
+    }
+    int32_t type,poi;int64_t position[3],after_position[3];
+    o->config_reason="anchor_config_fields_unreadable";
+    if(!load(r,raw+0x1a4,&type,4) || !load(r,raw+0x1a0,&poi,4) ||
+        !load(r,raw+0x128,position,sizeof(position)))return;
+    o->config_reason="anchor_config_changed";
+    if(!ptr(r,icon+0x1c8,&again) || again!=anchor || !instance(r,anchor,anchor_cls) ||
+        !handle(r,anchor,&again) || again!=native)return;
+    if(source==1) {
+        if(!ptr(r,anchor+0x60,&again) || again!=config || !instance(r,config,config_cls) ||
+            !handle(r,config,&after) || after!=raw)return;
+    } else if(!native_config(r,base,cache,logic,native,o->anchor_id,&after,&why) || after!=raw)return;
+    int32_t after_type,after_poi;
+    if(!load(r,raw+0x1a4,&after_type,4) || after_type!=type ||
+        !load(r,raw+0x1a0,&after_poi,4) || after_poi!=poi ||
+        !load(r,raw+0x128,after_position,sizeof(after_position)) || memcmp(position,after_position,sizeof(position)))return;
+    o->config_source=source;o->config_ok=1;o->anchor_type=type;o->poi_type=poi;
+    o->position_ok=1;
+    for(size_t j=0;j<3;++j)if(position[j]<-200*INT64_C(16384) || position[j]>200*INT64_C(16384))o->position_ok=0;
+    if(o->position_ok)memcpy(o->position_fixed,position,sizeof(position));
+    o->config_reason=o->position_ok ? "ready" : "anchor_position_invalid";
+}
 void lv_monster_respawn_read(LVTargetRead read,void *context,uint64_t base,const char *uuid,
                             const LVTargetSnapshot *snapshot,const LVLogicPositionReport *logic,unsigned enabled,LVMonsterRespawnReport *out) {
     if(!out)return;
@@ -141,7 +182,7 @@ void lv_monster_respawn_read(LVTargetRead read,void *context,uint64_t base,const
         ++out->examined;
         uint64_t anchor,native,config=0,raw_config;uint8_t active,showing,recycled;int32_t state,type;
         LVMonsterRespawnTimer t={.anchor_id=key};
-        LVMonsterRespawnObservation observation={.anchor_id=key,.reason="not_sampled",
+        LVMonsterRespawnObservation observation={.anchor_id=key,.reason="not_sampled",.config_reason="not_sampled",
             .active=-1,.showing=-1,.recycled=-1,.state=-1,.anchor_type=-1,.poi_type=-1};
         /* Each rejection has an explicit category. An alive/hidden anchor is
            not an unreadable anchor and does not establish a respawn timer. */
@@ -209,27 +250,21 @@ void lv_monster_respawn_read(LVTargetRead read,void *context,uint64_t base,const
         if(duplicate){observation.reason="duplicate_anchor";goto record_anchor;}
         if(out->count==LV_RESPAWN_MAX_TIMERS){out->reason="anchor_limit";out->count=0;return;}
         seen[out->count]=native;out->timers[out->count++]=t;observation.reason="ready";
+        observation.config_reason="ready";observation.config_ok=observation.position_ok=1;
+        memcpy(observation.position_fixed,t.position_fixed,sizeof(t.position_fixed));
         if(observation.config_source==2)++out->native_config_count;
 record_anchor:
         /* Bounded diagnostics also sample a checked current binding for
            excluded icons. A positive raw value here never makes a marker:
            only the fully checked BornCountDown path above emits timers. */
-        {
-            uint64_t observed_anchor,observed_native,observed_config,observed_raw;
-            if(ptr(&r,icon+0x1c8,&observed_anchor) && instance(&r,observed_anchor,anchor_cls) &&
-                handle(&r,observed_anchor,&observed_native)) {
-                if(!observation.timer_ok && load(&r,observed_native+0x68,&observation.remaining_fixed,8))observation.timer_ok=1;
-                if(ptr(&r,observed_anchor+0x60,&observed_config) && instance(&r,observed_config,config_cls) &&
-                    handle(&r,observed_config,&observed_raw)) {
-                    int32_t observed_value;
-                    if(observation.anchor_type==-1 && load(&r,observed_raw+0x1a4,&observed_value,4))observation.anchor_type=observed_value;
-                    if(observation.poi_type==-1 && load(&r,observed_raw+0x1a0,&observed_value,4))observation.poi_type=observed_value;
-                }
+        if(out->observation_count<LV_RESPAWN_MAX_OBSERVATIONS) {
+            if(!observation.config_ok)observe_config(&r,base,cache,logic,icon,anchor_cls,config_cls,&observation);
+            if(observation.config_ok) {
+                ++out->config_observation_count;
+                if(observation.config_source==2)++out->native_config_observation_count;
             }
-        }
-        if(out->observation_count<LV_RESPAWN_MAX_OBSERVATIONS)
             out->observations[out->observation_count++]=observation;
-        else out->observations_truncated=1;
+        } else out->observations_truncated=1;
 #undef REJECT
     }
     int32_t after_version;uint64_t after_capacity;

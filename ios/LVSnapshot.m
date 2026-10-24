@@ -207,6 +207,8 @@ static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTarg
             @"initialized":@(o->active), @"showing":@(o->showing), @"recycled":@(o->recycled),
             @"current_time_state":@(o->state), @"anchor_type":@(o->anchor_type), @"poi_type":@(o->poi_type),
             @"config_source":o->config_source==2 ? @"native_map_data" : (o->config_source==1 ? @"managed_anchor_cache" : @"unavailable"),
+            @"config_reason":@(o->config_reason), @"config_read_ok":@(o->config_ok),
+            @"position_read_ok":@(o->position_ok), @"position":fixedPosition(o->position_fixed),
             @"remaining_read_ok":@(o->timer_ok), @"remaining_fixed":@(o->remaining_fixed) }];
     }
     NSMutableArray *timers=[NSMutableArray new];
@@ -240,6 +242,8 @@ static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTarg
         @"respawn_timers": @{ @"enabled":@(timersEnabled), @"reason":@(respawn.reason),
             @"class_root_fallbacks":@(respawn.class_root_fallbacks),
             @"native_config_count":@(respawn.native_config_count),
+            @"config_observation_count":@(respawn.config_observation_count),
+            @"native_config_observation_count":@(respawn.native_config_observation_count),
             @"source":@"current_monster_anchor_timeNeedToBorn", @"read_only":@YES,
             @"device_verified":@NO, @"examined_anchor_count":@(respawn.examined),
             @"read_timer_count":@(respawn.count), @"marker_count":@(timers.count),

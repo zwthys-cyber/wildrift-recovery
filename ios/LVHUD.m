@@ -111,6 +111,28 @@ static void recordCoordinateTrace(NSDictionary *snapshot) {
         }
         [monsters addObject:entry];
     }
+    /* Keep the changing cooldown values per sample, without repeating every
+       pointer/config/slot dump twice (skills and display_skills). This leaves
+       the bounded trace budget available for native anchor transitions. */
+    NSDictionary *skillPanel=snapshot[@"enemy_skill_panel"] ?: @{};
+    NSMutableArray *skillHeroes=[NSMutableArray new];
+    NSArray *skillKeys=@[@"object_id",@"resource_id",@"slot_index",@"role",@"level",@"cooldown_fixed",
+        @"cooldown_read_ok",@"cooldown_source",@"cooldown_locked",@"cooldown_zero_verified",
+        @"logic_start_raw",@"logic_total_raw",@"logic_cooldown_reason"];
+    for(NSDictionary *hero in skillPanel[@"heroes"]) {
+        NSMutableArray *skills=[NSMutableArray new], *displayIDs=[NSMutableArray new];
+        for(NSDictionary *skill in hero[@"skills"]) {
+            NSMutableDictionary *values=[NSMutableDictionary new];
+            for(NSString *key in skillKeys)if(skill[key])values[key]=skill[key];
+            [skills addObject:values];
+        }
+        for(NSDictionary *skill in hero[@"display_skills"])if(skill[@"resource_id"])[displayIDs addObject:skill[@"resource_id"]];
+        [skillHeroes addObject:@{ @"object_id":hero[@"object_id"] ?: @0, @"resource_id":hero[@"resource_id"] ?: @0,
+            @"result":hero[@"result"] ?: @"unavailable", @"reason":hero[@"reason"] ?: @"unavailable",
+            @"skills":skills, @"display_resource_ids":displayIDs }];
+    }
+    NSDictionary *compactPanel=@{ @"result":skillPanel[@"result"] ?: @"unavailable",
+        @"reason":skillPanel[@"reason"] ?: @"unavailable", @"compact":@YES, @"heroes":skillHeroes };
     [coordinateSamples addObject:@{ @"sampled_at":[NSISO8601DateFormatter.new stringFromDate:NSDate.date],
         @"uptime_seconds":@(now), @"result":result, @"read_attempts":snapshot[@"snapshot_read_attempts"] ?: @0,
         @"local_camp":map[@"local_camp"] ?: @0, @"map_reason":map[@"reason"] ?: @"missing",
@@ -118,13 +140,14 @@ static void recordCoordinateTrace(NSDictionary *snapshot) {
         @"outside_map_enemies":map[@"outside_map_enemy_count"] ?: @0,
         @"health_cache":map[@"health_cache"] ?: @{}, @"native_health":map[@"native_health"] ?: @{},
         @"logic_positions":map[@"logic_positions"] ?: @{},
-        @"enemy_skill_panel":snapshot[@"enemy_skill_panel"] ?: @{},
+        @"enemy_skill_panel":compactPanel,
         @"hero_list_truncated":@(truncated), @"heroes":heroes, @"wards":wards,
         @"ward_list_truncated":@(wardsTruncated), @"ward_settings":map[@"wards"] ?: @{},
         @"respawn_timers":map[@"respawn_timers"] ?: @{},
         @"monsters":monsters, @"monster_list_truncated":@(monstersTruncated), @"monster_settings":map[@"monsters"] ?: @{} }];
     if(coordinateSamples.count>32) [coordinateSamples removeObjectAtIndex:0];
-    NSMutableDictionary *trace=[@{ @"format_version":@1, @"session":hudSession.lowercaseString,
+    NSMutableDictionary *trace=[@{ @"format_version":@2, @"session":hudSession.lowercaseString,
+        @"latest_enemy_skill_panel":skillPanel,
         @"battle_instance":coordinateBattle ?: @"",
         @"producer_pid":@(getpid()), @"profile_uuid":@LV_TARGET_UUID, @"sample_interval_seconds":@1,
         @"sample_limit":@32, @"hero_limit":@16, @"ward_limit":@16, @"monster_limit":@24, @"samples":coordinateSamples,
