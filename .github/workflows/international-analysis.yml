@@ -28,6 +28,7 @@ jobs:
           python3 tools/inspect_summoner_cooldown.py
           python3 tools/inspect_runtime_features.py
           python3 tools/inspect_minimap_roots.py
+          python3 tools/inspect_anchor_binding.py
       - name: Validate original international native engine getters
         env:
           LVLOLM_IOS_ENGINE: inputs/FEProj
@@ -64,6 +65,8 @@ jobs:
             build/anchor-position-components.asm
             build/minimap-root-layouts.json
             build/minimap-root-accessors.asm
+            build/anchor-binding-layouts.json
+            build/anchor-binding-getters.asm
       - name: Remove private inputs
         if: always()
         run: rm -rf inputs
