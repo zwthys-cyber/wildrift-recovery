@@ -71,6 +71,29 @@ class InternationalProfile(unittest.TestCase):
             declared=int(re.search(macro+r' UINT64_C\((0x[0-9a-f]+)\)',self.profile)[1],16)
             self.assertEqual(actual,declared)
 
+    def test_native_anchor_configuration_getters(self):
+        cs=Cs(CS_ARCH_ARM64,CS_MODE_LITTLE_ENDIAN);cs.detail=True
+        for pc,mnemonic,immediate in ((0x3777084,'adds',0xca0),(0x3776ff8,'adds',0xc30)):
+            ins=next(cs.disasm(self.fw[pc:pc+4],pc))
+            self.assertEqual(ins.mnemonic,mnemonic)
+            self.assertEqual(ins.operands[-1].imm,immediate)
+        for pc,offset in ((0x3b099cc,0x18),(0x3b09a18,0x30),(0x3b09b00,0x28),
+                          (0x3b09ac0,0x28),(0x3b058e4,0x30),(0x3b05b90,0xb8)):
+            ins=next(cs.disasm(self.fw[pc:pc+4],pc))
+            self.assertEqual(ins.mnemonic,'ldr')
+            self.assertEqual(ins.operands[1].mem.disp,offset)
+        # Native conversion uses the original item as the factory argument;
+        # its first word is a type/factory key, not a second native pointer.
+        ins=next(cs.disasm(self.fw[0xa9c7824:0xa9c7828],0xa9c7824))
+        self.assertEqual((ins.mnemonic,ins.op_str),('mov','x1, x20'))
+        t=self.md.type(34147)
+        self.assertEqual((t['namespace'],t['name']),('FrameEngine','DataConfig'))
+        fields={f['name']:f for f in self.native.fields(t)}
+        self.assertEqual(fields['_config']['offset'],0x10)
+        self.assertTrue(fields['_config']['static'])
+        t=self.md.type(35504)
+        self.assertEqual((t['namespace'],t['name']),('FrameEngine.Logic','MapDataSet'))
+
     def test_chained_rebases_do_not_mutate_input(self):
         from macho_rebases import local_rebases
         import hashlib

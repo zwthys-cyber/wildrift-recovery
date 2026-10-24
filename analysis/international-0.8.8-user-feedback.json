@@ -1,0 +1,16 @@
+{
+  "app_version": "0.8.8",
+  "scope": "Sanitized numeric observations only; no player identifiers, session IDs or process addresses.",
+  "samples": 7,
+  "prepared_enemy_markers": 3,
+  "examined_anchors_per_sample": 7,
+  "excluded_anchors_per_sample": 7,
+  "anchor_read_failures_per_sample": 0,
+  "all_anchor_ui_init_and_show_flags_zero": true,
+  "born_countdown_anchors": [
+    {"anchor_id": 62, "state": 1, "raw_q14_first_three_samples": [64728, 46904, 30194]},
+    {"anchor_id": 63, "state": 1, "raw_q14_first_three_samples": [310922, 293098, 276388]}
+  ],
+  "cached_anchor_config_types": "unavailable",
+  "interpretation": "Current native timer values decrease. UI init/show flags cannot establish native timer availability, and the managed +60 configuration cache is not necessarily populated. Preserve native timer state/identity checks and add the original native configuration lookup. No HP inference, refresh period or local clock arithmetic is authorized or implemented. On-device display remains unverified."
+}

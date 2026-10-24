@@ -7,7 +7,7 @@ typedef struct {
     uint32_t anchor_id;
     const char *reason;
     int32_t active, showing, recycled, state, anchor_type, poi_type;
-    unsigned flags_ok, state_ok, timer_ok;
+    unsigned flags_ok, state_ok, timer_ok, config_source;
     int64_t remaining_fixed;
 } LVMonsterRespawnObservation;
 typedef struct {
@@ -18,7 +18,7 @@ typedef struct {
 typedef struct {
     const char *reason;
     unsigned enabled, class_root_fallbacks;
-    size_t count, examined, unavailable, duplicates;
+    size_t count, examined, unavailable, duplicates, native_config_count;
     size_t not_counting, excluded, observation_count;
     unsigned observations_truncated;
     LVMonsterRespawnObservation observations[LV_RESPAWN_MAX_OBSERVATIONS];
@@ -27,5 +27,5 @@ typedef struct {
 /* Current game-owned monster anchor timers only. No wall clock, death-history
    inference, game calls or writes. UUID and usable battle snapshot required. */
 void lv_monster_respawn_read(LVTargetRead,void *,uint64_t,const char *,
-                            const LVTargetSnapshot *,unsigned,LVMonsterRespawnReport *);
+                            const LVTargetSnapshot *,const LVLogicPositionReport *,unsigned,LVMonsterRespawnReport *);
 #endif

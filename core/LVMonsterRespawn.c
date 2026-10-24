@@ -28,8 +28,74 @@ static int handle(Reader *r,uint64_t object,uint64_t *native) {
     uint64_t mirror;return ptr(r,object+0x18,native) && ptr(r,object+0x10,&mirror) && mirror==*native;
 }
 static int combat_poi(int32_t poi) {return (poi>=2 && poi<=11) || (poi>=13 && poi<=15);}
+static int vector_item(Reader *r,uint64_t header,int32_t index,size_t limit,uint64_t *item) {
+    uint64_t begin,end;int32_t stride;
+    return index>=0 && ptr(r,header,&begin) && ptr(r,header+8,&end) && end>=begin &&
+        end-begin<=limit*8 && !((end-begin)%8) && load(r,header+0x18,&stride,4) && stride==8 &&
+        (uint64_t)index<(end-begin)/8 && ptr(r,begin+(uint64_t)index*8,item);
+}
+static int current_desk(Reader *r,const LVLogicPositionReport *logic) {
+    uint64_t frame,battle;
+    return logic && logic->profile_matches && logic->desk && logic->battle &&
+        logic->battle==logic->frame_battle && ptr(r,logic->desk+0x38,&frame) && frame==logic->frame_root &&
+        ptr(r,frame+0x10,&battle) && battle==logic->battle;
+}
+/* Mirror original MonsterAnchor.get_anchorData / MapDataProxy.GetMapDC.
+   Resolve current native configuration without calling a getter or populating
+   the managed anchor's lazy +60 cache. Native +68 remains the timer source. */
+static int native_config(Reader *r,uint64_t base,uint64_t cache,const LVLogicPositionReport *logic,
+                         uint64_t native,uint32_t key,uint64_t *config,const char **reason) {
+    *reason="native_map_context_unavailable";
+    if(!current_desk(r,logic))return 0;
+    uint64_t data_cls,statics,object,data,same;
+    *reason="native_data_config_class_unavailable";
+    if((!ptr(r,cache+34147*8ULL,&data_cls) || !named(r,data_cls,"DataConfig","FrameEngine")) &&
+       (!ptr(r,base+0xed5a230,&data_cls) || !named(r,data_cls,"DataConfig","FrameEngine")))return 0;
+    *reason="native_data_config_unavailable";
+    if(!ptr(r,data_cls+0xb8,&statics) || !ptr(r,statics+0x10,&object) ||
+        !instance(r,object,data_cls) || !handle(r,object,&data))return 0;
+    int32_t mode,id,map_index;uint64_t map_dc,header;
+    *reason="native_anchor_identity_unavailable";
+    if(!load(r,native+0x28,&id,4) || id<0 || (uint32_t)id!=key ||
+        !load(r,native+0x30,&map_index,4))return 0;
+    uint64_t proxy=data+0xca0;
+    *reason="native_map_mode_unreadable";
+    if(!load(r,proxy+0x30,&mode,4))return 0;
+    if(mode==1 || mode==2) {
+        uint64_t set,vtable,bridge_cls,bridge_statics,bridge,bridge_type;uint16_t kind,again_kind;
+        *reason="native_map_dataset_unavailable";
+        if(!vector_item(r,proxy+8,mode==1?0:map_index,32,&set))return 0;
+        /* Original LGameObject conversion a9c7744..7790 selects managed
+           handle storage for kind 4. Only the native pointer payload is
+           supported here; do not mistake a managed handle for an address. */
+        *reason="map_payload_backend_unavailable";
+        if(!ptr(r,base+0xed5e090,&bridge_cls) || !ptr(r,bridge_cls+0xb8,&bridge_statics) ||
+            !ptr(r,bridge_statics+0x10,&bridge) || !ptr(r,bridge+0x18,&bridge_type) ||
+            !load(r,bridge_type+8,&kind,2))return 0;
+        *reason="managed_map_payload_unsupported";
+        if(kind==4)return 0;
+        *reason="native_map_dataset_unavailable";
+        /* The vector item itself is the native MapDataSet. Its first word
+           is a factory/vtable key: a9c7790..7828 uses that key to choose a
+           wrapper factory, passing the original item to the factory. */
+        if(!ptr(r,set,&vtable) || !ptr(r,set+0xb8,&map_dc) ||
+            !load(r,bridge_type+8,&again_kind,2) || again_kind!=kind)return 0;
+    } else {
+        *reason="native_default_map_unavailable";
+        if(!mode) {
+            /* The default map DC is embedded in DataConfig, not the desk. */
+            map_dc=data+0xc30;
+        } else return 0;
+    }
+    *reason="native_anchor_config_unavailable";
+    if(!ptr(r,map_dc+0x28,&header) || !vector_item(r,header,id,4096,config))return 0;
+    *reason="native_data_config_changed";
+    if(!ptr(r,data_cls+0xb8,&same) || same!=statics || !ptr(r,statics+0x10,&same) || same!=object ||
+        !handle(r,object,&same) || same!=data || !current_desk(r,logic))return 0;
+    *reason="ready";return 1;
+}
 void lv_monster_respawn_read(LVTargetRead read,void *context,uint64_t base,const char *uuid,
-                            const LVTargetSnapshot *snapshot,unsigned enabled,LVMonsterRespawnReport *out) {
+                            const LVTargetSnapshot *snapshot,const LVLogicPositionReport *logic,unsigned enabled,LVMonsterRespawnReport *out) {
     if(!out)return;
     memset(out,0,sizeof(*out));out->enabled=enabled!=0;out->reason="disabled";
     if(!enabled)return;
@@ -73,7 +139,7 @@ void lv_monster_respawn_read(LVTargetRead read,void *context,uint64_t base,const
         if(hash<0 || !key || !icon)continue;
         if(!instance(&r,icon,icon_cls))continue;
         ++out->examined;
-        uint64_t anchor,native,config,raw_config;uint8_t active,showing,recycled;int32_t state,type;
+        uint64_t anchor,native,config=0,raw_config;uint8_t active,showing,recycled;int32_t state,type;
         LVMonsterRespawnTimer t={.anchor_id=key};
         LVMonsterRespawnObservation observation={.anchor_id=key,.reason="not_sampled",
             .active=-1,.showing=-1,.recycled=-1,.state=-1,.anchor_type=-1,.poi_type=-1};
@@ -86,14 +152,21 @@ void lv_monster_respawn_read(LVTargetRead read,void *context,uint64_t base,const
         if(!load(&r,icon+0x1e8,&state,4))REJECT("anchor_state_unreadable",unavailable);
         observation.state_ok=1;observation.state=state;
         if(state<0 || state>4)REJECT("anchor_state_invalid",unavailable);
-        if(active!=1)REJECT("icon_not_initialized",excluded);
-        if(showing!=1)REJECT("icon_hidden",excluded);
+        /* The anchor dictionary holds current bindings even when its UI
+           init/show flags stay zero. Native state and binding identity gate
+           timers; visibility flags are diagnostics, not lifetime evidence. */
         if(recycled)REJECT("icon_recycled",excluded);
         if(state!=1)REJECT("not_born_countdown",not_counting);
         if(!ptr(&r,icon+0x1c8,&anchor) || !instance(&r,anchor,anchor_cls))REJECT("anchor_binding_unavailable",unavailable);
         if(!handle(&r,anchor,&native))REJECT("anchor_handle_unavailable",unavailable);
-        if(!ptr(&r,anchor+0x60,&config) || !instance(&r,config,config_cls))REJECT("anchor_config_unavailable",unavailable);
-        if(!handle(&r,config,&raw_config))REJECT("config_handle_unavailable",unavailable);
+        if(ptr(&r,anchor+0x60,&config) && instance(&r,config,config_cls) && handle(&r,config,&raw_config)) {
+            observation.config_source=1;
+        } else {
+            const char *why="anchor_config_unavailable";
+            if(!logic)REJECT(why,unavailable);
+            if(!native_config(&r,base,cache,logic,native,key,&raw_config,&why))REJECT(why,unavailable);
+            observation.config_source=2;
+        }
         if(!load(&r,raw_config+0x1a4,&type,4))REJECT("anchor_type_unreadable",unavailable);
         observation.anchor_type=type;
         if(type!=0)REJECT("not_monster_anchor",excluded);
@@ -112,15 +185,22 @@ void lv_monster_respawn_read(LVTargetRead read,void *context,uint64_t base,const
         if(!valid || !load(&r,entries+0x20+i*24,again,sizeof(again)) || memcmp(entry,again,sizeof(entry)) ||
             !instance(&r,icon,icon_cls) || !ptr(&r,icon+0x1c8,&same) || same!=anchor ||
             !load(&r,icon+0x1e8,&after_state,4) || after_state!=state ||
-            !load(&r,icon+0xc0,&active,1) || active!=1 || !load(&r,icon+0xc1,&showing,1) || showing!=1 ||
+            !load(&r,icon+0xc0,&active,1) || active!=observation.active ||
+            !load(&r,icon+0xc1,&showing,1) || showing!=observation.showing ||
             !load(&r,icon+0xc8,&recycled,1) || recycled ||
-            !instance(&r,anchor,anchor_cls) || !instance(&r,config,config_cls) ||
-            !handle(&r,anchor,&after_native) || after_native!=native || !ptr(&r,anchor+0x60,&same) || same!=config ||
-            !handle(&r,config,&after_config) || after_config!=raw_config ||
+            !instance(&r,anchor,anchor_cls) || !handle(&r,anchor,&after_native) || after_native!=native ||
             !load(&r,raw_config+0x1a4,&after_type,4) || after_type!=type ||
             !load(&r,raw_config+0x1a0,&after_poi,4) || after_poi!=t.poi_type ||
             !load(&r,raw_config+0x128,position,sizeof(position)) || memcmp(position,t.position_fixed,sizeof(position))) {
             REJECT("anchor_changed_during_read",unavailable);
+        }
+        if(observation.config_source==1) {
+            if(!instance(&r,config,config_cls) || !ptr(&r,anchor+0x60,&same) || same!=config ||
+                !handle(&r,config,&after_config) || after_config!=raw_config)REJECT("anchor_config_changed",unavailable);
+        } else {
+            const char *why;
+            if(!native_config(&r,base,cache,logic,native,key,&after_config,&why) || after_config!=raw_config)
+                REJECT("native_anchor_config_changed",unavailable);
         }
         unsigned duplicate=0;
         for(size_t j=0;j<out->count;++j)if(seen[j]==native || out->timers[j].anchor_id==key) {
@@ -129,6 +209,7 @@ void lv_monster_respawn_read(LVTargetRead read,void *context,uint64_t base,const
         if(duplicate){observation.reason="duplicate_anchor";goto record_anchor;}
         if(out->count==LV_RESPAWN_MAX_TIMERS){out->reason="anchor_limit";out->count=0;return;}
         seen[out->count]=native;out->timers[out->count++]=t;observation.reason="ready";
+        if(observation.config_source==2)++out->native_config_count;
 record_anchor:
         /* Bounded diagnostics also sample a checked current binding for
            excluded icons. A positive raw value here never makes a marker:

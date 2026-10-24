@@ -7,6 +7,8 @@
 static unsigned char memory[0x80000];
 static LVTargetSnapshot snapshot;
 static LVMonsterRespawnReport report;
+static LVLogicPositionReport logic;
+static const LVLogicPositionReport *logic_input;
 static uint64_t failure,mutation,replacement,global_root;
 static unsigned reads,mutation_reads,checks;
 static void put(uint64_t a,const void *p,size_t n){assert(a>=HEAP && a-HEAP+n<=sizeof(memory));memcpy(memory+a-HEAP,p,n);}
@@ -20,6 +22,7 @@ static int reader(void *context,uint64_t a,void *p,size_t n) {
     if(a==failure)return 0;
     if(a==BASE+LV_TARGET_CLASS_CACHE_OFFSET){uint64_t v=HEAP;memcpy(p,&v,8);return 1;}
     if(a==BASE+LV_MINIMAP_CONTROLLER_CLASS_GLOBAL){memcpy(p,&global_root,8);return 1;}
+    if(a==BASE+0xed5e090){uint64_t v=HEAP+0x73000;memcpy(p,&v,8);return 1;}
     if(a<HEAP || a-HEAP+n>sizeof(memory))return 0;
     memcpy(p,memory+a-HEAP,n);
     if(a==mutation && ++mutation_reads==2)memcpy(p,&replacement,n<8?n:8);
@@ -32,7 +35,7 @@ static void cls(unsigned i,const char *name,const char *ns) {
 }
 static void setup(void) {
     memset(memory,0,sizeof(memory));memset(&snapshot,0,sizeof(snapshot));snapshot.result=LV_TARGET_READY;
-    failure=mutation=replacement=global_root=reads=mutation_reads=0;
+    failure=mutation=replacement=global_root=reads=mutation_reads=0;logic_input=NULL;memset(&logic,0,sizeof(logic));
     cls(0,"UIMainBattleMiniMapCtrl","");cls(1,"MiniMapEntityCtrl","");cls(2,"UIMiniMapIconCtrl","");
     cls(3,"UIMiniIconAnchorCtrl","");cls(4,"MonsterAnchor","FrameEngine.Logic");cls(5,"AnchorDataData","FrameEngine.Interface");
     q(HEAP+LV_TYPE_MINIMAP_CONTROLLER*8ULL,HEAP+0x50000);
@@ -52,8 +55,48 @@ static void setup(void) {
     q(HEAP+0x5b160,HEAP+0x61000);q(HEAP+0x5b168,HEAP+0x61018);d(HEAP+0x5b178,24);
     q(HEAP+0x5b128,(uint64_t)(-10*INT64_C(16384)));q(HEAP+0x5b138,20*16384);
 }
-static void sample(void){reads=0;lv_monster_respawn_read(reader,NULL,BASE,LV_TARGET_UUID,&snapshot,1,&report);}
+static void sample(void){reads=0;lv_monster_respawn_read(reader,NULL,BASE,LV_TARGET_UUID,&snapshot,logic_input,1,&report);}
+static void native_setup(int mode) {
+    setup();logic_input=&logic;
+    logic.profile_matches=1;logic.desk=HEAP+0x72000;logic.frame_root=HEAP+0x65000;
+    logic.battle=logic.frame_battle=HEAP+0x66000;
+    q(logic.desk+0x38,logic.frame_root);q(logic.frame_root+0x10,logic.battle);
+    q(HEAP+0x58060,0);d(HEAP+0x5a028,7);d(HEAP+0x5a030,1);
+    b(HEAP+0x600c0,0);b(HEAP+0x600c1,0);
+    cls(7,"DataConfig","FrameEngine");q(HEAP+34147*8ULL,HEAP+0x50e00);
+    q(HEAP+0x50eb8,HEAP+0x62000);q(HEAP+0x62010,HEAP+0x63000);
+    q(HEAP+0x63000,HEAP+0x50e00);q(HEAP+0x63010,HEAP+0x64000);q(HEAP+0x63018,HEAP+0x64000);
+    uint64_t proxy=HEAP+0x64ca0,dc=HEAP+0x64c30;
+    d(proxy+0x30,mode);
+    cls(6,"MapDataSet","FrameEngine.Logic");q(HEAP+35504*8ULL,HEAP+0x50c00);
+    q(proxy+8,HEAP+0x68000);q(proxy+16,HEAP+0x68010);d(proxy+0x20,8);
+    q(HEAP+0x68000,HEAP+0x67000);q(HEAP+0x68008,HEAP+0x67000);
+    q(HEAP+0x67000,HEAP+0x69000);
+    q(HEAP+0x730b8,HEAP+0x74000);q(HEAP+0x74010,HEAP+0x75000);q(HEAP+0x75018,HEAP+0x76000);
+    q(HEAP+0x670b8,dc);
+    q(dc+0x28,HEAP+0x6a000);
+    q(HEAP+0x6a000,HEAP+0x6b000);q(HEAP+0x6a008,HEAP+0x6b040);d(HEAP+0x6a018,8);
+    q(HEAP+0x6b038,HEAP+0x5b000);
+}
 int main(void) {
+    for(int mode=0;mode<=2;++mode) {
+        native_setup(mode);sample();check(report.count==1 && report.native_config_count==1 &&
+            report.observations[0].config_source==2 && report.timers[0].remaining_fixed==90*16384);
+    }
+    native_setup(2);d(HEAP+0x5a030,2);sample();check(!report.count);
+    native_setup(2);d(HEAP+0x5a028,8);sample();check(!report.count);
+    native_setup(2);d(HEAP+0x64cc0,16);sample();check(!report.count);
+    native_setup(2);d(HEAP+0x6a018,16);sample();check(!report.count);
+    native_setup(2);q(HEAP+0x67000,0);sample();check(!report.count);
+    native_setup(2);q(logic.frame_root+0x10,HEAP+0x66008);sample();check(!report.count);
+    native_setup(2);logic.profile_matches=0;sample();check(!report.count);
+    native_setup(2);d(HEAP+0x76008,4);sample();
+    check(!report.count && !strcmp(report.observations[0].reason,"managed_map_payload_unsupported"));
+    native_setup(2);q(HEAP+0x62010,0);sample();check(!report.count);
+    native_setup(2);mutation=HEAP+0x62010;replacement=HEAP+0x63008;sample();check(!report.count);
+    native_setup(3);sample();check(!report.count && !strcmp(report.observations[0].reason,"native_default_map_unavailable"));
+    native_setup(2);mutation=HEAP+0x6b038;replacement=HEAP+0x5b008;sample();
+    check(!report.count && !strcmp(report.observations[0].reason,"native_anchor_config_changed"));
     setup();sample();check(report.count==1 && !strcmp(report.reason,"ready"));
     check(report.observation_count==1 && !strcmp(report.observations[0].reason,"ready") &&
         report.observations[0].timer_ok && report.observations[0].remaining_fixed==90*16384);
@@ -63,7 +106,9 @@ int main(void) {
         !strcmp(report.observations[0].reason,"not_born_countdown") && !strcmp(report.reason,"no_current_respawn_timer"));
     check(report.observations[0].timer_ok && report.observations[0].remaining_fixed>0 && !report.count);
     setup();b(HEAP+0x600c1,0);sample();
-    check(!report.count && !report.unavailable && report.excluded==1 && !strcmp(report.observations[0].reason,"icon_hidden"));
+    check(report.count==1 && !report.unavailable && !report.excluded && !strcmp(report.observations[0].reason,"ready"));
+    b(HEAP+0x600c0,0);sample();check(report.count==1 && report.observations[0].state==1);
+    d(HEAP+0x601e8,4);sample();check(!report.count && report.not_counting==1);
     setup();failure=HEAP+0x601e8;sample();
     check(report.unavailable==1 && !report.observations[0].state_ok &&
         !strcmp(report.observations[0].reason,"anchor_state_unreadable") && !strcmp(report.reason,"anchor_data_unavailable"));
@@ -93,13 +138,13 @@ int main(void) {
     check(report.timers[0].anchor_id==7 && report.timers[0].poi_type==2 && report.timers[0].remaining_fixed==90*16384);
     check(report.timers[0].position_fixed[0]==-10*16384 && report.timers[0].position_fixed[2]==20*16384);
     q(HEAP+0x5a068,89*16384);sample();check(report.timers[0].remaining_fixed==89*16384);
-    setup();lv_monster_respawn_read(reader,NULL,BASE,LV_TARGET_UUID,&snapshot,0,&report);check(!report.count && !reads);
-    setup();lv_monster_respawn_read(reader,NULL,BASE,"wrong-profile",&snapshot,1,&report);check(!report.count && !reads);
+    setup();lv_monster_respawn_read(reader,NULL,BASE,LV_TARGET_UUID,&snapshot,logic_input,0,&report);check(!report.count && !reads);
+    setup();lv_monster_respawn_read(reader,NULL,BASE,"wrong-profile",&snapshot,logic_input,1,&report);check(!report.count && !reads);
     setup();snapshot.result=LV_TARGET_NOT_IN_BATTLE;sample();check(!report.count && !reads);
-    setup();lv_monster_respawn_read(reader,NULL,UINT64_MAX,LV_TARGET_UUID,&snapshot,1,&report);check(!report.count && !reads);
+    setup();lv_monster_respawn_read(reader,NULL,UINT64_MAX,LV_TARGET_UUID,&snapshot,logic_input,1,&report);check(!report.count && !reads);
     for(int state=0;state<6;++state)if(state!=1){setup();d(HEAP+0x601e8,state);sample();check(!report.count);}
-    setup();b(HEAP+0x600c0,0);sample();check(!report.count);
-    setup();b(HEAP+0x600c1,0);sample();check(!report.count);
+    setup();b(HEAP+0x600c0,0);sample();check(report.count==1);
+    setup();b(HEAP+0x600c1,0);sample();check(report.count==1);
     setup();b(HEAP+0x600c8,1);sample();check(!report.count);
     setup();d(HEAP+0x5b1a0,1);sample();check(!report.count); /* Fruit is not a combat monster. */
     setup();d(HEAP+0x5b1a4,1);sample();check(!report.count); /* Building anchor. */

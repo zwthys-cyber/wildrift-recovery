@@ -1,0 +1,12 @@
+{
+  "framework_uuid": "B59675EA-20A7-306E-97FF-5EA41A2B36C6",
+  "source": "Selected original instructions recovered by GitHub-hosted analysis; no original binaries or full metadata included.",
+  "original_anchor_configuration_getter": "0x3b09950",
+  "native_anchor_id_offset": "0x28",
+  "native_anchor_map_index_offset": "0x30",
+  "data_config": {"type_index":34147,"namespace":"FrameEngine","name":"DataConfig","class_global":"0xed5a230","singleton_static_offset":"0x10","map_proxy_offset":"0xca0","default_map_dc_offset":"0xc30","map_proxy_getter":"0x3777070","default_dc_getter":"0x3776fe4"},
+  "map_lookup": {"getter":"0x3b0588c","mode_offset":"0x30","map_sets_vector_offset":"0x8","mode_1_index":0,"mode_2_index":"native anchor +0x30","dataset_dc_offset":"0xb8","mode_0":"embedded default DataConfig +0xc30"},
+  "anchor_configuration_vector": {"map_dc_offset":"0x28","stride":8,"index":"native anchor id","limit":4096},
+  "native_payload_conversion": {"entry":"0xa9c76a0","backend_class_global":"0xed5e090","backend_kind_path":["class+0xb8","statics+0x10","object+0x18","uint16 +0x8"],"managed_kind":4,"native_vector_item_is_dataset":true,"first_word":"native factory/vtable key; do not dereference it as a second dataset pointer","factory_item_argument_instruction":"0xa9c7824"},
+  "scope": "Only current native timer +0x68 is used. Configuration supplies category/position only. Managed GC-handle conversion is deliberately unsupported. Source, bounds, current battle and repeated configuration checks must pass."
+}
