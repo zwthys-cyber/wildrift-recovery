@@ -5,8 +5,8 @@
 #define LV_PANEL_MAX_SKILLS 16
 /* Read-only diagnostic probe over the original native lookup cascade slots.
    Values are exported without interpretation; null and unreadable differ. */
-#define LV_MANAGER_PROBE_COUNT 10
-#define LV_MANAGER_PROBE_OFFSETS {0x140,0x158,0x1d8,0x1e8,0x270,0x278,0x280,0x308,0x310,0x360}
+#define LV_MANAGER_PROBE_COUNT 11
+#define LV_MANAGER_PROBE_OFFSETS {0x140,0x158,0x1c0,0x1d8,0x1e8,0x270,0x278,0x280,0x308,0x310,0x360}
 
 typedef enum {
     LV_PANEL_UNKNOWN, LV_PANEL_REGULAR, LV_PANEL_ULTIMATE, LV_PANEL_SUMMONER
@@ -20,7 +20,7 @@ typedef struct {
     uint64_t logic_native, logic_cd_node;
     int64_t logic_remain_raw, logic_total_raw, logic_start_raw;
     unsigned logic_cooldown_ok, logic_node_values_ok;
-    const char *logic_cooldown_reason;
+    const char *logic_cooldown_reason, *logic_lookup_source;
     unsigned summoner, cooldown_ok, locked, ambiguous;
     LVPanelRole role;
     int32_t configured_index;

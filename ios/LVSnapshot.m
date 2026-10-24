@@ -51,7 +51,7 @@ static NSDictionary *enemySkillPanel(LVMachReader *reader, const LVTargetSnapsho
         [engineUUID isKindOfClass:NSString.class]?engineUUID.UTF8String:NULL,snapshot,&panel);
     lv_skill_panel_classify(readTarget,(__bridge void *)reader,engineBase,
         [engineUUID isKindOfClass:NSString.class]?engineUUID.UTF8String:NULL,snapshot,&panel);
-    BOOL hideSmall=config && config->values[lv_config_index("hideSmallSkills")][0]!=0;
+    BOOL hideSmall=YES; /* Panel keeps ultimate/summoner skills; raw diagnostics remain complete. */
     NSMutableArray *heroes=[NSMutableArray new];
     for(size_t i=0;i<panel.count;++i) {
         const LVPanelHero *hero=&panel.heroes[i];NSMutableArray *skills=[NSMutableArray new];
@@ -67,6 +67,7 @@ static NSDictionary *enemySkillPanel(LVMachReader *reader, const LVTargetSnapsho
                 @"logic_cooldown_read_ok":@(skill->logic_cooldown_ok!=0), @"logic_remain_raw":@(skill->logic_remain_raw),
                 @"logic_node_values_read_ok":@(skill->logic_node_values_ok!=0), @"logic_total_raw":@(skill->logic_total_raw),
                 @"logic_start_raw":@(skill->logic_start_raw),
+                @"logic_lookup_source":@(skill->logic_lookup_source ?: "unavailable"),
                 @"logic_cooldown_reason":@(skill->logic_cooldown_reason ?: "unavailable"), @"cooldown_zero_verified":@NO,
                 @"node_values_read_ok":@(skill->node_values_ok!=0), @"node_total_fixed":@(skill->total_fixed),
                 @"node_start_fixed":@(skill->start_fixed), @"configured_cd_read_ok":@(skill->configured_cd_ok!=0),

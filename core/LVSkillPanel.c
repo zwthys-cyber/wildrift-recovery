@@ -357,6 +357,35 @@ static int summoner_vector(Reader *r,uint64_t header,Vector *v) {
     v->count=kept;
     return 1;
 }
+/* The original component GetSkill (fe3c8c) scans +28/+58/+d8 and
+   skips null entries. Its sync counterpart fe3e4c uses +28/+60/+f0.
+   Do not transplant sync manager +140 or vector offsets into native RAM. */
+static int component_lists(Reader *r,uint64_t component,Vector lists[3]) {
+    return summoner_vector(r,component+0x28,&lists[0]) &&
+        summoner_vector(r,component+0x58,&lists[1]) &&
+        summoner_vector(r,component+0xd8,&lists[2]);
+}
+static int matching_skill(Reader *r,const Vector *lists,size_t count,uint32_t resource,
+                          unsigned summoner,uint64_t *found) {
+    *found=0;
+    for(size_t i=0;i<count;++i)for(size_t j=0;j<lists[i].count;++j) {
+        uint32_t id;uint64_t n=lists[i].entries[j];
+        if(!(summoner?summoner_resource(r,n,&id):native_resource(r,n,&id)))return -1;
+        if(id!=resource)continue;
+        if(*found && *found!=n)return 2;
+        *found=n;
+    }
+    return *found?1:0;
+}
+static int same_native_lists(Reader *r,const Vector *lists,size_t count,unsigned summoner) {
+    for(size_t i=0;i<count;++i) {
+        Vector again;
+        if(!(summoner?summoner_vector(r,lists[i].header,&again):native_vector(r,lists[i].header,&again)) ||
+            again.begin!=lists[i].begin || again.end!=lists[i].end || again.count!=lists[i].count ||
+            memcmp(again.entries,lists[i].entries,again.count*8))return 0;
+    }
+    return 1;
+}
 void lv_skill_panel_native_cooldowns(LVTargetRead read,void *context,uint64_t base,const char *uuid,
                                     const LVTargetSnapshot *s,LVSkillPanel *panel) {
     if(!panel || !panel->enabled || panel->count>LV_PANEL_MAX_HEROES)return;
@@ -374,7 +403,7 @@ void lv_skill_panel_native_cooldowns(LVTargetRead read,void *context,uint64_t ba
             if(k->logic_cooldown_ok){k->cooldown_ok=0;k->cooldown_fixed=0;k->locked=0;}
             k->logic_cooldown_ok=0;k->logic_native=0;k->logic_cd_node=0;k->logic_remain_raw=0;
             k->logic_total_raw=0;k->logic_start_raw=0;k->logic_node_values_ok=0;
-            k->logic_cooldown_reason="logic_profile_unavailable";
+            k->logic_cooldown_reason="logic_profile_unavailable";k->logic_lookup_source="unavailable";
         }
     }
     if(!read || !s || s->count>LV_TARGET_MAX_ACTORS || !uuid || strcmp(uuid,LV_NATIVE_ENGINE_UUID) ||
@@ -387,52 +416,52 @@ void lv_skill_panel_native_cooldowns(LVTargetRead read,void *context,uint64_t ba
             s->actors[j].object_id==h->object_id && s->actors[j].resource_id==h->resource_id) {
             if(a){a=NULL;break;}a=&s->actors[j];
         }
-        uint64_t manager=0,owner=0,smanager=0,sroot=0;Vector list,sum_list,sum_list_b;
-        int ready=a && identity(&r,a) && logic_actor_identity(&r,a) &&
+        uint64_t manager=0,owner=0,smanager=0,component=0;Vector list,sum_list,extra[3];
+        int root_ready=a && identity(&r,a) && logic_actor_identity(&r,a) &&
             pointer(&r,a->logic_native+0x200,&manager) && manager &&
-            pointer(&r,manager+0x28,&owner) && owner==a->logic_native &&
-            native_vector(&r,manager+0x2d8,&list);
-        /* Route A: native hero +360 -> summoner manager (consumer ff8b28).
-           Route B: manager +140 root, mirroring the working sync route that
-           reaches summoner skills through +140. Both managers carry the
-           +60/+68 list with +74 resource entries (GetSkill 1001d60). */
-        int smanager_ok=0,sum_list_ok=0,sroot_ok=0,sum_list_b_ok=0;
-        if(ready) {
-            smanager_ok=pointer(&r,a->logic_native+0x360,&smanager) && smanager;
-            sum_list_ok=smanager_ok && summoner_vector(&r,smanager+0x60,&sum_list);
-            if(!sum_list_ok) {
-                sroot_ok=pointer(&r,manager+0x140,&sroot) && sroot;
-                sum_list_b_ok=sroot_ok && summoner_vector(&r,sroot+0x60,&sum_list_b);
-            }
-        }
-        h->logic_summoner_manager=smanager?smanager:sroot;
-        h->logic_summoner_manager_ok=(smanager_ok||sroot_ok)!=0;
-        h->logic_summoner_list_ok=(sum_list_ok||sum_list_b_ok)!=0;
+            pointer(&r,manager+0x28,&owner) && owner==a->logic_native;
+        int ready=root_ready && native_vector(&r,manager+0x2d8,&list);
+        int smanager_ok=root_ready && pointer(&r,a->logic_native+0x360,&smanager) && smanager;
+        int sum_list_ok=smanager_ok && summoner_vector(&r,smanager+0x60,&sum_list);
+        /* Original native consumer ff8d1c calls fe3c8c through manager +1c0.
+           This is the counterpart of the working sync +140 component. */
+        int component_ok=root_ready && pointer(&r,manager+0x1c0,&component) && component;
+        int extra_ok=component_ok && component_lists(&r,component,extra);
+        h->logic_summoner_manager=sum_list_ok?smanager:(component_ok?component:smanager);
+        h->logic_summoner_manager_ok=(smanager_ok||component_ok)!=0;
+        h->logic_summoner_list_ok=(sum_list_ok||extra_ok)!=0;
         static const unsigned probe_offsets[LV_MANAGER_PROBE_COUNT]=LV_MANAGER_PROBE_OFFSETS;
         for(size_t p=0;p<LV_MANAGER_PROBE_COUNT;++p)
-            h->logic_manager_slot_ok[p]=pointer(&r,manager+probe_offsets[p],&h->logic_manager_slot[p])!=0;
-        int sum_ready=ready && (sum_list_ok||sum_list_b_ok);
-        const Vector *sum_v=sum_list_ok?&sum_list:&sum_list_b;
+            h->logic_manager_slot_ok[p]=root_ready &&
+                pointer(&r,manager+probe_offsets[p],&h->logic_manager_slot[p]);
         for(size_t j=0;j<h->count;++j) {
             LVPanelSkill *k=&h->skills[j];
-            int base=k->summoner?sum_ready:ready;
-            const Vector *v=k->summoner?sum_v:&list;
+            const Vector *v=&list;size_t vector_count=1;unsigned route=0;
+            uint64_t found=0,other=0;int match=0;
+            if(k->ambiguous)continue;
             if(k->summoner) {
-                if(!ready)k->logic_cooldown_reason="logic_manager_unavailable";
-                else if(!sum_list_ok && !sum_list_b_ok)
-                    k->logic_cooldown_reason=(smanager_ok||sroot_ok)?"summoner_list_unavailable":"summoner_manager_unavailable";
-                else k->logic_cooldown_reason="skill_not_found";
-            } else k->logic_cooldown_reason=base?"skill_not_found":"logic_manager_unavailable";
-            if(!base || k->ambiguous)continue;
-            uint64_t found=0;unsigned matches=0,complete=1;
-            for(size_t z=0;z<v->count;++z) {
-                uint32_t res;
-                if(!(k->summoner?summoner_resource(&r,v->entries[z],&res)
-                                :native_resource(&r,v->entries[z],&res))){complete=0;break;}
-                if(res==k->resource_id){found=v->entries[z];++matches;}
+                k->logic_cooldown_reason=!root_ready?"logic_manager_unavailable":
+                    (!(smanager_ok||component_ok)?"summoner_manager_unavailable":
+                     (!(sum_list_ok||extra_ok)?"summoner_list_unavailable":"skill_not_found"));
+                if(!(sum_list_ok||extra_ok))continue;
+                int first=sum_list_ok?matching_skill(&r,&sum_list,1,k->resource_id,1,&found):0;
+                int second=extra_ok?matching_skill(&r,extra,3,k->resource_id,1,&other):0;
+                if(first<0 || second<0){k->logic_cooldown_reason="skill_configuration_unavailable";continue;}
+                if(first==2 || second==2 || (found && other && found!=other)) {
+                    k->logic_cooldown_reason="skill_ambiguous";continue;
+                }
+                if(found){v=&sum_list;route=1;}
+                else if(other){found=other;v=extra;vector_count=3;route=2;}
+                else continue;
+                match=1;k->logic_lookup_source=route==1?"hero_summoner_360":"manager_component_1c0";
+            } else {
+                k->logic_cooldown_reason=ready?"skill_not_found":"logic_manager_unavailable";
+                if(!ready)continue;
+                match=matching_skill(&r,&list,1,k->resource_id,0,&found);
+                k->logic_lookup_source="manager_skills_2d8";
             }
-            if(!complete){k->logic_cooldown_reason="skill_configuration_unavailable";continue;}
-            if(matches!=1){if(matches>1)k->logic_cooldown_reason="skill_ambiguous";continue;}
+            if(match<0){k->logic_cooldown_reason="skill_configuration_unavailable";continue;}
+            if(match!=1){if(match==2)k->logic_cooldown_reason="skill_ambiguous";continue;}
             uint64_t node=0,same=0;uint32_t res;uint8_t locked=0;int64_t remain=0;
             k->logic_native=found;k->logic_cooldown_reason="node_unavailable";
             /* Original GetState treats any nonzero node byte at +0x10 as the
@@ -449,23 +478,11 @@ void lv_skill_panel_native_cooldowns(LVTargetRead read,void *context,uint64_t ba
                start +28->+30). Non-gating: only remain drives the display. */
             k->logic_node_values_ok=load(&r,node+0x20,&k->logic_total_raw,8) &&
                 load(&r,node+0x28,&k->logic_start_raw,8);
-            Vector again;
             int resource_ok=k->summoner ? (summoner_resource(&r,found,&res) && res==k->resource_id)
                                         : (native_resource(&r,found,&res) && res==k->resource_id);
-            int list_ok=k->summoner ? (sum_list_ok ?
-                    (summoner_vector(&r,smanager+0x60,&again) &&
-                     again.begin==sum_list.begin && again.end==sum_list.end &&
-                     again.count==sum_list.count &&
-                     !memcmp(again.entries,sum_list.entries,sum_list.count*8) &&
-                     pointer(&r,a->logic_native+0x360,&same) && same==smanager)
-                  : (summoner_vector(&r,sroot+0x60,&again) &&
-                     again.begin==sum_list_b.begin && again.end==sum_list_b.end &&
-                     again.count==sum_list_b.count &&
-                     !memcmp(again.entries,sum_list_b.entries,sum_list_b.count*8) &&
-                     pointer(&r,manager+0x140,&same) && same==sroot))
-                                    : (native_vector(&r,manager+0x2d8,&again) &&
-                                       again.begin==list.begin && again.end==list.end &&
-                                       again.count==list.count && !memcmp(again.entries,list.entries,list.count*8));
+            int list_ok=same_native_lists(&r,v,vector_count,k->summoner) &&
+                (route!=1 || (pointer(&r,a->logic_native+0x360,&same) && same==smanager)) &&
+                (route!=2 || (pointer(&r,manager+0x1c0,&same) && same==component));
             if(!resource_ok ||
                 !pointer(&r,found+0x580,&same) || same!=found ||
                 !pointer(&r,found+0x590,&same) || same!=node ||

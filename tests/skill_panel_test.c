@@ -121,6 +121,23 @@ static void native_setup(void) {
     q(snode+0x18,4*16384);byte(snode+0x10,0);
     q(snode+0x20,12*16384);q(snode+0x28,8*16384);
 }
+static void summoner_setup(void) {
+    uint64_t b=HEAP+0x10000;
+    q(b+0xf360,0);q(b+0xe5c0,b+0xe000);q(b+0xe028,b+0xd400);q(b+0xe030,b+0xd418);
+    vector(b+0xa18,b+0xc00,5);vector(b+0xb28,b+0xd00,3);
+    const int32_t ids[]={10000001,81100101,81090101};
+    for(size_t j=0;j<3;++j) {
+        uint64_t sync=b+0x2c00+j*0x600,slot=b+0xa200+j*0x100,cd=b+0xc200+j*0x100;
+        q(b+0xc10+j*8,sync);q(b+0xd00+j*8,sync);
+        q(sync+0x108,slot);q(slot+0x98,sync);q(slot+0xb0,b+0x400);
+        d(slot+0xb8,5+(int32_t)j);d(sync+0x20,102+(int32_t)j);d(sync+0x44,ids[j]);d(sync+0x38,1);
+        q(sync+0x440,cd);q(cd+0x20,0);
+        uint64_t n=b+0x6000+j*0x800,node=b+0xd000+j*0x80,wrapper=b+0xd200+j*0x20,cfg=b+0xd300+j*0x20;
+        q(b+0xd400+j*8,n);q(n+0x580,n);q(n+0x590,node);
+        /* Deliberately distinct config data: summoner GetSkill reads +74. */
+        q(n+0x668,wrapper);q(wrapper+8,cfg);d(cfg+0xc,777);d(n+0x74,ids[j]);q(node+0x18,(j+1)*30*16384);
+    }
+}
 static void native_sample(void) {
     reads=0;lv_skill_panel_native_cooldowns(reader,NULL,ENGINE,LV_NATIVE_ENGINE_UUID,&snapshot,&panel);
 }
@@ -157,11 +174,11 @@ static void native_checks(void) {
     /* The summoner list may carry null slots; GetSkill 1001d60 skips them. */
     setup();native_setup();q(b+0xdc40,0);q(b+0xdc48,b+0x5000);q(b+0xe268,b+0xdc50);sample();native_sample();
     check(enemy()->skills[2].logic_cooldown_ok && enemy()->skills[2].cooldown_fixed==4*16384);
-    /* Route B: manager +140 root reaches the same summoner list. */
-    setup();native_setup();q(b+0xf360,0);q(b+0xe540,b+0xe600);q(b+0xe660,b+0xdc40);q(b+0xe668,b+0xdc48);
+    /* Original native counterpart of sync +140 is +1c0 with +28 list. */
+    setup();native_setup();q(b+0xf360,0);q(b+0xe5c0,b+0xe800);q(b+0xe828,b+0xdc40);q(b+0xe830,b+0xdc48);
     sample();native_sample();
     check(enemy()->skills[2].logic_cooldown_ok && enemy()->skills[2].cooldown_fixed==4*16384);
-    setup();native_setup();q(b+0xf360,0);q(b+0xe540,b+0xe600);q(b+0xe660,b+0xdc48);q(b+0xe668,b+0xdc40);
+    setup();native_setup();q(b+0xf360,0);q(b+0xe5c0,b+0xe800);q(b+0xe828,b+0xdc48);q(b+0xe830,b+0xdc40);
     sample();native_sample();
     check(!enemy()->skills[2].logic_cooldown_ok && !strcmp(enemy()->skills[2].logic_cooldown_reason,"summoner_list_unavailable"));
     setup();native_setup();d(b+0x5074,10101001);sample();native_sample();
@@ -175,6 +192,42 @@ static void native_checks(void) {
     setup();native_setup();sample();reads=0;
     lv_skill_panel_native_cooldowns(reader,NULL,ENGINE,"wrong-profile",&snapshot,&panel);
     check(!reads && !enemy()->skills[0].logic_cooldown_ok);
+}
+static void component_checks(void) {
+    uint64_t b=HEAP+0x10000;
+    setup();native_setup();summoner_setup();sample();native_sample();check(enemy()->count==5);
+    for(size_t j=0;j<3;++j) {
+        LVPanelSkill *k=&enemy()->skills[j+2];
+        check(k->summoner && k->slot_index==(int32_t)j+5 && k->logic_cooldown_ok);
+        check(k->cooldown_fixed==(int64_t)(j+1)*30*16384);
+        check(!strcmp(k->logic_lookup_source,"manager_component_1c0"));
+    }
+    /* The same native skill may appear in two component lists. */
+    setup();native_setup();summoner_setup();q(b+0xe058,b+0xd400);q(b+0xe060,b+0xd418);sample();native_sample();
+    check(enemy()->skills[2].logic_cooldown_ok);
+    /* Both secondary component lists are original GetSkill sources. */
+    for(size_t off=0x58;off<=0xd8;off+=0x80) {
+        setup();native_setup();summoner_setup();q(b+0xe028,0);q(b+0xe030,0);
+        q(b+0xe000+off,b+0xd400);q(b+0xe008+off,b+0xd418);sample();native_sample();
+        check(enemy()->skills[2].logic_cooldown_ok && enemy()->skills[4].logic_cooldown_ok);
+    }
+    /* A broken ordinary list does not block the independent component. */
+    setup();native_setup();summoner_setup();q(b+0xe6e0,b+0xdc00-8);sample();native_sample();
+    check(!enemy()->skills[0].logic_cooldown_ok && enemy()->skills[2].logic_cooldown_ok);
+    /* The prior unproven native +140 route must never be used. */
+    setup();native_setup();summoner_setup();q(b+0xe5c0,0);q(b+0xe540,b+0xe000);
+    q(b+0xe060,b+0xd400);q(b+0xe068,b+0xd418);sample();native_sample();
+    check(!enemy()->skills[2].logic_cooldown_ok && enemy()->skills[0].logic_cooldown_ok);
+    setup();native_setup();summoner_setup();d(b+0x6874,10000001);sample();native_sample();
+    check(!enemy()->skills[2].logic_cooldown_ok && !strcmp(enemy()->skills[2].logic_cooldown_reason,"skill_ambiguous"));
+    setup();native_setup();summoner_setup();sample();failure=b+0xd018;native_sample();
+    check(!enemy()->skills[2].logic_cooldown_ok && enemy()->skills[3].logic_cooldown_ok);
+    setup();native_setup();summoner_setup();sample();mutation=b+0xd400;replacement=b+0x7800;native_sample();
+    check(!enemy()->skills[2].logic_cooldown_ok && !strcmp(enemy()->skills[2].logic_cooldown_reason,"identity_or_list_changed"));
+    setup();native_setup();summoner_setup();sample();mutation=b+0xe5c0;replacement=b+0xe800;native_sample();
+    check(!enemy()->skills[2].logic_cooldown_ok && !strcmp(enemy()->skills[2].logic_cooldown_reason,"identity_or_list_changed"));
+    setup();native_setup();summoner_setup();sample();native_sample();q(b+0xe5c0,0);native_sample();
+    check(!enemy()->skills[2].logic_cooldown_ok && !enemy()->skills[2].cooldown_ok && !enemy()->skills[2].cooldown_fixed);
 }
 int main(void) {
     uint64_t b=HEAP+0x10000,skill=b+0x2000,slot=b+0xa000,node=b+0xc000;
@@ -238,6 +291,6 @@ int main(void) {
     sample();check(!panel.count && panel.result==LV_TARGET_CHANGED);
     setup();snapshot.count=0;sample();check(!panel.count);
     lv_skill_panel_read(NULL,NULL,NULL,1,&panel);check(!panel.count);
-    classification_checks();native_checks();
+    classification_checks();native_checks();component_checks();
     printf("Enemy skill panel: %u checks passed\n",checks);return 0;
 }

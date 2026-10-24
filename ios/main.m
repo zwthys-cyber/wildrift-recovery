@@ -53,9 +53,9 @@ static NSString *LVLabel(const char *key) {
 static NSString *LVImplementationNote(const char *rawKey) {
     NSString *key=@(rawKey);
     if ([key isEqualToString:@"drawMinimap"]) return @"敌人头像已获当前场景实机确认";
-    if ([key isEqualToString:@"drawSkillPanel"]) return @"当前槽位冷却；# 为技能槽，S 为召唤师槽，新版待实测";
+    if ([key isEqualToString:@"drawSkillPanel"]) return @"显示大招与召唤师技能；普通技能冷却已获训练场实机验证";
     if ([key hasPrefix:@"skillPanel"]) return @"已接入敌方技能面板；修改后重新启动悬浮窗";
-    if ([key isEqualToString:@"hideSmallSkills"]) return @"技能名称/大招分类尚未完成，此开关暂不生效";
+    if ([key isEqualToString:@"hideSmallSkills"]) return @"面板已固定隐藏普通小技能";
     if ([key isEqualToString:@"drawWards"]) return @"已实现；眼位出现和销毁仍需实机确认";
     if ([key isEqualToString:@"drawMonsters"]) return @"显示当前可读且存活的野怪；新版待实机确认";
     if ([key isEqualToString:@"hideMonsterHealth"]) return @"仅隐藏野怪血量文字，保留标记";
@@ -105,7 +105,10 @@ static NSInteger LVGroup(const LVField *field) {
     }
     NSMutableArray *groups = [NSMutableArray new];
     for (int i = 0; i < 7; ++i) [groups addObject:[NSMutableArray new]];
-    for (NSUInteger i = 0; i < LV_CONFIG_FIELD_COUNT; ++i) [groups[LVGroup(&lv_fields[i])] addObject:@(i)];
+    for (NSUInteger i = 0; i < LV_CONFIG_FIELD_COUNT; ++i) {
+        if (!strcmp(lv_fields[i].key,"hideSmallSkills")) continue;
+        [groups[LVGroup(&lv_fields[i])] addObject:@(i)];
+    }
     self.groups = groups;
     self.probeStatus = @"尚未检测";
     self.hudStatus = @"尚未检查悬浮窗";

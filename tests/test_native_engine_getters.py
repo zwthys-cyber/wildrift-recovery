@@ -27,7 +27,7 @@ def machine(data,ranges):
         for p in range(a&~4095,(b+4095)&~4095,4096):
             if p not in pages: u.mem_map(p,4096); pages.add(p)
         u.mem_write(a,data[a:b])
-    for a,n in ((HEAP,0x10000),(STACK,0x10000),(HALT,4096),(0x523c000,4096),(0x51ab000,4096)):
+    for a,n in ((HEAP,0x10000),(STACK,0x10000),(HALT,4096),(0x523c000,4096),(0x51aa000,4096),(0x51ab000,4096)):
         u.mem_map(a,n)
     u.reg_write(UC_ARM64_REG_SP,STACK+0x8000); u.reg_write(UC_ARM64_REG_LR,HALT)
     def guard(uc,pc,size,_):
@@ -104,6 +104,35 @@ class OriginalEngineGetters(unittest.TestCase):
         q(u,skill+0x580,skill);u.reg_write(UC_ARM64_REG_X19,skill+0x570)
         u.emu_start(0x1024bf0,0x1024bf4,count=4)
         self.assertEqual(u.reg_read(UC_ARM64_REG_X19),skill)
+
+    def test_original_native_component_lookup_matches_the_sync_component(self):
+        # Native GetSkill uses manager +1c0 and component +28/+58/+d8.
+        # Sync +140/+28/+60/+f0 is a distinct representation. Run both
+        # original lookup loops, with decoy IDs in the other representation.
+        for native in (True,False):
+            start,end,getter=(0xfe3c8c,0xfe3e48,0xfefc48) if native else (0xfe3e4c,0xfe4008,0xfefc50)
+            offsets=(0x28,0x58,0xd8) if native else (0x28,0x60,0xf0)
+            for offset in offsets:
+                for sought in (10000001,81100101,81090101,999):
+                    ranges=((start,end),(getter,getter+8),(0xff8d1c,0xff8d20),(0xff9218,0xff921c))
+                    u=machine(self.data,ranges);manager=HEAP+0x1000;component=HEAP+0x2000;entries=HEAP+0x3000
+                    q(u,manager+0x1c0,component if native else HEAP+0xe000)
+                    q(u,manager+0x140,HEAP+0xe000 if native else component)
+                    u.reg_write(UC_ARM64_REG_X19,manager)
+                    load=0xff8d1c if native else 0xff9218
+                    u.emu_start(load,load+4,count=4)
+                    self.assertEqual(u.reg_read(UC_ARM64_REG_X0),component)
+                    q(u,component+offset,entries);q(u,component+offset+8,entries+32)
+                    q(u,entries,0)  # Original loops skip null entries.
+                    expected=0
+                    for i,res in enumerate((10000001,81100101,81090101)):
+                        skill=HEAP+0x4000+i*0x1000;q(u,entries+(i+1)*8,skill)
+                        u.mem_write(skill+(0x74 if native else 0x44),struct.pack('<I',res))
+                        u.mem_write(skill+(0x44 if native else 0x74),struct.pack('<I',999))
+                        if res==sought:expected=skill
+                    u.reg_write(UC_ARM64_REG_X1,sought);u.reg_write(UC_ARM64_REG_LR,HALT)
+                    u.emu_start(start,HALT,count=500)
+                    self.assertEqual(u.reg_read(UC_ARM64_REG_X0),expected)
 
     def test_original_logger_accessor_is_not_the_runtime_battle(self):
         # The 0.7.8 test correctly executed this helper, but incorrectly
