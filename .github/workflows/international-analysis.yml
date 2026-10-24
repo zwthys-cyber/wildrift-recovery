@@ -56,6 +56,7 @@ jobs:
             build/monster-timer-consumers.asm
             build/monster-anchor-roots.json
             build/monster-anchor-roots.asm
+            build/monster-group-references.json
       - name: Remove private inputs
         if: always()
         run: rm -rf inputs

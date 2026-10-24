@@ -75,7 +75,7 @@ roots=[];asm=[]
 for index in range(md.tables['types']['count']):
  t=md.type(index)
  if t['namespace'] not in ('FrameEngine.Logic','FrameEngine.Interface'):continue
- if t['name'] not in ('MapMgr','MapAnchorMgr','MapBlockAnchorMgr','MapBlockAnchor','MonsterAnchor','Battle','AnchorDataData'):continue
+ if index!=34521 and t['name'] not in ('MapMgr','MapAnchorMgr','MapBlockAnchorMgr','MapBlockAnchor','MonsterAnchor','Battle','AnchorDataData'):continue
  methods=native.methods(t);roots.append({'index':index,'type':t['namespace']+'.'+t['name'],'fields':native.fields(t),'methods':methods})
  for m in methods:
   if m['name'] not in ('get_mapMgr','get_anchorMgr','get_mapAnchorMgr','get_blockAnchorMgr','get_anchorData','get_fixPosition','get_position','get_poiType','get_analysisGroup','get_anchorType','get_id','get_ID','get_objId'):continue
@@ -85,3 +85,12 @@ for index in range(md.tables['types']['count']):
    if ins.mnemonic=='ret':break
 (ROOT/'build/monster-anchor-roots.json').write_text(json.dumps(roots,indent=2))
 (ROOT/'build/monster-anchor-roots.asm').write_text('\n'.join(asm)+'\n')
+
+references=[]
+for index in range(md.tables['types']['count']):
+ t=md.type(index)
+ fs=[f for f in md.fields(t) if 'anchorgroup' in f['name'].lower()]
+ if fs and t['namespace']!='IFix':
+  fields={f['index']:f for f in native.fields(t)}
+  references.append({'type':t['namespace']+'.'+t['name'],'index':index,'fields':[fields[f['index']] for f in fs]})
+(ROOT/'build/monster-group-references.json').write_text(json.dumps(references,indent=2))

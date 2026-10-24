@@ -65,6 +65,8 @@ jobs:
           gcc -std=c11 -Wall -Wextra -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -no-pie -g -Icore core/LVHUDTelemetry.c tests/hud_telemetry_test.c -o build/hud_telemetry_test
           gcc -std=c11 -D_POSIX_C_SOURCE=200809L -Wall -Wextra -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -no-pie -g -Icore core/LVMinimap.c tests/monster_minimap_test.c -lm -o build/monster_minimap_test
           gcc -std=c11 -Wall -Wextra -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -no-pie -g -Icore core/LVSkillPanel.c tests/skill_panel_test.c -o build/skill_panel_test
+          gcc -std=c11 -D_POSIX_C_SOURCE=200809L -Wall -Wextra -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -no-pie -g -Icore core/LVActions.c core/LVConfig.c core/LVSmitePreview.c tests/smite_preview_test.c -lm -o build/smite_preview_test
+          build/smite_preview_test
           build/skill_panel_test | tee build/skill-panel-checks.txt
           build/monster_minimap_test | tee build/monster-minimap-checks.txt
           build/minimap_test | tee build/minimap-checks.txt

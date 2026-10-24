@@ -5,6 +5,7 @@ Only the two pure RAM transforms run: no framework entry point, calls,
 syscalls, task access, game actions, file loading or network code is executed.
 """
 import hashlib
+import json
 import os
 import random
 import struct
@@ -12,7 +13,7 @@ import sys
 import unittest
 from pathlib import Path
 from unicorn import Uc, UC_ARCH_ARM64, UC_MODE_ARM, UC_HOOK_CODE
-from unicorn.arm64_const import (UC_ARM64_REG_X0, UC_ARM64_REG_X1,
+from unicorn.arm64_const import (UC_ARM64_REG_X0, UC_ARM64_REG_X1, UC_ARM64_REG_X9,
                                  UC_ARM64_REG_SP, UC_ARM64_REG_LR)
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -61,6 +62,30 @@ class OriginalInstructions(unittest.TestCase):
         cls.metadata_global=address(0x17841b8+0x18)
         cls.bitmap_global=address(0x17841b8+0x34)
         cls.string_keys=0xe9903e0
+
+    def test_original_international_spell_identifiers(self):
+        fields={f['index']:f['name'] for f in self.native.fields(self.md.type(26902)) if f['literal']}
+        fo,fs=struct.unpack_from('<II',self.md.header,0x40)
+        do,ds=struct.unpack_from('<II',self.md.header,0x48)
+        actual={}
+        for pos in range(fo,fo+fs,12):
+            field,typ,offset=struct.unpack_from('<iii',self.md.data,pos)
+            if field not in fields:continue
+            self.assertGreaterEqual(offset,0);self.assertLess(offset+4,ds)
+            raw=self.md.data[do+offset:do+offset+4];prefix=raw[0]
+            if prefix<128:value=prefix
+            elif prefix<192:value=((prefix&63)<<8)|raw[1]
+            else:
+                self.assertLess(prefix,224)
+                value=((prefix&31)<<24)|int.from_bytes(raw[1:4],'big')
+            actual[fields[field]]=-(value>>1)-1 if value&1 else value>>1
+        expected=json.loads((ROOT/'analysis/international-spell-ids.json').read_text())
+        self.assertEqual(actual,expected)
+        # Independent original initializer emits Ignite's resource constant.
+        uc=machine(self.fw,0x8ecc9d8,0x8ecc9e0)
+        uc.emu_start(0x8ecc9d8,0x8ecc9e0,count=4)
+        self.assertEqual(uc.reg_read(UC_ARM64_REG_X9),actual['SUMMON_SKILL_TYPE_IGNITE'])
+        self.assertNotEqual(actual['SUMMON_SKILL_TYPE_IGNITE'],actual['SUMMON_SKILL_TYPE_SMITE'])
 
     def test_stream_block_64_states(self):
         rng = random.Random(20261010)
