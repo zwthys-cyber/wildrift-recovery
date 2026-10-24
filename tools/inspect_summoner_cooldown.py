@@ -33,3 +33,19 @@ for start,end,label in ((0x1014ff4,0x1015090,'native GetState'),
  lines.append(f'; {label} {start:#x}')
  lines.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(engine[start:end],start))
 (ROOT/'build/summoner-cooldown.asm').write_text('\n'.join(lines)+'\n')
+
+# Selected spell-related metadata only; original enum/default values and
+# method entry points can identify international labels without guessing IDs.
+import json,struct,re
+selected=[]
+for index in range(md.tables['types']['count']):
+ t=md.type(index)
+ if 'summoner' not in t['name'].lower():continue
+ fields=native.fields(t)
+ selected.append({'type':t['namespace']+'.'+t['name'],'index':index,
+  'fields':[{k:f[k] for k in ('index','name','type_index','literal')} for f in fields],
+  'methods':[{k:m[k] for k in ('name','native_address')} for m in native.methods(t)
+    if any(w in m['name'].lower() for w in ('resid','skillid','type','name','spell'))]})
+# Retain bounded header table summaries to inspect the exact custom format.
+summary={hex(i):struct.unpack_from('<II',md.header,i) for i in (0x38,0x40,0x48,0x50)}
+(ROOT/'build/summoner-labels.json').write_text(json.dumps({'types':selected,'default_table_candidates':summary},indent=2))

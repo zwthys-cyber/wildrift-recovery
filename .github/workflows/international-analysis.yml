@@ -43,6 +43,7 @@ jobs:
             build/skill-cooldown-accessors.asm
             build/skill-cooldown-consumers.asm
             build/summoner-cooldown.asm
+            build/summoner-labels.json
       - name: Remove private inputs
         if: always()
         run: rm -rf inputs
