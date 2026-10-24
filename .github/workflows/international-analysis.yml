@@ -27,6 +27,7 @@ jobs:
           python3 tools/inspect_skill_cooldown.py
           python3 tools/inspect_summoner_cooldown.py
           python3 tools/inspect_runtime_features.py
+          python3 tools/inspect_minimap_roots.py
       - name: Validate original international native engine getters
         env:
           LVLOLM_IOS_ENGINE: inputs/FEProj
@@ -61,6 +62,8 @@ jobs:
             build/monster-group-references.json
             build/monster-timer-enums.json
             build/anchor-position-components.asm
+            build/minimap-root-layouts.json
+            build/minimap-root-accessors.asm
       - name: Remove private inputs
         if: always()
         run: rm -rf inputs
