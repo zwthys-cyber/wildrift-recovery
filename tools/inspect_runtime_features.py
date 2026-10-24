@@ -89,10 +89,10 @@ for index in range(md.tables['types']['count']):
 references=[]
 for index in range(md.tables['types']['count']):
  t=md.type(index)
- fs=[f for f in md.fields(t) if 'anchorgroup' in f['name'].lower()]
- if fs and t['namespace']!='IFix':
+ matches=[f for f in md.fields(t) if 'anchorgroup' in f['name'].lower()]
+ if matches and t['namespace']!='IFix':
   fields={f['index']:f for f in native.fields(t)}
-  references.append({'type':t['namespace']+'.'+t['name'],'index':index,'fields':[fields[f['index']] for f in fs]})
+  references.append({'type':t['namespace']+'.'+t['name'],'index':index,'fields':[fields[f['index']] for f in matches]})
 (ROOT/'build/monster-group-references.json').write_text(json.dumps(references,indent=2))
 
 # Verify exactly the enum states consumed by the bounded respawn reader.
