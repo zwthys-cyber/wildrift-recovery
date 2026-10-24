@@ -49,7 +49,7 @@ for index in range(md.tables['types']['count']):
 root_layouts=[];root_asm=[]
 for index in range(md.tables['types']['count']):
  t=md.type(index)
- if not any('mapdataproxy' in f['name'].lower() for f in md.fields(t)):continue
+ if t['namespace']!='FrameEngine' or t['name']!='DataConfig':continue
  root_layouts.append({'index':index,'type':t['namespace']+'.'+t['name'],'fields':native.fields(t),'methods':native.methods(t)})
  for m in native.methods(t):
   if not (m['name'].startswith('get_') and any(w in m['name'].lower() for w in ('map','instance','frame','desk'))):continue
@@ -57,3 +57,9 @@ for index in range(md.tables['types']['count']):
   root_asm.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(fw[start:start+256],start))
 (ROOT/'build/anchor-binding-layouts.json').write_text(json.dumps(layouts+extra+context_layouts+root_layouts,indent=2))
 (ROOT/'build/anchor-binding-getters.asm').write_text('\n'.join(lines+extra_asm+context_asm+root_asm)+'\n')
+
+# Exact generic payload conversion used by GetMapDC, not a broad code dump.
+with (ROOT/'build/anchor-binding-getters.asm').open('a') as output:
+ output.write('; GetMapDC payload conversion\n')
+ for ins in cs.disasm(fw[0xa9c76a0:0xa9c77a0],0xa9c76a0):
+  output.write(f'{ins.address:08x}: {ins.mnemonic:8s} {ins.op_str}\n')
