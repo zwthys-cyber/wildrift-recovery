@@ -37,8 +37,8 @@ for index in range(md.tables['types']['count']):
 context_layouts=[];context_asm=[]
 for index in range(md.tables['types']['count']):
  t=md.type(index)
- if index!=34199 and not ('MapDC' in t['name'] or 'MapData' in t['name']):continue
- if t['namespace'] not in ('FrameEngine.Logic','FrameEngine.Interface'):continue
+ if index not in (34199,36534) and not ('MapDC' in t['name'] or 'MapData' in t['name']):continue
+ if index not in (34199,36534) and t['namespace'] not in ('FrameEngine.Logic','FrameEngine.Interface'):continue
  context_layouts.append({'index':index,'type':t['namespace']+'.'+t['name'],'fields':native.fields(t),'methods':native.methods(t)})
  for m in native.methods(t):
   if not (m['name'].startswith('get_') and any(w in m['name'].lower() for w in ('map','instance','battle'))):continue
