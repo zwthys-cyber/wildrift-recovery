@@ -31,5 +31,21 @@
     "summoner_skills_absent_from_native_manager_list_2d8": true,
     "native_summoner_manager_at_hero_0x360_with_list_0x60": true
   },
-  "privacy_scope": "Whitelisted counts, game object/resource IDs, Q14 numeric values and static evidence only. Device addresses, process IDs, sessions, player identifiers, device paths and raw reports excluded."
+  "privacy_scope": "Whitelisted counts, game object/resource IDs, Q14 numeric values and static evidence only. Device addresses, process IDs, sessions, player identifiers, device paths and raw reports excluded.",
+  "round_2": {
+    "reviewed_at": "2026-10-23T22:00:00+00:00",
+    "enemy_regular_skill_native_countdown_reconfirmed": true,
+    "third_regular_skill_appeared_after_level_up": true,
+    "enemy_summoner_native_stage": "logic_manager_unavailable",
+    "enemy_summoner_hero_360_chain_failed": true,
+    "smite_preview_reported_smite_not_found_with_equipped_smite": true,
+    "international_smite_resource_id": "81100101",
+    "cn_smite_resource_id": "81110101",
+    "fixes_shipped": [
+      "staged summoner failure reasons (summoner_manager_unavailable/summoner_list_unavailable)",
+      "summoner list tolerates null slots like native GetSkill 1001d60",
+      "smite preview recognizes both 81100101 and 81110101",
+      "panel labels: 1技能/2技能/3技能/R and 闪现/惩戒 for confirmed summoner ids"
+    ]
+  }
 }
