@@ -6,7 +6,8 @@ for start,end,label in ((0x1fafccc,0x1fafd04,'native hero type check'),
  (0x1001d60,0x1001e60,'native summoner GetSkill'),
  (0x1001e60,0x1001f80,'sync summoner GetSkill'),
  (0xfefc48,0xfefc58,'native/sync resource getter'),
- (0x1001000,0x10011c0,'summoner manager construction context'),
+ (0xfe3c8c,0xfe3e4c,'native manager +1c0 skill lookup'),
+ (0xfe3e4c,0xfe400c,'sync manager +140 skill lookup'),
  (0xff8b28,0xff8f80,'native summoner manager consumer'),
  (0xff9030,0xff9480,'sync summoner manager consumer')):
  lines.append(f'; {label} {start:#x}')
