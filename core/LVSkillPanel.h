@@ -29,6 +29,8 @@ typedef struct {
     size_t count, unavailable;
     unsigned classification_ok;
     uint32_t ultimate_resource_id;
+    uint64_t logic_summoner_manager;
+    unsigned logic_summoner_manager_ok, logic_summoner_list_ok;
     unsigned truncated;
     LVPanelSkill skills[LV_PANEL_MAX_SKILLS];
 } LVPanelHero;

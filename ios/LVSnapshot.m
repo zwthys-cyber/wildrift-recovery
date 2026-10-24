@@ -81,6 +81,9 @@ static NSDictionary *enemySkillPanel(LVMachReader *reader, const LVTargetSnapsho
             @"result":resultName(hero->result), @"reason":@(hero->reason), @"skills":skills,
             @"display_skills":displayed, @"hidden_regular_count":@(skills.count-displayed.count),
             @"classification_read_ok":@(hero->classification_ok!=0), @"ultimate_resource_id":@(hero->ultimate_resource_id),
+            @"logic_summoner_manager_address":hexAddress(hero->logic_summoner_manager),
+            @"logic_summoner_manager_ok":@(hero->logic_summoner_manager_ok!=0),
+            @"logic_summoner_list_ok":@(hero->logic_summoner_list_ok!=0),
             @"unavailable_skill_count":@(hero->unavailable), @"truncated":@(hero->truncated!=0) }];
     }
     return @{ @"enabled":@(panel.enabled!=0), @"result":resultName(panel.result), @"reason":@(panel.reason),

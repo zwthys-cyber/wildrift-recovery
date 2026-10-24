@@ -337,11 +337,34 @@ static int summoner_resource(Reader *r,uint64_t n,uint32_t *id) {
        word (resource getter fefc48), unlike the +668 wrapper chain. */
     return load(r,n+0x74,id,4) && *id;
 }
+static int summoner_vector(Reader *r,uint64_t header,Vector *v) {
+    /* The summoner list may carry null slots; GetSkill 1001d60 skips them.
+       Tolerate nulls while still requiring aligned unique non-null entries. */
+    memset(v,0,sizeof(*v));v->header=header;
+    if(!pointer(r,header,&v->begin) || !pointer(r,header+8,&v->end) ||
+        v->end<v->begin || (v->end-v->begin)%8 ||
+        v->end-v->begin>LV_TARGET_MAX_SKILLS*8)return 0;
+    size_t count=(size_t)((v->end-v->begin)/8);
+    if(count && !load(r,v->begin,v->entries,count*8))return 0;
+    size_t kept=0;
+    for(size_t i=0;i<count;++i) {
+        uint64_t e=v->entries[i];
+        if(!e)continue;
+        if(e&7)return 0;
+        for(size_t j=0;j<kept;++j)if(v->entries[j]==e)return 0;
+        v->entries[kept++]=e;
+    }
+    v->count=kept;
+    return 1;
+}
 void lv_skill_panel_native_cooldowns(LVTargetRead read,void *context,uint64_t base,const char *uuid,
                                     const LVTargetSnapshot *s,LVSkillPanel *panel) {
     if(!panel || !panel->enabled || panel->count>LV_PANEL_MAX_HEROES)return;
     for(size_t i=0;i<panel->count;++i) {
         if(panel->heroes[i].count>LV_PANEL_MAX_SKILLS)return;
+        panel->heroes[i].logic_summoner_manager=0;
+        panel->heroes[i].logic_summoner_manager_ok=0;
+        panel->heroes[i].logic_summoner_list_ok=0;
         for(size_t j=0;j<panel->heroes[i].count;++j) {
             LVPanelSkill *k=&panel->heroes[i].skills[j];
             if(k->logic_cooldown_ok){k->cooldown_ok=0;k->cooldown_fixed=0;k->locked=0;}
@@ -365,13 +388,25 @@ void lv_skill_panel_native_cooldowns(LVTargetRead read,void *context,uint64_t ba
             pointer(&r,a->logic_native+0x200,&manager) && manager &&
             pointer(&r,manager+0x28,&owner) && owner==a->logic_native &&
             native_vector(&r,manager+0x2d8,&list);
-        int sum_ready=ready && pointer(&r,a->logic_native+0x360,&smanager) && smanager &&
-            native_vector(&r,smanager+0x60,&sum_list);
+        int smanager_ok=0,sum_list_ok=0;
+        if(ready) {
+            smanager_ok=pointer(&r,a->logic_native+0x360,&smanager) && smanager;
+            sum_list_ok=smanager_ok && summoner_vector(&r,smanager+0x60,&sum_list);
+        }
+        h->logic_summoner_manager=smanager;
+        h->logic_summoner_manager_ok=smanager_ok!=0;
+        h->logic_summoner_list_ok=sum_list_ok!=0;
+        int sum_ready=ready && sum_list_ok;
         for(size_t j=0;j<h->count;++j) {
             LVPanelSkill *k=&h->skills[j];
             int base=k->summoner?sum_ready:ready;
             const Vector *v=k->summoner?&sum_list:&list;
-            k->logic_cooldown_reason=base?"skill_not_found":"logic_manager_unavailable";
+            if(k->summoner) {
+                if(!ready)k->logic_cooldown_reason="logic_manager_unavailable";
+                else if(!smanager_ok)k->logic_cooldown_reason="summoner_manager_unavailable";
+                else if(!sum_list_ok)k->logic_cooldown_reason="summoner_list_unavailable";
+                else k->logic_cooldown_reason="skill_not_found";
+            } else k->logic_cooldown_reason=base?"skill_not_found":"logic_manager_unavailable";
             if(!base || k->ambiguous)continue;
             uint64_t found=0;unsigned matches=0,complete=1;
             for(size_t z=0;z<v->count;++z) {
@@ -401,7 +436,7 @@ void lv_skill_panel_native_cooldowns(LVTargetRead read,void *context,uint64_t ba
             Vector again;
             int resource_ok=k->summoner ? (summoner_resource(&r,found,&res) && res==k->resource_id)
                                         : (native_resource(&r,found,&res) && res==k->resource_id);
-            int list_ok=k->summoner ? (native_vector(&r,smanager+0x60,&again) &&
+            int list_ok=k->summoner ? (summoner_vector(&r,smanager+0x60,&again) &&
                                        again.begin==sum_list.begin && again.end==sum_list.end &&
                                        again.count==sum_list.count &&
                                        !memcmp(again.entries,sum_list.entries,sum_list.count*8) &&
