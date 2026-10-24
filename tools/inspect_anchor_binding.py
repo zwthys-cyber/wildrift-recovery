@@ -61,5 +61,5 @@ for index in range(md.tables['types']['count']):
 # Exact generic payload conversion used by GetMapDC, not a broad code dump.
 with (ROOT/'build/anchor-binding-getters.asm').open('a') as output:
  output.write('; GetMapDC payload conversion\n')
- for ins in cs.disasm(fw[0xa9c76a0:0xa9c77a0],0xa9c76a0):
+ for ins in cs.disasm(fw[0xa9c76a0:0xa9c7aa0],0xa9c76a0):
   output.write(f'{ins.address:08x}: {ins.mnemonic:8s} {ins.op_str}\n')
