@@ -46,7 +46,9 @@ static void setup(void) {
     q(HEAP+0x58010,HEAP+0x5a000);q(HEAP+0x58018,HEAP+0x5a000);q(HEAP+0x58060,HEAP+0x59000);
     q(HEAP+0x59000,HEAP+0x50a00);q(HEAP+0x59010,HEAP+0x5b000);q(HEAP+0x59018,HEAP+0x5b000);
     q(HEAP+0x5a068,90*16384);d(HEAP+0x5b1a0,2);d(HEAP+0x5b1a4,0);
-    q(HEAP+0x5b160,(uint64_t)(-10*INT64_C(16384)));q(HEAP+0x5b170,20*16384);
+    /* +160 is a vector-of-positions header, not three coordinates. */
+    q(HEAP+0x5b160,HEAP+0x61000);q(HEAP+0x5b168,HEAP+0x61018);d(HEAP+0x5b178,24);
+    q(HEAP+0x5b128,(uint64_t)(-10*INT64_C(16384)));q(HEAP+0x5b138,20*16384);
 }
 static void sample(void){reads=0;lv_monster_respawn_read(reader,NULL,BASE,LV_TARGET_UUID,&snapshot,1,&report);}
 int main(void) {
@@ -67,10 +69,11 @@ int main(void) {
     setup();q(HEAP+0x5a068,0);sample();check(!report.count);
     setup();q(HEAP+0x5a068,UINT64_MAX);sample();check(!report.count);
     setup();q(HEAP+0x5a068,3601*16384);sample();check(!report.count);
-    setup();q(HEAP+0x5b160,10000*16384);sample();check(!report.count);
+    setup();q(HEAP+0x5b128,10000*16384);sample();check(!report.count);
     setup();q(HEAP+0x58060,0);sample();check(!report.count);
     setup();q(HEAP+0x58010,HEAP+0x5a008);sample();check(!report.count);
     setup();q(HEAP+0x59018,HEAP+0x5b008);sample();check(!report.count);
+    setup();mutation=HEAP+0x59000;replacement=HEAP+0x50800;sample();check(!report.count);
     setup();q(HEAP+0x60000,HEAP+0x50400);sample();check(!report.count);
     setup();failure=HEAP+0x5a068;sample();check(!report.count);
     setup();failure=HEAP+0x57020;sample();check(!report.count && !strcmp(report.reason,"anchor_entries_unreadable"));

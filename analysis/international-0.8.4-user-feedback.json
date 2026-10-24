@@ -61,5 +61,13 @@
       "read-only probe of manager slots 0x140/0x158/0x1d8/0x1e8/0x270/0x278/0x280/0x308/0x310/0x360",
       "slot probe distinguishes null from unreadable"
     ]
+  },
+  "interpretation_correction_0_8_5": {
+    "basis": "Original international ENUM_SUMMON_SKILL_TYPE defaults and original Ignite initializer, verified in GitHub Actions",
+    "ignite_resource_id": 81100101,
+    "smite_resource_id": 81110101,
+    "prior_81100101_as_smite_interpretation_withdrawn": true,
+    "prior_dual_id_smite_preview_compatibility_removed": true,
+    "native_component_route_correction": "Native manager +1c0, lists +28/+58/+d8; sync +140 must not be copied to the native layout"
   }
 }

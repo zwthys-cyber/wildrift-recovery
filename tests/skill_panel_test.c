@@ -84,7 +84,7 @@ static void classification_checks(void) {
     d(b+0x2044,99999999);sample();classify();check(enemy()->skills[0].role==LV_PANEL_REGULAR);
     setup();config_setup();d(b+0xe80c,10101001);sample();classify();
     check(!enemy()->classification_ok && enemy()->skills[0].role==LV_PANEL_UNKNOWN);
-    check(lv_skill_panel_skill_visible(&enemy()->skills[0],1));
+    check(!lv_skill_panel_skill_visible(&enemy()->skills[0],1));
     setup();config_setup();q(b+0xa090,0);sample();classify();check(enemy()->skills[0].role==LV_PANEL_UNKNOWN);
     setup();config_setup();q(b+0x818,HEAP+0x400);sample();classify();check(!enemy()->classification_ok);
     setup();config_setup();sample();failure=b+0xe804;classify();check(!enemy()->classification_ok);

@@ -40,7 +40,7 @@ static NSString *summonerSpellName(NSDictionary *skill) {
         NSArray *skills=hero[@"display_skills"] ?: hero[@"skills"];
         if(!skills.count) {
             NSString *message=[hero[@"result"] isEqualToString:@"changed_during_read"] ? @"数据变化中" :
-                ([hero[@"hidden_regular_count"] unsignedIntegerValue]>0 ? @"已隐藏普通技能" : @"暂无可读技能");
+                @"暂无已识别大招/召唤师技能";
             [message drawAtPoint:CGPointMake(avatar+10,y+3) withAttributes:header];continue;
         }
         NSUInteger columns=MIN((NSUInteger)8,skills.count);

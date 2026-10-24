@@ -87,6 +87,25 @@ class OriginalInstructions(unittest.TestCase):
         self.assertEqual(uc.reg_read(UC_ARM64_REG_X9),actual['SUMMON_SKILL_TYPE_IGNITE'])
         self.assertNotEqual(actual['SUMMON_SKILL_TYPE_IGNITE'],actual['SUMMON_SKILL_TYPE_SMITE'])
 
+    def test_original_monster_respawn_enum_states(self):
+        # Each selected enum default is encoded in one byte, independently
+        # checking the state/classification constants used by the C reader.
+        wanted={}
+        for index,names in ((6771,{'BornCountDown':2}),
+                            (36516,{'MONSTER_ANCHOR':0}),
+                            (36520,{'Dragon':4,'Baron':6,'RiftHerald':8,'SruBlue':10,
+                                    'SruRed':12,'MurkWolf':14,'Krug':16,'RazorBeak':18,
+                                    'Hama':20,'Scutterler':22,'TopHerald':26,'HexHerald':28,'HexBaron':30})):
+            for field in self.native.fields(self.md.type(index)):
+                if field['name'] in names:wanted[field['index']]=names[field['name']]
+        self.assertEqual(len(wanted),15)
+        fo,fs=struct.unpack_from('<II',self.md.header,0x40);do,_=struct.unpack_from('<II',self.md.header,0x48)
+        observed={}
+        for pos in range(fo,fo+fs,12):
+            field,typ,offset=struct.unpack_from('<iii',self.md.data,pos)
+            if field in wanted:observed[field]=self.md.data[do+offset]
+        self.assertEqual(observed,wanted)
+
     def test_stream_block_64_states(self):
         rng = random.Random(20261010)
         states = [[0] * 16, [0xffffffff] * 16] + [[rng.getrandbits(32) for _ in range(16)] for _ in range(62)]

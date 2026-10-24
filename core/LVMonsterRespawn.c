@@ -71,7 +71,7 @@ void lv_monster_respawn_read(LVTargetRead read,void *context,uint64_t base,const
             !load(&r,raw_config+0x1a4,&type,4) || type!=0 ||
             !load(&r,raw_config+0x1a0,&t.poi_type,4) || !combat_poi(t.poi_type) ||
             !load(&r,native+0x68,&t.remaining_fixed,8) || t.remaining_fixed<=0 || t.remaining_fixed>3600*INT64_C(16384) ||
-            !load(&r,raw_config+0x160,t.position_fixed,sizeof(t.position_fixed))) {++out->unavailable;continue;}
+            !load(&r,raw_config+0x128,t.position_fixed,sizeof(t.position_fixed))) {++out->unavailable;continue;}
         unsigned valid=1;
         for(size_t j=0;j<3;++j)if(t.position_fixed[j]<-200*INT64_C(16384) || t.position_fixed[j]>200*INT64_C(16384))valid=0;
         int32_t after_state,after_type,after_poi;int64_t position[3];uint64_t after_native,after_config;
@@ -80,11 +80,12 @@ void lv_monster_respawn_read(LVTargetRead read,void *context,uint64_t base,const
             !load(&r,icon+0x1e8,&after_state,4) || after_state!=state ||
             !load(&r,icon+0xc0,&active,1) || active!=1 || !load(&r,icon+0xc1,&showing,1) || showing!=1 ||
             !load(&r,icon+0xc8,&recycled,1) || recycled ||
+            !instance(&r,anchor,anchor_cls) || !instance(&r,config,config_cls) ||
             !handle(&r,anchor,&after_native) || after_native!=native || !ptr(&r,anchor+0x60,&same) || same!=config ||
             !handle(&r,config,&after_config) || after_config!=raw_config ||
             !load(&r,raw_config+0x1a4,&after_type,4) || after_type!=type ||
             !load(&r,raw_config+0x1a0,&after_poi,4) || after_poi!=t.poi_type ||
-            !load(&r,raw_config+0x160,position,sizeof(position)) || memcmp(position,t.position_fixed,sizeof(position))) {
+            !load(&r,raw_config+0x128,position,sizeof(position)) || memcmp(position,t.position_fixed,sizeof(position))) {
             ++out->unavailable;continue;
         }
         unsigned duplicate=0;

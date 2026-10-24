@@ -61,6 +61,32 @@ class OriginalGetters(unittest.TestCase):
                 uc.emu_start(start, HALT, count=100)
                 self.assertEqual(uc.reg_read(UC_ARM64_REG_X0), value)
 
+    def test_original_monster_anchor_remaining_and_configuration(self):
+        # These named original getters read the exact current fields used by
+        # the respawn reader; no synthetic deadline arithmetic is involved.
+        for remaining in (0,1,16384,90*16384,3600*16384):
+            for start,end,expected in ((0x3b0821c,0x3b08228,remaining),
+                                       (0x3b0a33c,0x3b0a34c,remaining>>14)):
+                uc=machine(self.fw,start,end);q(uc,HEAP+0x18,HEAP+0x1000)
+                q(uc,HEAP+0x1068,remaining);q(uc,HEAP+0x1050,12345)
+                uc.reg_write(UC_ARM64_REG_X0,HEAP);uc.emu_start(start,HALT,count=10)
+                self.assertEqual(uc.reg_read(UC_ARM64_REG_X0),expected)
+        for start,member in ((0x3c93cf8,0x1a0),(0x3c93d04,0x1a4)):
+            for value in (0,1,2,11,15,0xffffffff):
+                uc=machine(self.fw,start,start+12);q(uc,HEAP+0x18,HEAP+0x1000)
+                d(uc,HEAP+0x1000+member,value);uc.reg_write(UC_ARM64_REG_X0,HEAP)
+                uc.emu_start(start,HALT,count=10);self.assertEqual(uc.reg_read(UC_ARM64_REG_X0),value)
+        # Named transformPos returns exactly three raw Q14 components at +128.
+        # +160 is a vector container and must never be interpreted as a point.
+        for position in ((-10*16384,0,20*16384),(1,-1,0),(200*16384,0,-200*16384)):
+            uc=machine(self.fw,0x3c93c5c,0x3c93c78)
+            q(uc,HEAP+0x18,HEAP+0x1000)
+            raw=struct.pack('<3q',*position);uc.mem_write(HEAP+0x1128,raw)
+            q(uc,HEAP+0x1160,HEAP+0x3000)
+            uc.reg_write(UC_ARM64_REG_X0,HEAP);uc.reg_write(UC_ARM64_REG_X8,HEAP+0xb000)
+            uc.emu_start(0x3c93c5c,HALT,count=10)
+            self.assertEqual(bytes(uc.mem_read(HEAP+0xb000,24)),raw)
+
     def test_original_cached_ward_classification(self):
         # Named original IsSummonedWards and interface accessor, after the
         # initialization call. Execute only their byte-load instruction.

@@ -56,7 +56,7 @@ static NSDictionary *enemySkillPanel(LVMachReader *reader, const LVTargetSnapsho
     NSMutableArray *heroes=[NSMutableArray new];
     for(size_t i=0;i<panel.count;++i) {
         const LVPanelHero *hero=&panel.heroes[i];NSMutableArray *skills=[NSMutableArray new];
-        NSMutableArray *displayed=[NSMutableArray new];
+        NSMutableArray *displayed=[NSMutableArray new];NSUInteger hiddenRegular=0,hiddenUnknown=0;
         for(size_t j=0;j<hero->count;++j) {
             const LVPanelSkill *skill=&hero->skills[j];
             NSDictionary *entry=@{ @"object_id":@(skill->object_id), @"resource_id":@(skill->resource_id),
@@ -77,7 +77,10 @@ static NSDictionary *enemySkillPanel(LVMachReader *reader, const LVTargetSnapsho
                 @"cooldown_read_ok":@(skill->cooldown_ok!=0), @"cooldown_locked":@(skill->locked!=0),
                 @"cooldown_fixed":@(skill->cooldown_fixed), @"ambiguous":@(skill->ambiguous!=0),
                 @"role":@(lv_skill_panel_role_name(skill->role)), @"configured_index":@(skill->configured_index) };
-            [skills addObject:entry];if(lv_skill_panel_skill_visible(skill,hideSmall))[displayed addObject:entry];
+            [skills addObject:entry];
+            if(lv_skill_panel_skill_visible(skill,hideSmall))[displayed addObject:entry];
+            else if(skill->role==LV_PANEL_REGULAR)++hiddenRegular;
+            else ++hiddenUnknown;
         }
         NSMutableDictionary *managerSlots=[NSMutableDictionary new];
         unsigned probeOffsets[LV_MANAGER_PROBE_COUNT]=LV_MANAGER_PROBE_OFFSETS;
@@ -87,7 +90,7 @@ static NSDictionary *enemySkillPanel(LVMachReader *reader, const LVTargetSnapsho
                 @"read_ok":@(hero->logic_manager_slot_ok[p]!=0) };
         [heroes addObject:@{ @"object_id":@(hero->object_id), @"resource_id":@(hero->resource_id),
             @"result":resultName(hero->result), @"reason":@(hero->reason), @"skills":skills,
-            @"display_skills":displayed, @"hidden_regular_count":@(skills.count-displayed.count),
+            @"display_skills":displayed, @"hidden_regular_count":@(hiddenRegular), @"hidden_unknown_count":@(hiddenUnknown),
             @"classification_read_ok":@(hero->classification_ok!=0), @"ultimate_resource_id":@(hero->ultimate_resource_id),
             @"logic_summoner_manager_address":hexAddress(hero->logic_summoner_manager),
             @"logic_summoner_manager_ok":@(hero->logic_summoner_manager_ok!=0),
@@ -203,7 +206,7 @@ static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTarg
         int64_t seconds=t->remaining_fixed/16384+(t->remaining_fixed%16384!=0);
         [timers addObject:@{ @"anchor_id":@(t->anchor_id), @"poi_type":@(t->poi_type),
             @"remaining_fixed":@(t->remaining_fixed), @"remaining_seconds":@(seconds),
-            @"position":fixedPosition(t->position_fixed), @"u":@(u), @"v":@(v) }];
+            @"position":fixedPosition(t->position_fixed), @"position_source":@"anchor_configuration_transformPos", @"u":@(u), @"v":@(v) }];
     }
     return @{ @"projection_ready": @(frame.ready != 0), @"reason": @(frame.reason),
         @"confirmed_enemy_hero_count": @(frame.confirmed_enemies), @"dead_enemy_count": @(frame.dead_enemies),

@@ -1,0 +1,40 @@
+{
+  "AnchorTimeState": {
+    "PreShowMonster": 0,
+    "BornCountDown": 1,
+    "ShowMonster": 2,
+    "LeaveCountDown": 3,
+    "None": 4,
+    "Max": 5
+  },
+  "AnchorDataData_AnchorType": {
+    "MONSTER_ANCHOR": 0,
+    "BUILDING_ANCHOR": 1,
+    "SOLDIER_ANCHOR": 2,
+    "SCENE_CREATOR_ANCHOR": 3
+  },
+  "AnchorDataData_POIType": {
+    "None": 0,
+    "Honeyfruit": 1,
+    "Dragon": 2,
+    "Baron": 3,
+    "RiftHerald": 4,
+    "SruBlue": 5,
+    "SruRed": 6,
+    "MurkWolf": 7,
+    "Krug": 8,
+    "RazorBeak": 9,
+    "Hama": 10,
+    "Scutterler": 11,
+    "Cannon": 12,
+    "TopHerald": 13,
+    "HexHerald": 14,
+    "HexBaron": 15,
+    "TopSoldier": 16,
+    "MidSoldier": 17,
+    "DownSoldier": 18,
+    "TradeMan": 19,
+    "TopPig": 20,
+    "DownPig": 21
+  }
+}

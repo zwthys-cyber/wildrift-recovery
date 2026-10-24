@@ -288,7 +288,7 @@ void lv_skill_panel_classify(LVTargetRead read,void *context,uint64_t base,const
     panel->classification_reason=classified==panel->count ? "ready" : "partial_or_unavailable";
 }
 int lv_skill_panel_skill_visible(const LVPanelSkill *skill,unsigned hide_small_skills) {
-    return skill && !(hide_small_skills && skill->role==LV_PANEL_REGULAR);
+    return skill && (!hide_small_skills || skill->role==LV_PANEL_ULTIMATE || skill->role==LV_PANEL_SUMMONER);
 }
 const char *lv_skill_panel_role_name(LVPanelRole role) {
     switch(role){case LV_PANEL_REGULAR:return "regular";case LV_PANEL_ULTIMATE:return "ultimate";
