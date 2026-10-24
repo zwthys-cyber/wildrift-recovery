@@ -3,6 +3,10 @@
 #include "LVTarget.h"
 #define LV_PANEL_MAX_HEROES 16
 #define LV_PANEL_MAX_SKILLS 16
+/* Read-only diagnostic probe over the original native lookup cascade slots.
+   Values are exported without interpretation; null and unreadable differ. */
+#define LV_MANAGER_PROBE_COUNT 10
+#define LV_MANAGER_PROBE_OFFSETS {0x140,0x158,0x1d8,0x1e8,0x270,0x278,0x280,0x308,0x310,0x360}
 
 typedef enum {
     LV_PANEL_UNKNOWN, LV_PANEL_REGULAR, LV_PANEL_ULTIMATE, LV_PANEL_SUMMONER
@@ -31,6 +35,8 @@ typedef struct {
     uint32_t ultimate_resource_id;
     uint64_t logic_summoner_manager;
     unsigned logic_summoner_manager_ok, logic_summoner_list_ok;
+    uint64_t logic_manager_slot[LV_MANAGER_PROBE_COUNT];
+    unsigned logic_manager_slot_ok[LV_MANAGER_PROBE_COUNT];
     unsigned truncated;
     LVPanelSkill skills[LV_PANEL_MAX_SKILLS];
 } LVPanelHero;

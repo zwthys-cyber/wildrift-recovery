@@ -77,6 +77,12 @@ static NSDictionary *enemySkillPanel(LVMachReader *reader, const LVTargetSnapsho
                 @"role":@(lv_skill_panel_role_name(skill->role)), @"configured_index":@(skill->configured_index) };
             [skills addObject:entry];if(lv_skill_panel_skill_visible(skill,hideSmall))[displayed addObject:entry];
         }
+        NSMutableDictionary *managerSlots=[NSMutableDictionary new];
+        unsigned probeOffsets[LV_MANAGER_PROBE_COUNT]=LV_MANAGER_PROBE_OFFSETS;
+        for(unsigned p=0;p<LV_MANAGER_PROBE_COUNT;++p)
+            managerSlots[[NSString stringWithFormat:@"0x%x",probeOffsets[p]]]=@{
+                @"address":hexAddress(hero->logic_manager_slot[p]),
+                @"read_ok":@(hero->logic_manager_slot_ok[p]!=0) };
         [heroes addObject:@{ @"object_id":@(hero->object_id), @"resource_id":@(hero->resource_id),
             @"result":resultName(hero->result), @"reason":@(hero->reason), @"skills":skills,
             @"display_skills":displayed, @"hidden_regular_count":@(skills.count-displayed.count),
@@ -84,6 +90,7 @@ static NSDictionary *enemySkillPanel(LVMachReader *reader, const LVTargetSnapsho
             @"logic_summoner_manager_address":hexAddress(hero->logic_summoner_manager),
             @"logic_summoner_manager_ok":@(hero->logic_summoner_manager_ok!=0),
             @"logic_summoner_list_ok":@(hero->logic_summoner_list_ok!=0),
+            @"logic_manager_slots":managerSlots,
             @"unavailable_skill_count":@(hero->unavailable), @"truncated":@(hero->truncated!=0) }];
     }
     return @{ @"enabled":@(panel.enabled!=0), @"result":resultName(panel.result), @"reason":@(panel.reason),

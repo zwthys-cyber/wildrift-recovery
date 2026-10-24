@@ -157,6 +157,13 @@ static void native_checks(void) {
     /* The summoner list may carry null slots; GetSkill 1001d60 skips them. */
     setup();native_setup();q(b+0xdc40,0);q(b+0xdc48,b+0x5000);q(b+0xe268,b+0xdc50);sample();native_sample();
     check(enemy()->skills[2].logic_cooldown_ok && enemy()->skills[2].cooldown_fixed==4*16384);
+    /* Route B: manager +140 root reaches the same summoner list. */
+    setup();native_setup();q(b+0xf360,0);q(b+0xe540,b+0xe600);q(b+0xe660,b+0xdc40);q(b+0xe668,b+0xdc48);
+    sample();native_sample();
+    check(enemy()->skills[2].logic_cooldown_ok && enemy()->skills[2].cooldown_fixed==4*16384);
+    setup();native_setup();q(b+0xf360,0);q(b+0xe540,b+0xe600);q(b+0xe660,b+0xdc48);q(b+0xe668,b+0xdc40);
+    sample();native_sample();
+    check(!enemy()->skills[2].logic_cooldown_ok && !strcmp(enemy()->skills[2].logic_cooldown_reason,"summoner_list_unavailable"));
     setup();native_setup();d(b+0x5074,10101001);sample();native_sample();
     check(!enemy()->skills[2].logic_cooldown_ok && !strcmp(enemy()->skills[2].logic_cooldown_reason,"skill_not_found"));
     setup();native_setup();q(b+0xe268,b+0xdc50);q(b+0xdc48,b+0x5800);d(b+0x5874,10101003);sample();native_sample();

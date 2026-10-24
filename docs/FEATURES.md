@@ -41,6 +41,8 @@
 
 静态证据确认两套节点是同一数据的不同表示：引擎节点（技能 +0x590）锁定 +0x10、剩余 +0x18、总时间 +0x20、起始 +0x28（引擎 getter 0x1015164/0x101516c/0x101517c 与 GetState/GetStateSync 0x1014ff4/0x10150ac）；同步镜像（技能 +0x440）为引擎数据整体 +8（锁定 +0x18、剩余 +0x20、总 +0x28、起始 +0x30，见 get_remainTime/get_totalTime/get_startTime）。0.8.4 实机追踪证实：敌方普通技能的引擎节点剩余随时间递减（同一英雄镜像剩余保持为零），即 0.8.3 的零值来自同步镜像不更新而非游戏状态；logic_node_values_read_ok、logic_total_raw、logic_start_raw 原始读取仅诊断不参与显示。
 
-敌方召唤师技能不在原生管理器 +0x2d8 列表中。原生召唤师管理器位于逻辑英雄 +0x360，其列表为 +0x60/+0x68（8 字节条目，允许空槽，与原生 GetSkill 0x1001d60 的跳过行为一致），条目资源 ID 在 +0x74（资源 getter 0xfefc48）；同步对应物为同步英雄 +0x198、列表 +0x48/+0x50、资源 +0x44（0x1001e60/0xfefc50）。召唤师条目复用同一受身份校验保护的触发器/节点读取（+0x580 拥有者、+0x590 节点）；若对象实际不带此布局，读取会失败关闭并保留同步诊断，不会显示错误数据。失败原因分阶段区分：summoner_manager_unavailable（英雄 +0x360 不可用）、summoner_list_unavailable（+0x60 列表校验失败）、skill_not_found。0.8.4 首次实机为 logic_manager_unavailable（合并原因），下一版将定位到具体阶段；英雄级诊断新增 logic_summoner_manager_address、logic_summoner_manager_ok、logic_summoner_list_ok。
+敌方召唤师技能不在原生管理器 +0x2d8 列表中。原生召唤师管理器候选路由：A 为逻辑英雄 +0x360（消费者 0xff8b28），B 为管理器 +0x140 根对象（镜像同步路径中已工作的 +0x140 路由）；两者列表均为 +0x60/+0x68（8 字节条目，允许空槽，与原生 GetSkill 0x1001d60 的跳过行为一致），条目资源 ID 在 +0x74（资源 getter 0xfefc48）；同步对应物为同步英雄 +0x198、列表 +0x48/+0x50、资源 +0x44（0x1001e60/0xfefc50）。召唤师条目复用同一受身份校验保护的触发器/节点读取（+0x580 拥有者、+0x590 节点）；若对象实际不带此布局，读取会失败关闭并保留同步诊断，不会显示错误数据。失败原因分阶段区分：summoner_manager_unavailable（两条路由的根都不可用）、summoner_list_unavailable（根存在但 +0x60 列表校验失败）、skill_not_found。
+
+0.8.4 实机显示路由 A 的英雄 +0x360 为空（logic_summoner_manager_address 0x0）。英雄级诊断新增 logic_summoner_manager_address/ok、logic_summoner_list_ok 与 logic_manager_slots：对管理器 +0x140/+0x158/+0x1d8/+0x1e8/+0x270/+0x278/+0x280/+0x308/+0x310/+0x360 十个原生级联槽位做只读指针导出（read_ok 区分空与不可读），下一轮实机直接定位召唤师技能所在路由。
 
 0.8.3 报告开头的 not_in_battle 是早于实际 HUD 追踪的探测；空快照的 classification_reason 改为 snapshot_unavailable，避免误报分类 ready。
