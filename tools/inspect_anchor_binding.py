@@ -46,3 +46,14 @@ for index in range(md.tables['types']['count']):
   context_asm.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(fw[start:start+256],start))
 (ROOT/'build/anchor-binding-layouts.json').write_text(json.dumps(layouts+extra+context_layouts,indent=2))
 (ROOT/'build/anchor-binding-getters.asm').write_text('\n'.join(lines+extra_asm+context_asm)+'\n')
+root_layouts=[];root_asm=[]
+for index in range(md.tables['types']['count']):
+ t=md.type(index)
+ if not any('mapdataproxy' in f['name'].lower() for f in md.fields(t)):continue
+ root_layouts.append({'index':index,'type':t['namespace']+'.'+t['name'],'fields':native.fields(t),'methods':native.methods(t)})
+ for m in native.methods(t):
+  if not (m['name'].startswith('get_') and any(w in m['name'].lower() for w in ('map','instance','frame','desk'))):continue
+  start=m['native_address'];root_asm.append(f'; {t["name"]}.{m["name"]} {start:#x}')
+  root_asm.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(fw[start:start+256],start))
+(ROOT/'build/anchor-binding-layouts.json').write_text(json.dumps(layouts+extra+context_layouts+root_layouts,indent=2))
+(ROOT/'build/anchor-binding-getters.asm').write_text('\n'.join(lines+extra_asm+context_asm+root_asm)+'\n')
