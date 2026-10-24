@@ -10,7 +10,8 @@ static LVTargetSnapshot snapshot;
 static LVSkillPanel panel;
 static uint64_t failure,mutation,replacement;
 static unsigned mutation_reads,change_on,checks,reads;
-static void check(int value){assert(value);++checks;}
+static void check_at(int value,int line){if(!value)fprintf(stderr,"Skill check %u failed at line %d\n",checks+1,line);assert(value);++checks;}
+#define check(value) check_at((value),__LINE__)
 static void put(uint64_t a,const void *p,size_t n){assert(a>=HEAP && a-HEAP+n<=sizeof(heap));memcpy(heap+a-HEAP,p,n);}
 static void q(uint64_t a,uint64_t v){put(a,&v,8);}
 static void d(uint64_t a,int32_t v){put(a,&v,4);}
@@ -224,7 +225,7 @@ static void component_checks(void) {
     check(!enemy()->skills[2].logic_cooldown_ok && enemy()->skills[3].logic_cooldown_ok);
     setup();native_setup();summoner_setup();sample();mutation=b+0xd400;replacement=b+0x7800;native_sample();
     check(!enemy()->skills[2].logic_cooldown_ok && !strcmp(enemy()->skills[2].logic_cooldown_reason,"identity_or_list_changed"));
-    setup();native_setup();summoner_setup();sample();mutation=b+0xe5c0;replacement=b+0xe800;native_sample();
+    setup();native_setup();summoner_setup();sample();mutation=b+0xe5c0;replacement=b+0xe800;change_on=3;native_sample();
     check(!enemy()->skills[2].logic_cooldown_ok && !strcmp(enemy()->skills[2].logic_cooldown_reason,"identity_or_list_changed"));
     setup();native_setup();summoner_setup();sample();native_sample();q(b+0xe5c0,0);native_sample();
     check(!enemy()->skills[2].logic_cooldown_ok && !enemy()->skills[2].cooldown_ok && !enemy()->skills[2].cooldown_fixed);
