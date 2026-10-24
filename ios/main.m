@@ -59,6 +59,7 @@ static NSString *LVImplementationNote(const char *rawKey) {
     if ([key isEqualToString:@"hideSmallSkills"]) return @"面板已固定隐藏普通小技能";
     if ([key isEqualToString:@"drawWards"]) return @"已实现；眼位出现和销毁仍需实机确认";
     if ([key isEqualToString:@"drawMonsters"]) return @"显示当前可读且存活的野怪；新版待实机确认";
+    if ([key isEqualToString:@"showMonsterRespawn"]) return @"读取当前野怪锚点的刷新倒计时；读不到时不显示，待实机验证";
     if ([key isEqualToString:@"hideMonsterHealth"]) return @"仅隐藏野怪血量文字，保留标记";
     if ([key isEqualToString:@"autoSmite"]) return @"仅判断预览，不会释放技能";
     if ([key isEqualToString:@"autoMercury"]) return @"仅恢复规则，尚未接入实际操作";

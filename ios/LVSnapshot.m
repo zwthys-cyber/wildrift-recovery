@@ -3,6 +3,7 @@
 #include "LVTarget.h"
 #include "LVSmitePreview.h"
 #include "LVSkillPanel.h"
+#include "LVMonsterRespawn.h"
 #include <errno.h>
 
 static int readTarget(void *context, uint64_t address, void *buffer, size_t length) {
@@ -190,6 +191,20 @@ static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTarg
             @"position_source": m->position_source==2 ? @"native_logic_transform" : @"sync_transform",
             @"edge_clamped": @(m->edge_clamped != 0) }];
     }
+    BOOL timersEnabled=config && config->values[lv_config_index("showMonsterRespawn")][0]!=0;
+    LVMonsterRespawnReport respawn;
+    lv_monster_respawn_read(readTarget,(__bridge void *)reader,base,LV_TARGET_UUID,snapshot,timersEnabled,&respawn);
+    NSMutableArray *timers=[NSMutableArray new];
+    if(frame.ready)for(size_t i=0;i<respawn.count;++i) {
+        const LVMonsterRespawnTimer *t=&respawn.timers[i];double u,v;
+        int projected=lv_minimap_project_world(&geometry,settings,frame.rotation_degrees,
+            (double)t->position_fixed[0]/16384.0,(double)t->position_fixed[2]/16384.0,&u,&v);
+        if(projected<=0)continue;
+        int64_t seconds=t->remaining_fixed/16384+(t->remaining_fixed%16384!=0);
+        [timers addObject:@{ @"anchor_id":@(t->anchor_id), @"poi_type":@(t->poi_type),
+            @"remaining_fixed":@(t->remaining_fixed), @"remaining_seconds":@(seconds),
+            @"position":fixedPosition(t->position_fixed), @"u":@(u), @"v":@(v) }];
+    }
     return @{ @"projection_ready": @(frame.ready != 0), @"reason": @(frame.reason),
         @"confirmed_enemy_hero_count": @(frame.confirmed_enemies), @"dead_enemy_count": @(frame.dead_enemies),
         @"missing_enemy_position_count": @(frame.missing_enemies), @"outside_map_enemy_count": @(frame.outside_enemies),
@@ -206,7 +221,13 @@ static NSDictionary *minimapSnapshot(LVMachReader *reader, uint64_t base, LVTarg
             @"current_marker_count":@(frame.monster_markers), @"dead_count":@(frame.dead_monsters),
             @"unavailable_count":@(frame.unavailable_monsters), @"outside_map_count":@(frame.outside_monsters),
             @"classification_source":@"BattleActor.isMonster", @"health_source":@"current_attribute_hp",
-            @"respawn_timer_implemented":@NO, @"device_verified":@NO },
+            @"respawn_timer_implemented":@YES, @"device_verified":@NO },
+        @"respawn_timers": @{ @"enabled":@(timersEnabled), @"reason":@(respawn.reason),
+            @"source":@"current_monster_anchor_timeNeedToBorn", @"read_only":@YES,
+            @"device_verified":@NO, @"examined_anchor_count":@(respawn.examined),
+            @"read_timer_count":@(respawn.count), @"marker_count":@(timers.count),
+            @"unavailable_count":@(respawn.unavailable), @"duplicate_count":@(respawn.duplicates),
+            @"timers":timers, @"scope":@"Current game-owned BornCountDown monster anchors and remaining Q14 time only. No historical death timers or clock extrapolation. Only currently available anchor UI bindings are sampled." },
         @"health_cache": @{ @"reason": @(health->reason), @"matched_hero_count": @(health->matched),
             @"enabled_hero_count": @(health->enabled), @"valid_fraction_count": @(health->valid),
             @"source": @"game_minimap_cached_percent", @"max_health_inferred": @NO },

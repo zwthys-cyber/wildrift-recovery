@@ -241,29 +241,31 @@ static int duplicate_id(const LVTargetSnapshot *s, size_t index) {
         if (i != index && s->actors[i].object_id_ok && s->actors[i].object_id == a->object_id) return 1;
     return 0;
 }
+int lv_minimap_project_world(const LVMinimapGeometry *g,const LVMinimapSettings *settings,
+                             int rotation,double x,double z,double *out_u,double *out_v) {
+    if(!out_u || !out_v || !settings_valid(settings) || !isfinite(x) || !isfinite(z) ||
+        (rotation!=0 && rotation!=90 && rotation!=180 && rotation!=270))return 0;
+    unsigned manual=settings->values[LV_MAP_MANUAL]!=0;
+    if(!g || (!manual && !g->ready) || g->full_map_showing || g->viewport_mode)return 0;
+    switch(rotation) {
+        case 90:{double old=x;x=z;z=-old;break;}
+        case 180:x=-x;z=-z;break;
+        case 270:{double old=x;x=-z;z=old;break;}
+    }
+    double u=.5+x/settings->values[LV_MAP_SPAN],v=.5-z/settings->values[LV_MAP_SPAN];
+    if(!manual){u=.5+x*g->scale_x/(2*g->half_width);v=.5-z*g->scale_z/(2*g->half_height);}
+    if(!isfinite(u) || !isfinite(v) || u<-.04 || u>1.04 || v<-.04 || v>1.04)return -1;
+    int clamped=u<0 || u>1 || v<0 || v>1;
+    *out_u=fmax(0,fmin(1,u));*out_v=fmax(0,fmin(1,v));return clamped?2:1;
+}
 static int add_marker(LVMinimapFrame *out, const LVTargetActor *a, unsigned ordinal,
                        const LVMinimapGeometry *g, const LVMinimapSettings *settings) {
     if ((!a->logic_position_ok && !a->position_ok) || (a->health_ok && a->health_fixed <= 0)) return 0;
     const int64_t *p=a->logic_position_ok ? a->logic_position_fixed : a->position_fixed;
     double x = (double)p[0] / 16384, z = (double)p[2] / 16384;
-    /* Red-side 180-degree camera orientation is a default, with a user
-       override for camera/layout settings. Native rotation APIs are not called. */
-    switch (out->rotation_degrees) {
-        case 90: { double old = x; x = z; z = -old; break; }
-        case 180: x = -x; z = -z; break;
-        case 270: { double old = x; x = -z; z = old; break; }
-    }
-    double u = .5 + x / settings->values[LV_MAP_SPAN];
-    double v = .5 - z / settings->values[LV_MAP_SPAN];
-    if (!out->manual_projection) {
-        u = .5 + x * g->scale_x / (2 * g->half_width);
-        v = .5 - z * g->scale_z / (2 * g->half_height);
-    }
-    /* Native WorldToMiniMap has an edge-clamp branch. Permit only a small
-       border overshoot (spawn points); never pin an off-board 500,500 sentinel. */
-    if (!isfinite(u) || !isfinite(v) || u < -.04 || u > 1.04 || v < -.04 || v > 1.04) return -1;
-    unsigned clamped = u < 0 || u > 1 || v < 0 || v > 1;
-    u = fmax(0,fmin(1,u)); v = fmax(0,fmin(1,v));
+    double u,v;int projected=lv_minimap_project_world(g,settings,out->rotation_degrees,x,z,&u,&v);
+    if(projected<=0)return projected;
+    unsigned clamped=projected==2;
     if (out->count >= LV_TARGET_MAX_ACTORS) return 0;
     out->markers[out->count++] = (LVMinimapMarker){ .object_id = a->object_id, .resource_id = a->resource_id,
         .ordinal = ordinal, .is_local = a->is_local, .is_ward = !a->is_local && !a->is_hero && a->ward_classification_ok && a->is_ward,

@@ -35,6 +35,8 @@ jobs:
         run: |
           gcc -std=c11 -Wall -Wextra -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -no-pie -g -Icore core/LVSkillPanel.c tests/skill_panel_test.c -o build/skill_panel_test
           build/skill_panel_test
+          gcc -std=c11 -Wall -Wextra -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -no-pie -g -Icore core/LVMonsterRespawn.c tests/monster_respawn_test.c -o build/monster_respawn_test
+          build/monster_respawn_test
       - name: Upload selected analysis only
         uses: actions/upload-artifact@v4
         with:
@@ -57,6 +59,8 @@ jobs:
             build/monster-anchor-roots.json
             build/monster-anchor-roots.asm
             build/monster-group-references.json
+            build/monster-timer-enums.json
+            build/anchor-position-components.asm
       - name: Remove private inputs
         if: always()
         run: rm -rf inputs

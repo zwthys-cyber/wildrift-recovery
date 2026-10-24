@@ -121,6 +121,7 @@ static void recordCoordinateTrace(NSDictionary *snapshot) {
         @"enemy_skill_panel":snapshot[@"enemy_skill_panel"] ?: @{},
         @"hero_list_truncated":@(truncated), @"heroes":heroes, @"wards":wards,
         @"ward_list_truncated":@(wardsTruncated), @"ward_settings":map[@"wards"] ?: @{},
+        @"respawn_timers":map[@"respawn_timers"] ?: @{},
         @"monsters":monsters, @"monster_list_truncated":@(monstersTruncated), @"monster_settings":map[@"monsters"] ?: @{} }];
     if(coordinateSamples.count>32) [coordinateSamples removeObjectAtIndex:0];
     NSMutableDictionary *trace=[@{ @"format_version":@1, @"session":hudSession.lowercaseString,
@@ -246,6 +247,7 @@ static NSString *blockLabel(NSString *code) {
     CADisplayLink *_displayLink;
 }
 @property(nonatomic, copy) NSArray<NSDictionary *> *markers;
+@property(nonatomic, copy) NSArray<NSDictionary *> *respawnTimers;
 @property(nonatomic) BOOL references;
 @property(nonatomic) CGFloat markerSize;
 @property(nonatomic, strong) LVHeroPortraits *portraitStore;
@@ -268,6 +270,9 @@ static NSString *blockLabel(NSString *code) {
 - (void)didMoveToWindow {
     [super didMoveToWindow];
     if (!self.window) [self stopAnimation];
+}
+- (void)setRespawnTimers:(NSArray<NSDictionary *> *)timers {
+    _respawnTimers=[timers copy] ?: @[];[self setNeedsDisplay];
 }
 - (void)setMarkers:(NSArray<NSDictionary *> *)markers {
     _markers = [markers copy] ?: @[];
@@ -308,6 +313,20 @@ static NSString *blockLabel(NSString *code) {
         CGContextSetLineWidth(context, 1); CGContextStrokeRect(context, CGRectInset(self.bounds, 1, 1));
     }
     double now = NSProcessInfo.processInfo.systemUptime;
+    for(NSDictionary *timer in self.respawnTimers) {
+        double u=[timer[@"u"] doubleValue],v=[timer[@"v"] doubleValue];
+        NSInteger seconds=[timer[@"remaining_seconds"] integerValue];
+        if(!isfinite(u) || !isfinite(v) || u<0 || u>1 || v<0 || v>1 || seconds<=0 || seconds>3600)continue;
+        NSString *text=[NSString stringWithFormat:@"%ld:%02ld",(long)(seconds/60),(long)(seconds%60)];
+        NSDictionary *attrs=@{NSFontAttributeName:[UIFont boldSystemFontOfSize:MAX(7,self.monsterHealthTextSize)],
+            NSForegroundColorAttributeName:UIColor.yellowColor};
+        CGSize size=[text sizeWithAttributes:attrs];
+        CGFloat x=MAX(1,MIN(self.bounds.size.width-size.width-1,u*self.bounds.size.width-size.width/2));
+        CGFloat y=MAX(1,MIN(self.bounds.size.height-size.height-1,v*self.bounds.size.height-size.height/2));
+        CGContextSetFillColorWithColor(context,[UIColor colorWithWhite:0 alpha:.85].CGColor);
+        CGContextFillRect(context,CGRectInset(CGRectMake(x,y,size.width,size.height),-1,-1));
+        [text drawAtPoint:CGPointMake(x,y) withAttributes:attrs];
+    }
     /* Draw monster labels first so enemy portraits remain above them. */
     for (unsigned layer=0;layer<2;++layer) for (size_t i = 0; i < _motion.count; ++i) {
         const LVMinimapMarker *marker = &_motion.items[i].target; double u, v;
@@ -500,7 +519,7 @@ static NSString *blockLabel(NSString *code) {
 }
 - (void)sample {
     if (self.lastSampleAt && NSProcessInfo.processInfo.systemUptime - self.lastSampleAt > 2) {
-        self.minimap.markers = @[]; self.mapStatus.text = @"位置采样过期 · 已清除标记";
+        self.minimap.markers = @[]; self.minimap.respawnTimers=@[]; self.mapStatus.text = @"位置采样过期 · 已清除标记";
         self.skillPanel.heroes=@[];self.skillPanel.statusReason=@"stale";
     }
     if (self.sampling) return; self.sampling = YES;
@@ -545,6 +564,7 @@ static NSString *blockLabel(NSString *code) {
     self.minimap.hideMonsterHealth=hudConfig.values[lv_config_index("hideMonsterHealth")][0]!=0;
     self.minimap.monsterHealthTextSize=MAX(7,MIN(14,hudConfig.values[lv_config_index("monsterHealthTextSize")][0]*.35));
     self.minimap.markers = [map[@"projection_ready"] boolValue] ? map[@"markers"] : @[];
+    self.minimap.respawnTimers=[map[@"projection_ready"] boolValue] ? map[@"respawn_timers"][@"timers"] : @[];
     NSUInteger enemyMarkers = 0;
     for (NSDictionary *marker in self.minimap.markers) if (![marker[@"is_local"] boolValue] && ![marker[@"is_ward"] boolValue] && ![marker[@"is_monster"] boolValue]) ++enemyMarkers;
     if ([map[@"projection_ready"] boolValue]) {

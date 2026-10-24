@@ -57,6 +57,10 @@ typedef struct {
     size_t confirmed_monsters, monster_markers, dead_monsters, unavailable_monsters, outside_monsters;
     LVMinimapMarker markers[LV_TARGET_MAX_ACTORS];
 } LVMinimapFrame;
+/* Projects the same current world coordinates used by actors and spawn anchors.
+   Returns 0 unavailable, -1 outside, 1 inside, 2 within native edge-clamp margin. */
+int lv_minimap_project_world(const LVMinimapGeometry *,const LVMinimapSettings *,int rotation,
+                             double x,double z,double *u,double *v);
 void lv_minimap_frame(const LVTargetSnapshot *snapshot, const LVMinimapGeometry *geometry,
                       const LVMinimapSettings *settings, LVMinimapFrame *output);
 void lv_minimap_frame_with_wards(const LVTargetSnapshot *snapshot, const LVMinimapGeometry *geometry,

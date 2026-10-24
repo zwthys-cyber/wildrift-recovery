@@ -94,3 +94,25 @@ for index in range(md.tables['types']['count']):
   fields={f['index']:f for f in native.fields(t)}
   references.append({'type':t['namespace']+'.'+t['name'],'index':index,'fields':[fields[f['index']] for f in fs]})
 (ROOT/'build/monster-group-references.json').write_text(json.dumps(references,indent=2))
+
+# Verify exactly the enum states consumed by the bounded respawn reader.
+timer_enums={};enum_fields={}
+for index in (6771,36516,36520):
+ t=md.type(index);enum_fields[index]={f['index']:f['name'] for f in native.fields(t) if f['literal']}
+ timer_enums[t['name']]={}
+ for pos in range(fo,fo+fs,12):
+  field,typ,offset=struct.unpack_from('<iii',md.data,pos)
+  if field in enum_fields[index]:
+   timer_enums[t['name']][enum_fields[index][field]]=compressed_signed(md.data[do+offset:do+offset+4])
+assert timer_enums['AnchorTimeState']['BornCountDown']==1
+assert timer_enums['AnchorDataData_AnchorType']['MONSTER_ANCHOR']==0
+assert timer_enums['AnchorDataData_POIType']['Dragon']==2
+(ROOT/'build/monster-timer-enums.json').write_text(json.dumps(timer_enums,indent=2))
+# The fixed configuration position is a data vector, distinct from encrypted
+# live transforms. Export its named component accessors only.
+t=md.type(34130);vlines=[f'; {t["namespace"]}.{t["name"]}']
+for m in native.methods(t):
+ if m['name'] not in ('get_x','get_y','get_z'):continue
+ start=m['native_address'];vlines.append(f'; {m["name"]} {start:#x}')
+ vlines.extend(f'{i.address:08x}: {i.mnemonic:8s} {i.op_str}' for i in cs.disasm(fw[start:start+32],start))
+(ROOT/'build/anchor-position-components.asm').write_text('\n'.join(vlines)+'\n')
